@@ -1,4 +1,5 @@
 import "./globals.css";
+import { Providers } from "./Providers";
 
 export const metadata = {
   title: "ODIN",
@@ -12,7 +13,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

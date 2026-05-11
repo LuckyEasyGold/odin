@@ -61,7 +61,7 @@ app.post("/api/v1/models", async (req: Request, res: Response) => {
 });
 
 app.post("/api/v1/generate", async (req: Request, res: Response) => {
-  const { modelId, inputs, format = "html" } = req.body;
+  const { modelId, inputs, format = "html", userId } = req.body;
 
   try {
     let model = await modelRepo.findById(modelId);
@@ -73,6 +73,7 @@ app.post("/api/v1/generate", async (req: Request, res: Response) => {
     
     const generation = await genRepo.create({
       modelId: model.id,
+      userId,
       inputs: inputs || {},
       outputHtml: format === "html" ? (result as string) : undefined,
     });

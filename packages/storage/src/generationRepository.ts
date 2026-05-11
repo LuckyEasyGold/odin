@@ -25,6 +25,10 @@ export class GenerationRepository {
   }
 
   async findByUserId(userId: string): Promise<Generation[]> {
-    return this.prisma.generation.findMany({ where: { userId } });
+    return this.prisma.generation.findMany({ 
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      include: { model: true }
+    }) as any;
   }
 }

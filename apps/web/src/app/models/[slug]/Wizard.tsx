@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { getTranslation } from "@/locales";
 
 interface Field {
@@ -21,11 +22,12 @@ interface Model {
 
 export default function Wizard({ model }: { model: Model }) {
   const t = getTranslation("pt");
+  const { data: session } = useSession();
   const [formData, setFormData] = useState<Record<string, any>>(
     model.fields.reduce((acc, f) => ({ ...acc, [f.key]: f.defaultValue || "" }), {})
   );
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ html?: string; error?: string } | null>(null);
+  const [result, setResult] = useState<{ html?: string; generationId?: string; error?: string } | null>(null);
 
   const handleChange = (key: string, value: any) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
@@ -44,6 +46,7 @@ export default function Wizard({ model }: { model: Model }) {
           modelId: model.id,
           inputs: formData,
           format: "html",
+          userId: session?.user?.id,
         }),
       });
 

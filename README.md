@@ -32,9 +32,9 @@ Diferente de um simples gerador de PDF, o ODIN permite que qualquer sistema (ERP
 | Funcionalidade | Status |
 |---|---|
 | 📑 Geração de PDF Profissional (Puppeteer A4) | ✅ Completo |
-| 🎨 Motor de Templates Dinâmicos (Handlebars) | ✅ Completo |
+| 🔐 Autenticação e Perfis (Auth.js / NextAuth) | ✅ Completo |
+| 📊 Dashboard do Usuário (Histórico de Documentos) | ✅ Completo |
 | 🌍 Localização Multilíngue (PT-BR, EN, ES) | ✅ Completo |
-| 📂 Biblioteca de Modelos (Financeiro, TI, Marketing) | ✅ Expandindo |
 | ⭐ Sistema de Avaliações e Feedback de Modelos | ✅ Completo |
 | ✅ Selos de Verificação de Modelos | ✅ Implementado |
 | 🔗 API REST estruturada para integrações | ✅ Funcional |
@@ -42,13 +42,13 @@ Diferente de um simples gerador de PDF, o ODIN permite que qualquer sistema (ERP
 
 ---
 
-## 🚀 Novidades da Fase 2 (Curadoria e Ecossistema)
+## 🚀 Novidades da Fase 3 (Autenticação e Multi-tenancy)
 
-O ODIN evoluiu para uma plataforma de colaboração:
-- **Expansão de Biblioteca:** Adicionados templates profissionais para *Social Media Management* e *Web Development*.
-- **Sistema de Ratings:** Usuários podem agora avaliar modelos e deixar feedbacks, ajudando a comunidade a identificar os melhores templates.
-- **Badges de Confiança:** Implementação de selos "Verificado" para modelos que atendem a critérios técnicos e jurídicos.
-- **UI Refinada:** Interface web moderna para exploração de modelos com filtros por categoria.
+O ODIN agora é uma plataforma completa e segura:
+- **Gestão de Identidade:** Integração com Auth.js permitindo login, cadastro e sessões seguras.
+- **Área do Usuário:** Dashboard privado para visualizar e baixar novamente documentos gerados anteriormente.
+- **Segurança de Dados:** Os documentos agora são vinculados ao perfil do usuário, garantindo privacidade e organização.
+- **Infraestrutura Escalável:** Migração do schema Prisma para suportar perfis complexos no Neon PostgreSQL.
 
 ---
 
