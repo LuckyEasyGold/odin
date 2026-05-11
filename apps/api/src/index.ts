@@ -2,7 +2,11 @@ import express from "express";
 import type { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { renderDocument } from "@odin/engine";
-import { ModelRepository, GenerationRepository } from "@odin/storage";
+import * as dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
+import { ModelRepository, GenerationRepository, RatingRepository } from "@odin/storage";
 
 const app = express();
 const PORT = process.env.API_PORT || 3001;
@@ -11,6 +15,7 @@ const prisma = new PrismaClient();
 // Repositories
 const modelRepo = new ModelRepository(prisma);
 const genRepo = new GenerationRepository(prisma);
+const ratingRepo = new RatingRepository(prisma);
 
 app.use(express.json());
 
@@ -26,6 +31,7 @@ app.get("/api/v1/models", async (_req: Request, res: Response) => {
     const models = await modelRepo.findAll();
     res.json(models);
   } catch (error) {
+    console.error("Fetch models error:", error);
     res.status(500).json({ error: "Failed to fetch models" });
   }
 });
@@ -105,6 +111,39 @@ app.get("/api/v1/generations/:id/download", async (req: Request, res: Response) 
     res.send(pdf);
   } catch (error) {
     res.status(500).json({ error: "Download failed" });
+  }
+});
+
+app.post("/api/v1/models/:id/ratings", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { userId, rating, comment } = req.body;
+
+    if (!userId) return res.status(400).json({ error: "User ID is required" });
+
+    const newRating = await ratingRepo.create({
+      modelId: id,
+      userId,
+      rating,
+      comment
+    });
+
+    // Sync average rating in Model
+    await modelRepo.recalculateRating(id);
+
+    res.status(201).json(newRating);
+  } catch (error) {
+    res.status(400).json({ error: "Failed to submit rating" });
+  }
+});
+
+app.get("/api/v1/models/:id/ratings", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const ratings = await ratingRepo.findByModelId(id);
+    res.json(ratings);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch ratings" });
   }
 });
 

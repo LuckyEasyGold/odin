@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTranslation } from "@/locales";
 import Wizard from "./Wizard";
+import RatingSection from "./RatingSection";
 
 async function getModel(slug: string) {
   try {
@@ -12,9 +13,10 @@ async function getModel(slug: string) {
   }
 }
 
-export default async function ModelDetailPage({ params }: { params: { slug: string } }) {
+export default async function ModelDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const t = getTranslation("pt");
-  const model = await getModel(params.slug);
+  const model = await getModel(slug);
 
   if (!model) {
     return (
@@ -36,6 +38,8 @@ export default async function ModelDetailPage({ params }: { params: { slug: stri
       </header>
 
       <Wizard model={model} />
+
+      <RatingSection modelId={model.id} />
     </main>
   );
 }

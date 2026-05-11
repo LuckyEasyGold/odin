@@ -37,15 +37,36 @@ export default async function ModelsPage() {
                 display: "block",
                 padding: "1.5rem",
                 border: "1px solid #eee",
-                borderRadius: "8px",
+                borderRadius: "12px",
                 textDecoration: "none",
                 color: "inherit",
-                transition: "border-color 0.2s",
+                transition: "all 0.2s",
+                backgroundColor: "white",
+                boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
               }}
             >
-              <h3 style={{ margin: "0 0 0.5rem 0", color: "#2563eb" }}>{model.name}</h3>
-              <p style={{ margin: 0, fontSize: "0.9rem", color: "#666" }}>{model.description}</p>
-              <div style={{ marginTop: "1rem", fontSize: "0.8rem", color: "#999" }}>v{model.version}</div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "0.5rem" }}>
+                <span style={{ 
+                  fontSize: "0.7rem", 
+                  backgroundColor: "#eff6ff", 
+                  color: "#2563eb", 
+                  padding: "0.25rem 0.5rem", 
+                  borderRadius: "9999px",
+                  fontWeight: "bold",
+                  textTransform: "uppercase"
+                }}>
+                  {model.category}
+                </span>
+                {model.compliance?.status === "verified" && (
+                  <span title="Verificado" style={{ color: "#10b981" }}>✅</span>
+                )}
+              </div>
+              <h3 style={{ margin: "0 0 0.5rem 0", color: "#1e293b", fontSize: "1.25rem" }}>{model.name}</h3>
+              <p style={{ margin: 0, fontSize: "0.9rem", color: "#64748b", lineHeight: "1.5" }}>{model.description}</p>
+              <div style={{ marginTop: "1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ fontSize: "0.8rem", color: "#94a3b8" }}>v{model.version}</div>
+                <div style={{ fontSize: "0.8rem", color: "#3b82f6", fontWeight: "bold" }}>Ver Detalhes →</div>
+              </div>
             </Link>
           ))}
         </div>

@@ -55,4 +55,24 @@ export class ModelRepository {
       } as any,
     });
   }
+
+  async recalculateRating(id: string): Promise<void> {
+    const ratings = await this.prisma.rating.findMany({
+      where: { modelId: id },
+      select: { rating: true },
+    });
+
+    if (ratings.length === 0) return;
+
+    const total = ratings.reduce((acc, r) => acc + r.rating, 0);
+    const average = total / ratings.length;
+
+    await this.prisma.model.update({
+      where: { id },
+      data: {
+        rating: average,
+        ratingCount: ratings.length,
+      },
+    });
+  }
 }
