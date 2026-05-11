@@ -36,19 +36,19 @@ Diferente de um simples gerador de PDF, o ODIN permite que qualquer sistema (ERP
 | 📊 Dashboard do Usuário (Histórico e Carteira) | ✅ Completo |
 | 🛡️ DNA Digital (Hash SHA-256 de Integridade) | ✅ Completo |
 | ✍️ Fluxo de Assinatura Eletrônica Interno | ✅ Completo |
+| ✨ Editor de Modelos (Model Creator) | ✅ Completo |
 | 🎨 Landing Page Premium e Navegação Inteligente | ✅ Completo |
-| 🔑 Gestão de Chaves de API para Devs | ✅ Completo |
 | 🔗 API REST estruturada para integrações | ✅ Funcional |
 
 ---
 
-## 🚀 Novidades da Fase 5 (Integridade e Assinatura)
+## 🚀 Novidades da Fase 6 (Colaboração e Estúdio)
 
-O ODIN agora oferece garantias jurídicas e técnicas para seus documentos:
-- **DNA Digital:** Implementação de hashing SHA-256 para garantir a imutabilidade dos documentos gerados.
-- **Assinatura Eletrônica:** Fluxo próprio de aceite digital com registro de IP, Timestamp e vínculo de identidade.
-- **UX Refinada:** Landing Page moderna com Navbar inteligente (Login/Register/Dashboard) e fluxos de navegação otimizados.
-- **Trilha de Auditoria:** Cada documento assinado possui um registro permanente de integridade no banco de dados.
+O ODIN agora permite que você seja um criador de conteúdo jurídico e comercial:
+- **Model Creator:** Interface intuitiva para criar novos modelos usando Handlebars e variáveis dinâmicas.
+- **Gestão de Criações:** Edite seus próprios modelos diretamente do Dashboard para melhorias contínuas.
+- **Ajuda Integrada:** Guia de exemplos dentro do editor para facilitar a criação de documentos complexos.
+- **Sistema de Autoria:** Cada modelo agora possui um criador vinculado, garantindo os créditos e a integridade da obra.
 
 ---
 

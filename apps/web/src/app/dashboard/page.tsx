@@ -13,23 +13,27 @@ export default async function DashboardPage() {
   if (!session?.user?.id) return null;
 
   const generations = await genRepo.findByUserId(session.user.id);
+  const myModels = await prisma.model.findMany({
+    where: { createdBy: session.user.id },
+    orderBy: { createdAt: "desc" },
+  });
 
   return (
-    <div>
-      <header style={{ marginBottom: "2rem" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+      <header>
         <h1 style={{ fontSize: "1.875rem", fontWeight: "bold" }}>Bem-vindo, {session.user.name}!</h1>
         <p style={{ color: "#64748b" }}>Aqui estão seus documentos recentes e estatísticas.</p>
       </header>
 
       {/* Stats Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem", marginBottom: "2.5rem" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem" }}>
         <div style={{ backgroundColor: "white", padding: "1.5rem", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
           <div style={{ color: "#64748b", fontSize: "0.875rem", marginBottom: "0.5rem" }}>Documentos Gerados</div>
           <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{generations.length}</div>
         </div>
         <div style={{ backgroundColor: "white", padding: "1.5rem", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
-          <div style={{ color: "#64748b", fontSize: "0.875rem", marginBottom: "0.5rem" }}>Modelos Favoritos</div>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>3</div>
+          <div style={{ color: "#64748b", fontSize: "0.875rem", marginBottom: "0.5rem" }}>Meus Modelos</div>
+          <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{myModels.length}</div>
         </div>
         <div style={{ backgroundColor: "white", padding: "1.5rem", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
           <div style={{ color: "#64748b", fontSize: "0.875rem", marginBottom: "0.5rem" }}>Uso de API</div>
@@ -92,18 +96,48 @@ export default async function DashboardPage() {
                       <Link href={`/models/${gen.model?.slug || ""}`} style={{ fontSize: "0.875rem", color: "#2563eb", textDecoration: "none" }}>
                         Ver
                       </Link>
-                      {gen.status !== "SIGNED" && (
-                        <button style={{ 
-                          fontSize: "0.875rem", 
-                          color: "#059669", 
-                          border: "none", 
-                          background: "none", 
-                          cursor: "pointer",
-                          fontWeight: "bold"
-                        }}>
-                          Assinar
-                        </button>
-                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+
+      {/* My Models Section */}
+      <section style={{ backgroundColor: "white", padding: "1.5rem", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
+        <h2 style={{ fontSize: "1.25rem", fontWeight: "bold", marginBottom: "1.5rem" }}>Minhas Contribuições (Modelos)</h2>
+        
+        {myModels.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "3rem", color: "#64748b" }}>
+            <p>Você ainda não criou nenhum modelo de documento.</p>
+            <Link href="/dashboard/models/new" style={{ color: "#10b981", fontWeight: "bold", textDecoration: "none" }}>Criar meu primeiro modelo →</Link>
+          </div>
+        ) : (
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ textAlign: "left", borderBottom: "1px solid #e2e8f0" }}>
+                <th style={{ padding: "1rem", color: "#64748b" }}>Nome do Modelo</th>
+                <th style={{ padding: "1rem", color: "#64748b" }}>Categoria</th>
+                <th style={{ padding: "1rem", color: "#64748b" }}>Versão</th>
+                <th style={{ padding: "1rem", color: "#64748b" }}>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {myModels.map((model: any) => (
+                <tr key={model.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                  <td style={{ padding: "1rem", fontWeight: "bold" }}>{model.name}</td>
+                  <td style={{ padding: "1rem", color: "#64748b" }}>{model.category}</td>
+                  <td style={{ padding: "1rem", fontSize: "0.875rem" }}>{model.version || "1.0.0"}</td>
+                  <td style={{ padding: "1rem" }}>
+                    <div style={{ display: "flex", gap: "1rem" }}>
+                      <Link href={`/dashboard/models/${model.id}/edit`} style={{ fontSize: "0.875rem", color: "#2563eb", textDecoration: "none", fontWeight: "bold" }}>
+                        ✏️ Editar
+                      </Link>
+                      <Link href={`/models/${model.slug}`} style={{ fontSize: "0.875rem", color: "#64748b", textDecoration: "none" }}>
+                        Ver Galeria
+                      </Link>
                     </div>
                   </td>
                 </tr>

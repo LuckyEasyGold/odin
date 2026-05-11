@@ -30,6 +30,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <Link href="/models" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "#94a3b8" }}>
             📂 Explorar Modelos
           </Link>
+          <Link href="/dashboard/models/new" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "#10b981", fontWeight: "bold" }}>
+            ✨ Criar Novo Modelo
+          </Link>
           <Link href="/dashboard/settings" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "#94a3b8" }}>
             ⚙️ Configurações
           </Link>
