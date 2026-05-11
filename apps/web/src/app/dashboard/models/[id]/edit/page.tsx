@@ -83,6 +83,30 @@ export default async function EditModelPage({ params }: { params: Promise<{ id: 
           />
         </div>
 
+        <div style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          gap: "1rem", 
+          padding: "1rem", 
+          backgroundColor: "#f8fafc", 
+          borderRadius: "12px",
+          border: "1px solid #e2e8f0"
+        }}>
+          <input 
+            type="checkbox" 
+            name="isPublic" 
+            id="isPublic" 
+            defaultChecked={model.isPublic}
+            style={{ width: "20px", height: "20px", cursor: "pointer" }}
+          />
+          <label htmlFor="isPublic" style={{ cursor: "pointer" }}>
+            <strong style={{ display: "block" }}>Modelo Público</strong>
+            <span style={{ fontSize: "0.875rem", color: "#64748b" }}>
+              Controla se este modelo aparece na galeria geral.
+            </span>
+          </label>
+        </div>
+
         <button type="submit" style={{ 
           padding: "1rem", 
           backgroundColor: "#2563eb", 

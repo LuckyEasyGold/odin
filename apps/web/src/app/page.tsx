@@ -9,8 +9,10 @@ export default async function Home() {
   const session = await auth();
   const t = getTranslation("pt");
   const models = await prisma.model.findMany({
-    where: { isActive: true },
+    where: { isActive: true, isPublic: true },
+    include: { category: true },
     take: 6,
+    orderBy: { createdAt: "desc" }
   });
 
   return (
@@ -111,21 +113,52 @@ export default async function Home() {
         </section>
 
         <section>
+          <style dangerouslySetInnerHTML={{ __html: `
+            .premium-card {
+              transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .premium-card:hover {
+              transform: translateY(-5px);
+              box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08) !important;
+              border-color: #3b82f6 !important;
+            }
+          `}} />
           <h3 style={{ fontSize: "1.5rem", marginBottom: "1.5rem" }}>{t.home.popular.title}</h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1.5rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "2rem" }}>
             {models.map(model => (
               <Link key={model.id} href={`/models/${model.slug}`} style={{ textDecoration: "none" }}>
-                <div style={{ 
-                  backgroundColor: "white", 
-                  padding: "1.5rem", 
-                  borderRadius: "16px", 
-                  border: "1px solid #e2e8f0",
-                  transition: "transform 0.2s",
-                  cursor: "pointer"
-                }}>
-                  <div style={{ color: "#2563eb", fontSize: "0.75rem", fontWeight: "bold", marginBottom: "0.5rem" }}>{model.category}</div>
-                  <h4 style={{ color: "#1e293b", margin: "0 0 0.5rem 0" }}>{model.name}</h4>
-                  <p style={{ color: "#64748b", fontSize: "0.875rem", margin: 0 }}>{model.description}</p>
+                <div 
+                  className="premium-card"
+                  style={{ 
+                    backgroundColor: "white", 
+                    padding: "2rem", 
+                    borderRadius: "24px", 
+                    border: "1px solid #f1f5f9",
+                    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.04)",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    cursor: "pointer"
+                  }}
+                >
+                  <div style={{ 
+                    color: "#2563eb", 
+                    fontSize: "0.7rem", 
+                    fontWeight: "800", 
+                    marginBottom: "1rem",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    background: "#eff6ff",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "9999px",
+                    display: "inline-block",
+                    width: "fit-content"
+                  }}>
+                    {model.category?.name || "Documento"}
+                  </div>
+                  <h4 style={{ color: "#1e293b", margin: "0 0 0.75rem 0", fontSize: "1.25rem", fontWeight: "700" }}>{model.name}</h4>
+                  <p style={{ color: "#64748b", fontSize: "0.95rem", margin: 0, lineHeight: "1.5", flex: 1 }}>{model.description}</p>
+                  <div style={{ marginTop: "1.5rem", color: "#3b82f6", fontWeight: "bold", fontSize: "0.875rem" }}>Ver Detalhes →</div>
                 </div>
               </Link>
             ))}

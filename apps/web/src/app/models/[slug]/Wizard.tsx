@@ -23,8 +23,25 @@ interface Model {
 export default function Wizard({ model }: { model: Model }) {
   const t = getTranslation("pt");
   const { data: session } = useSession();
+
+  // Automatic variable detection if fields is empty
+  const fields = (() => {
+    if (Array.isArray(model.fields) && model.fields.length > 0) return model.fields;
+    
+    // Extract variables from template using regex: {{variableName}}
+    const matches = model.template.match(/{{([^{}]+)}}/g) || [];
+    const uniqueVars = Array.from(new Set(matches.map(m => m.replace(/{{|}}/g, ""))));
+    
+    return uniqueVars.map(v => ({
+      key: v,
+      label: v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, " "),
+      type: "text",
+      required: true
+    }));
+  })();
+
   const [formData, setFormData] = useState<Record<string, any>>(
-    model.fields.reduce((acc, f) => ({ ...acc, [f.key]: f.defaultValue || "" }), {})
+    fields.reduce((acc, f) => ({ ...acc, [f.key]: f.defaultValue || "" }), {})
   );
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ html?: string; generationId?: string; error?: string } | null>(null);
@@ -70,7 +87,7 @@ export default function Wizard({ model }: { model: Model }) {
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
       <form onSubmit={handleSubmit} style={{ backgroundColor: "#f9fafb", padding: "1.5rem", borderRadius: "8px" }}>
         <h3>{model.name}</h3>
-        {model.fields.map((field) => (
+        {fields.map((field) => (
           <div key={field.key} style={{ marginBottom: "1rem" }}>
             <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: "bold" }}>
               {field.label} {field.required && "*"}

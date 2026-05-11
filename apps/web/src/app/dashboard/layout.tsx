@@ -13,8 +13,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "#f1f5f9" }}>
       {/* Sidebar */}
       <aside style={{ width: "260px", backgroundColor: "#1e293b", color: "white", padding: "1.5rem" }}>
-        <div style={{ marginBottom: "2.5rem" }}>
-          <h2 style={{ fontSize: "1.5rem", fontWeight: "bold" }}>ODIN</h2>
+        <div style={{ marginBottom: "2.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: "bold", margin: 0 }}>ODIN</h2>
+          <Link href="/" style={{ color: "#94a3b8", textDecoration: "none", fontSize: "0.75rem", border: "1px solid #334155", padding: "0.25rem 0.5rem", borderRadius: "4px" }}>
+            🏠 Início
+          </Link>
         </div>
 
         <nav style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>

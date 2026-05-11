@@ -30,7 +30,9 @@ model Model {
   slug        String   @unique
   name        String
   description String?
-  category    String
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  categoryName String? // Legacy field for backup
   subcategory String?
   version     String
   template    String
@@ -45,6 +47,7 @@ model Model {
   license     String   @default("MIT")
   features    Json     @default("{}")
   compliance  Json     @default("{}")
+  isPublic    Boolean  @default(true) // New visibility field
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [id])
   createdAt   DateTime @default(now())
@@ -101,6 +104,19 @@ model Generation {
   user        User?    @relation(fields: [userId], references: [id])
 
   @@map("generations")
+}
+
+model Category {
+  id          String     @id @default(uuid())
+  name        String     @unique
+  description String?
+  parentId    String?
+  parent      Category?  @relation("SubCategories", fields: [parentId], references: [id])
+  children    Category[] @relation("SubCategories")
+  models      Model[]
+  createdAt   DateTime   @default(now())
+
+  @@map("categories")
 }
 
 model ApiKey {
