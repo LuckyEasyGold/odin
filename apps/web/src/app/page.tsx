@@ -17,52 +17,7 @@ export default async function Home() {
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#f8fafc", fontFamily: "system-ui, sans-serif" }}>
-      {/* Navbar Premium */}
-      <nav style={{ 
-        display: "flex", 
-        justifyContent: "space-between", 
-        alignItems: "center", 
-        padding: "1rem 5%", 
-        backgroundColor: "white", 
-        boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-        position: "sticky",
-        top: 0,
-        zIndex: 100
-      }}>
-        <Link href="/" style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#1e293b", textDecoration: "none" }}>
-          ODIN<span style={{ color: "#2563eb" }}>.</span>
-        </Link>
-        
-        <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
-          <Link href="/models" style={{ color: "#64748b", textDecoration: "none", fontWeight: "500" }}>Modelos</Link>
-          {session ? (
-            <Link href="/dashboard" style={{ 
-              padding: "0.5rem 1.2rem", 
-              backgroundColor: "#2563eb", 
-              color: "white", 
-              borderRadius: "8px", 
-              textDecoration: "none",
-              fontWeight: "bold"
-            }}>
-              Meu Dashboard
-            </Link>
-          ) : (
-            <>
-              <Link href="/login" style={{ color: "#64748b", textDecoration: "none", fontWeight: "500" }}>Entrar</Link>
-              <Link href="/register" style={{ 
-                padding: "0.5rem 1.2rem", 
-                backgroundColor: "#1e293b", 
-                color: "white", 
-                borderRadius: "8px", 
-                textDecoration: "none",
-                fontWeight: "bold"
-              }}>
-                Criar Conta
-              </Link>
-            </>
-          )}
-        </div>
-      </nav>
+      {/* Navbar Premium removed - now using global Navbar */}
 
       <main style={{ padding: "4rem 5%", maxWidth: "1200px", margin: "0 auto" }}>
         <header style={{ textAlign: "center", marginBottom: "4rem" }}>

@@ -6,6 +6,8 @@ export const metadata = {
   description: "Open Document Infrastructure Network"
 };
 
+import Navbar from "@/components/Navbar";
+
 export default function RootLayout({
   children
 }: {
@@ -14,7 +16,10 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <Navbar />
+          {children}
+        </Providers>
       </body>
     </html>
   );

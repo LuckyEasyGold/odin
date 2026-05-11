@@ -1,151 +1,107 @@
-import { auth } from "@/lib/auth";
 import { PrismaClient } from "@prisma/client";
-import { GenerationRepository } from "@odin/storage";
 import Link from "next/link";
+import { auth } from "@/lib/auth";
 
 const prisma = new PrismaClient();
-const genRepo = new GenerationRepository(prisma);
 
 export default async function DashboardPage() {
   const session = await auth();
-  
-  // We already checked session in layout.tsx, but TypeScript needs this.
   if (!session?.user?.id) return null;
 
-  const generations = await genRepo.findByUserId(session.user.id);
-  const myModels = await prisma.model.findMany({
-    where: { createdBy: session.user.id },
-    orderBy: { createdAt: "desc" },
-  });
+  // Fetch data in parallel for speed
+  const [totalGenerations, rawModels, recentGenerations] = await Promise.all([
+    prisma.generation.count({ where: { userId: session.user.id } }),
+    prisma.model.findMany({
+      where: { createdBy: session.user.id },
+      include: { category: true },
+      orderBy: { createdAt: "desc" }
+    }),
+    prisma.generation.findMany({
+      where: { userId: session.user.id },
+      include: { model: true },
+      take: 5,
+      orderBy: { createdAt: "desc" }
+    })
+  ]);
+
+  // Serialize models for safety
+  const myModels = rawModels.map(m => ({
+    ...m,
+    price: Number(m.price),
+    rating: Number(m.rating),
+    createdAt: m.createdAt.toISOString(),
+    updatedAt: m.updatedAt.toISOString(),
+  }));
+
+  const balance = 0;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-      <header>
-        <h1 style={{ fontSize: "1.875rem", fontWeight: "bold" }}>Bem-vindo, {session.user.name}!</h1>
-        <p style={{ color: "#64748b" }}>Aqui estão seus documentos recentes e estatísticas.</p>
+    <div style={{ padding: "1rem" }}>
+      <header style={{ marginBottom: "2rem" }}>
+        <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "#0f172a" }}>Dashboard</h1>
+        <p style={{ color: "#64748b" }}>Gestão completa dos seus documentos e modelos.</p>
       </header>
 
-      {/* Stats Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem" }}>
-        <div style={{ backgroundColor: "white", padding: "1.5rem", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
-          <div style={{ color: "#64748b", fontSize: "0.875rem", marginBottom: "0.5rem" }}>Documentos Gerados</div>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{generations.length}</div>
+      {/* Stats Grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem", marginBottom: "3rem" }}>
+        <div style={{ backgroundColor: "white", padding: "1.5rem", borderRadius: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "1px solid #f1f5f9" }}>
+          <div style={{ color: "#94a3b8", fontSize: "0.8rem", fontWeight: "bold", textTransform: "uppercase" }}>Gerados</div>
+          <div style={{ fontSize: "1.75rem", fontWeight: "800", color: "#1e293b" }}>{totalGenerations}</div>
         </div>
-        <div style={{ backgroundColor: "white", padding: "1.5rem", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
-          <div style={{ color: "#64748b", fontSize: "0.875rem", marginBottom: "0.5rem" }}>Meus Modelos</div>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{myModels.length}</div>
+        <div style={{ backgroundColor: "white", padding: "1.5rem", borderRadius: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "1px solid #f1f5f9" }}>
+          <div style={{ color: "#94a3b8", fontSize: "0.8rem", fontWeight: "bold", textTransform: "uppercase" }}>Modelos</div>
+          <div style={{ fontSize: "1.75rem", fontWeight: "800", color: "#1e293b" }}>{myModels.length}</div>
         </div>
-        <div style={{ backgroundColor: "white", padding: "1.5rem", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
-          <div style={{ color: "#64748b", fontSize: "0.875rem", marginBottom: "0.5rem" }}>Uso de API</div>
-          <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>Ativo</div>
+        <div style={{ backgroundColor: "white", padding: "1.5rem", borderRadius: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "1px solid #f1f5f9" }}>
+          <div style={{ color: "#94a3b8", fontSize: "0.8rem", fontWeight: "bold", textTransform: "uppercase" }}>Saldo</div>
+          <div style={{ fontSize: "1.75rem", fontWeight: "800", color: "#10b981" }}>R$ {balance.toFixed(2)}</div>
         </div>
       </div>
 
-      {/* Recent Activity Table */}
-      <section style={{ backgroundColor: "white", padding: "1.5rem", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
-        <h2 style={{ fontSize: "1.25rem", fontWeight: "bold", marginBottom: "1.5rem" }}>Atividade Recente</h2>
-        
-        {generations.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "3rem", color: "#64748b" }}>
-            <p>Você ainda não gerou nenhum documento.</p>
-            <Link href="/models" style={{ color: "#2563eb", fontWeight: "bold", textDecoration: "none" }}>Explorar modelos agora →</Link>
+      <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: "2rem" }}>
+        {/* My Models */}
+        <section style={{ backgroundColor: "white", padding: "2rem", borderRadius: "24px", border: "1px solid #f1f5f9" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: "700" }}>Minhas Contribuições</h2>
+            <Link href="/dashboard/models/new" style={{ fontSize: "0.8rem", color: "#3b82f6", fontWeight: "bold", textDecoration: "none" }}>+ Novo Modelo</Link>
           </div>
-        ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ textAlign: "left", borderBottom: "1px solid #e2e8f0" }}>
-                <th style={{ padding: "1rem", color: "#64748b" }}>Documento</th>
-                <th style={{ padding: "1rem", color: "#64748b" }}>Data</th>
-                <th style={{ padding: "1rem", color: "#64748b" }}>DNA Digital</th>
-                <th style={{ padding: "1rem", color: "#64748b" }}>Status</th>
-                <th style={{ padding: "1rem", color: "#64748b" }}>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {generations.map((gen: any) => (
-                <tr key={gen.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                  <td style={{ padding: "1rem", fontWeight: "bold" }}>{gen.model?.name || "Modelo Removido"}</td>
-                  <td style={{ padding: "1rem", fontSize: "0.875rem" }}>
-                    {new Date(gen.createdAt).toLocaleDateString()}
-                  </td>
-                  <td style={{ padding: "1rem" }}>
-                    <code title={gen.documentHash} style={{ 
-                      fontSize: "0.75rem", 
-                      backgroundColor: "#f1f5f9", 
-                      padding: "0.2rem 0.4rem", 
-                      borderRadius: "4px",
-                      color: "#475569"
-                    }}>
-                      {gen.documentHash?.slice(0, 8) || "N/A"}
-                    </code>
-                  </td>
-                  <td style={{ padding: "1rem" }}>
-                    <span style={{ 
-                      padding: "0.25rem 0.5rem", 
-                      backgroundColor: gen.status === "SIGNED" ? "#ecfdf5" : "#fff7ed", 
-                      color: gen.status === "SIGNED" ? "#059669" : "#c2410c", 
-                      borderRadius: "9999px",
-                      fontSize: "0.75rem",
-                      fontWeight: "bold"
-                    }}>
-                      {gen.status === "SIGNED" ? "ASSINADO" : "PENDENTE"}
-                    </span>
-                  </td>
-                  <td style={{ padding: "1rem" }}>
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
-                      <Link href={`/models/${gen.model?.slug || ""}`} style={{ fontSize: "0.875rem", color: "#2563eb", textDecoration: "none" }}>
-                        Ver
-                      </Link>
-                    </div>
-                  </td>
-                </tr>
+          {myModels.length === 0 ? (
+            <p style={{ color: "#94a3b8", textAlign: "center", padding: "2rem" }}>Nenhum modelo criado ainda.</p>
+          ) : (
+            <div style={{ display: "grid", gap: "1rem" }}>
+              {myModels.map(m => (
+                <div key={m.id} style={{ padding: "1rem", borderRadius: "16px", backgroundColor: "#f8fafc", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <div style={{ fontWeight: "600", fontSize: "0.95rem" }}>{m.name}</div>
+                    <div style={{ fontSize: "0.75rem", color: "#64748b" }}>{m.category?.name || "Geral"} • {m.isPublic ? "Público" : "Privado"}</div>
+                  </div>
+                  <Link href={`/dashboard/models/${m.id}/edit`} style={{ fontSize: "0.8rem", color: "#3b82f6", textDecoration: "none" }}>Editar</Link>
+                </div>
               ))}
-            </tbody>
-          </table>
-        )}
-      </section>
+            </div>
+          )}
+        </section>
 
-      {/* My Models Section */}
-      <section style={{ backgroundColor: "white", padding: "1.5rem", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
-        <h2 style={{ fontSize: "1.25rem", fontWeight: "bold", marginBottom: "1.5rem" }}>Minhas Contribuições (Modelos)</h2>
-        
-        {myModels.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "3rem", color: "#64748b" }}>
-            <p>Você ainda não criou nenhum modelo de documento.</p>
-            <Link href="/dashboard/models/new" style={{ color: "#10b981", fontWeight: "bold", textDecoration: "none" }}>Criar meu primeiro modelo →</Link>
-          </div>
-        ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ textAlign: "left", borderBottom: "1px solid #e2e8f0" }}>
-                <th style={{ padding: "1rem", color: "#64748b" }}>Nome do Modelo</th>
-                <th style={{ padding: "1rem", color: "#64748b" }}>Categoria</th>
-                <th style={{ padding: "1rem", color: "#64748b" }}>Versão</th>
-                <th style={{ padding: "1rem", color: "#64748b" }}>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {myModels.map((model: any) => (
-                <tr key={model.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                  <td style={{ padding: "1rem", fontWeight: "bold" }}>{model.name}</td>
-                  <td style={{ padding: "1rem", color: "#64748b" }}>{model.category}</td>
-                  <td style={{ padding: "1rem", fontSize: "0.875rem" }}>{model.version || "1.0.0"}</td>
-                  <td style={{ padding: "1rem" }}>
-                    <div style={{ display: "flex", gap: "1rem" }}>
-                      <Link href={`/dashboard/models/${model.id}/edit`} style={{ fontSize: "0.875rem", color: "#2563eb", textDecoration: "none", fontWeight: "bold" }}>
-                        ✏️ Editar
-                      </Link>
-                      <Link href={`/models/${model.slug}`} style={{ fontSize: "0.875rem", color: "#64748b", textDecoration: "none" }}>
-                        Ver Galeria
-                      </Link>
-                    </div>
-                  </td>
-                </tr>
+        {/* Recent Activity */}
+        <section style={{ backgroundColor: "white", padding: "2rem", borderRadius: "24px", border: "1px solid #f1f5f9" }}>
+          <h2 style={{ fontSize: "1.25rem", fontWeight: "700", marginBottom: "2rem" }}>Atividade Recente</h2>
+          {recentGenerations.length === 0 ? (
+            <p style={{ color: "#94a3b8", textAlign: "center", padding: "2rem" }}>Nenhum documento gerado.</p>
+          ) : (
+            <div style={{ display: "grid", gap: "1rem" }}>
+              {recentGenerations.map(g => (
+                <div key={g.id} style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                  <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#10b981" }}></div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: "0.9rem", fontWeight: "500" }}>{g.model.name}</div>
+                    <div style={{ fontSize: "0.7rem", color: "#94a3b8" }}>{new Date(g.createdAt).toLocaleDateString()}</div>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
-        )}
-      </section>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
