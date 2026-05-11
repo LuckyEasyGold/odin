@@ -1,92 +1,128 @@
-# ODIN - Open Document Infrastructure Network
+<div align="center">
+  <h1>⚡ ODIN</h1>
+  <p><strong>Open Document Infrastructure Network</strong></p>
+  <p>Uma infraestrutura aberta para criação, validação, automação e gestão de documentos profissionais via API.</p>
 
-> Uma infraestrutura aberta para criação, validação, automação e gestão de documentos profissionais via API.
+  <p>
+    <a href="https://nextjs.org"><img alt="Next.js" src="https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js"></a>
+    <a href="https://www.typescriptlang.org"><img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript"></a>
+    <a href="https://www.prisma.io"><img alt="Prisma" src="https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma"></a>
+    <a href="https://neon.tech"><img alt="Neon" src="https://img.shields.io/badge/Neon-PostgreSQL-00E699?style=for-the-badge&logo=postgresql"></a>
+    <a href="https://puppeteer.com"><img alt="Puppeteer" src="https://img.shields.io/badge/Puppeteer-PDF-40B5A4?style=for-the-badge&logo=puppeteer"></a>
+    <img alt="Version" src="https://img.shields.io/badge/versão-1.2.0--beta-orange?style=for-the-badge">
+  </p>
 
-## Instalação
+  <br/>
+  </div>
+
+---
+
+## 📖 Sobre o Projeto
+
+**ODIN** é uma camada de infraestrutura open source projetada para padronizar a criação, versionamento e automação de documentos profissionais e jurídicos. 
+
+Diferente de um simples gerador de PDF, o ODIN permite que qualquer sistema (ERP, CRM, Marketplace) gere documentos validados a partir de modelos reutilizáveis e estruturados, com suporte a múltiplas linguagens e assinaturas.
+
+🌐 **Repositório Oficial:** [github.com/LuckyEasyGold/odin](https://github.com/LuckyEasyGold/odin) | [codeberg.org/whodo/odin](https://codeberg.org/whodo/odin)
+
+---
+
+## ✨ Funcionalidades (Status do MVP)
+
+| Funcionalidade | Status |
+|---|---|
+| 📑 Geração de PDF Profissional (Puppeteer A4) | ✅ Completo |
+| 🎨 Motor de Templates Dinâmicos (Handlebars) | ✅ Completo |
+| 🌍 Localização Multilíngue (PT-BR, EN, ES) | ✅ Completo |
+| 📂 Biblioteca de Modelos (Financeiro, TI, Marketing) | ✅ Expandindo |
+| ⭐ Sistema de Avaliações e Feedback de Modelos | ✅ Completo |
+| ✅ Selos de Verificação de Modelos | ✅ Implementado |
+| 🔗 API REST estruturada para integrações | ✅ Funcional |
+| ☁️ Persistência Cloud Serverless (Neon DB) | ✅ Conectado |
+
+---
+
+## 🚀 Novidades da Fase 2 (Curadoria e Ecossistema)
+
+O ODIN evoluiu para uma plataforma de colaboração:
+- **Expansão de Biblioteca:** Adicionados templates profissionais para *Social Media Management* e *Web Development*.
+- **Sistema de Ratings:** Usuários podem agora avaliar modelos e deixar feedbacks, ajudando a comunidade a identificar os melhores templates.
+- **Badges de Confiança:** Implementação de selos "Verificado" para modelos que atendem a critérios técnicos e jurídicos.
+- **UI Refinada:** Interface web moderna para exploração de modelos com filtros por categoria.
+
+---
+
+## 🛠️ Stack Tecnológica
+
+- **Monorepo:** [Turborepo](https://turbo.build/) + [pnpm](https://pnpm.io/)
+- **Frontend:** [Next.js 15](https://nextjs.org) (App Router)
+- **Backend/API:** [Express](https://expressjs.com/) + [tsx](https://tsx.is/)
+- **Document Engine:** [Puppeteer](https://pptr.dev/) (Renderização PDF)
+- **Templates:** [Handlebars](https://handlebarsjs.com/)
+- **Banco de Dados:** [Neon](https://neon.tech) (PostgreSQL Serverless)
+- **ORM:** [Prisma](https://www.prisma.io)
+- **Linguagem:** [TypeScript](https://www.typescriptlang.org)
+
+---
+
+## 🚀 Instalação e Execução Local
 
 ```bash
-# Instalar dependências
+# 1. Clone o repositório
+git clone https://github.com/LuckyEasyGold/odin.git
+cd odin
+
+# 2. Instale as dependências (necessário pnpm)
 pnpm install
 
-# Iniciar desenvolvimento
-pnpm dev
+# 3. Configure as variáveis de ambiente
+cp .env.example .env
+# Edite o .env com sua DATABASE_URL do Neon
 ```
 
-## Scripts
+### Comandos de Desenvolvimento
 
-| Script | Descrição |
-|--------|-----------|
-| `pnpm dev` | Inicia todas as aplicações em modo desenvolvimento |
-| `pnpm build` | Build de todos os pacotes |
-| `pnpm test` | Executa os testes |
-| `pnpm test:coverage` | Executa testes com cobertura |
-| `pnpm format` | Formata o código |
-| `pnpm lint` | Verifica o código |
+```bash
+# Iniciar API e Web simultaneamente
+pnpm dev
 
-## Estrutura
+# Gerar cliente Prisma
+pnpm --filter @odin/storage exec prisma generate
+
+# Popular banco com modelos iniciais
+pnpm --filter @odin/storage exec prisma db seed
+```
+
+---
+
+## 🗃️ Estrutura do Projeto
 
 ```
 odin/
 ├── apps/
-│   ├── api/        # API REST (Express)
-│   ├── web/        # Interface web (Next.js)
-│   └── worker/     # Worker de processamento (BullMQ)
+│   ├── api/            # API REST (Express)
+│   └── web/            # Interface Next.js 15
 ├── packages/
-│   ├── core/       # Tipos, schemas Zod e interfaces TypeScript
-│   ├── engine/     # Renderização Handlebars/PDF (Puppeteer)
-│   ├── storage/    # Persistência Prisma/PostgreSQL
-│   └── utils/      # Utilitários comuns
-├── contracts/      # JSON contracts para cada módulo
-├── scripts/        # Scripts de automação
-└── tests/          # Testes integrados
+│   ├── core/           # Tipos e interfaces compartilhadas
+│   ├── engine/         # Motor de renderização PDF (Puppeteer)
+│   ├── storage/        # Camada de dados e Repositórios (Prisma)
+│   └── utils/          # Helpers compartilhados
+├── prisma/             # Schema e Migrations
+└── ODIN_MASTER_BLUEPRINT.md # Visão estratégica do projeto
 ```
 
-## Pacotes
+---
 
-### @odin/core
-Tipos e schemas Zod para validação de dados:
-- `Model`, `Field`, `Generation`, `Rating`, `ApiKey`
-- Schemas Zod para runtime validation
+## 🤝 Contribuindo
 
-### @odin/engine
-Renderização de documentos:
-- Handlebars templates
-- PDF generation with Puppeteer
+1. Faça um _fork_ do projeto
+2. Crie sua branch: `git checkout -b feature/minha-melhoria`
+3. Commit suas mudanças: `git commit -m 'feat: adiciona nova funcionalidade'`
+4. Push: `git push origin feature/minha-melhoria`
+5. Abra um Pull Request
 
-### @odin/storage
-Repositórios Prisma:
-- `ModelRepository` - CRUD de modelos
-- `GenerationRepository` - Armazenamento de documentos gerados
-- `RatingRepository` - Avaliações
-- `ApiKeyRepository` - Gerenciamento de chaves API
+---
 
-### @odin/api
-REST API Express:
-- `GET/POST /api/v1/models` - CRUD de modelos
-- `POST /api/v1/generate` - Geração de documentos
-- `GET /api/v1/mcp/tools` - Discovery de ferramentas
-
-### @odin/web
-Interface Next.js:
-- Landing page
-- Browse de modelos
-- Wizard de preenchimento
-
-### @odin/worker
-Processamento assíncrono:
-- Fila BullMQ para geração de PDFs
-- Processamento em background
-
-## Variáveis de Ambiente
-
-Copie `.env.example` para `.env` e configure:
-
-```env
-DATABASE_URL=postgresql://user:password@localhost:5432/odin
-REDIS_URL=redis://localhost:6379
-API_PORT=3000
-```
-
-## Licença
-
-MIT
+<div align="center">
+  <p>Feito com ❤️ por <strong>Vinícius Ramos</strong> e a comunidade <strong>ODIN</strong></p>
+</div>
