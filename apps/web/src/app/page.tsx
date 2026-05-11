@@ -16,26 +16,27 @@ export default async function Home() {
   });
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#f8fafc", fontFamily: "system-ui, sans-serif" }}>
+    <div style={{ minHeight: "100vh", backgroundColor: "var(--background)", color: "var(--foreground)", fontFamily: "system-ui, sans-serif" }}>
       {/* Navbar Premium removed - now using global Navbar */}
 
       <main style={{ padding: "4rem 5%", maxWidth: "1200px", margin: "0 auto" }}>
         <header style={{ textAlign: "center", marginBottom: "4rem" }}>
-          <h1 style={{ color: "#1e293b", fontSize: "3rem", marginBottom: "1rem" }}>{t.common.title}</h1>
-          <p style={{ color: "#64748b", fontSize: "1.25rem", maxWidth: "600px", margin: "0 auto" }}>
+          <h1 style={{ color: "var(--foreground)", fontSize: "3rem", marginBottom: "1rem" }}>{t.common.title}</h1>
+          <p style={{ color: "var(--muted)", fontSize: "1.25rem", maxWidth: "600px", margin: "0 auto" }}>
             {t.common.description}
           </p>
         </header>
 
         <section style={{ 
-          backgroundColor: "white", 
+          backgroundColor: "var(--card-bg)", 
           padding: "3rem", 
           borderRadius: "24px", 
-          boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
-          marginBottom: "4rem"
+          boxShadow: "0 4px 6px -1px var(--shadow)",
+          marginBottom: "4rem",
+          border: "1px solid var(--card-border)"
         }}>
-          <h2 style={{ fontSize: "2rem", marginBottom: "1rem" }}>{t.home.hero.title}</h2>
-          <p style={{ color: "#64748b", lineHeight: "1.6", marginBottom: "2rem" }}>{t.home.hero.description}</p>
+          <h2 style={{ fontSize: "2rem", marginBottom: "1rem", color: "var(--foreground)" }}>{t.home.hero.title}</h2>
+          <p style={{ color: "var(--muted)", lineHeight: "1.6", marginBottom: "2rem" }}>{t.home.hero.description}</p>
           
           <div style={{ display: "flex", gap: "1rem" }}>
             <Link
@@ -51,19 +52,6 @@ export default async function Home() {
             >
               {t.home.actions.browse}
             </Link>
-            <a
-              href="/api/v1/mcp/tools"
-              style={{ 
-                padding: "0.8rem 2rem", 
-                border: "2px solid #e2e8f0", 
-                borderRadius: "12px", 
-                textDecoration: "none",
-                color: "#1e293b",
-                fontWeight: "bold"
-              }}
-            >
-              {t.home.actions.apiDoc}
-            </a>
           </div>
         </section>
 
@@ -74,22 +62,22 @@ export default async function Home() {
             }
             .premium-card:hover {
               transform: translateY(-5px);
-              box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08) !important;
+              box-shadow: 0 20px 25px -5px var(--shadow) !important;
               border-color: #3b82f6 !important;
             }
           `}} />
-          <h3 style={{ fontSize: "1.5rem", marginBottom: "1.5rem" }}>{t.home.popular.title}</h3>
+          <h3 style={{ fontSize: "1.5rem", marginBottom: "1.5rem", color: "var(--foreground)" }}>{t.home.popular.title}</h3>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "2rem" }}>
             {models.map(model => (
               <Link key={model.id} href={`/models/${model.slug}`} style={{ textDecoration: "none" }}>
                 <div 
                   className="premium-card"
                   style={{ 
-                    backgroundColor: "white", 
+                    backgroundColor: "var(--card-bg)", 
                     padding: "2rem", 
                     borderRadius: "24px", 
-                    border: "1px solid #f1f5f9",
-                    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.04)",
+                    border: "1px solid var(--card-border)",
+                    boxShadow: "0 10px 15px -3px var(--shadow)",
                     height: "100%",
                     display: "flex",
                     flexDirection: "column",
@@ -103,7 +91,7 @@ export default async function Home() {
                     marginBottom: "1rem",
                     textTransform: "uppercase",
                     letterSpacing: "0.05em",
-                    background: "#eff6ff",
+                    background: "rgba(37, 99, 235, 0.1)",
                     padding: "0.25rem 0.75rem",
                     borderRadius: "9999px",
                     display: "inline-block",
@@ -111,14 +99,16 @@ export default async function Home() {
                   }}>
                     {model.category?.name || "Documento"}
                   </div>
-                  <h4 style={{ color: "#1e293b", margin: "0 0 0.75rem 0", fontSize: "1.25rem", fontWeight: "700" }}>{model.name}</h4>
-                  <p style={{ color: "#64748b", fontSize: "0.95rem", margin: 0, lineHeight: "1.5", flex: 1 }}>{model.description}</p>
+                  <h4 style={{ color: "var(--foreground)", margin: "0 0 0.75rem 0", fontSize: "1.25rem", fontWeight: "700" }}>{model.name}</h4>
+                  <p style={{ color: "var(--muted)", fontSize: "0.95rem", margin: 0, lineHeight: "1.5", flex: 1 }}>{model.description}</p>
                   <div style={{ marginTop: "1.5rem", color: "#3b82f6", fontWeight: "bold", fontSize: "0.875rem" }}>Ver Detalhes →</div>
                 </div>
               </Link>
             ))}
           </div>
         </section>
+      </main>
+    </div>
       </main>
     </div>
   );
