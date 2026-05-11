@@ -14,6 +14,9 @@ model User {
   password  String?
   fullName  String?
   avatarUrl String?
+  isSpecialist Boolean @default(false)
+  specialty    String? // Ex: "Jurídico", "Contábil"
+  registrationId String? // Ex: OAB, CRC
   balance   Decimal  @default(0)
   createdAt DateTime @default(now())
   models    Model[]
@@ -47,6 +50,12 @@ model Model {
   license     String   @default("MIT")
   features    Json     @default("{}")
   compliance  Json     @default("{}")
+  guidance    String?  // Texto explicativo do modelo (Dicas do especialista)
+  variableHints Json?  // Exemplos/Mockups para cada variável {{...}}
+  isVerified  Boolean  @default(false)
+  complianceScore Int  @default(0)
+  curatorNote String?
+  country     String   @default("BR")
   isPublic    Boolean  @default(true) // New visibility field
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [id])
@@ -78,6 +87,8 @@ model Rating {
   userId    String
   rating    Int      @default(3)
   comment   String?
+  isTechnical Boolean @default(false)
+  isApproval  Boolean @default(false)
   weight    Decimal  @default(1)
   createdAt DateTime @default(now())
   model     Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)

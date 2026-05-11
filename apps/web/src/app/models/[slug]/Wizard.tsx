@@ -86,83 +86,117 @@ export default function Wizard({ model }: { model: Model }) {
   };
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "2rem" }}>
-      <form onSubmit={handleSubmit} style={{ 
-        backgroundColor: "var(--card-bg)", 
-        padding: "2rem", 
-        borderRadius: "24px",
-        border: "1px solid var(--card-border)",
-        boxShadow: "0 4px 6px var(--shadow)"
-      }}>
-        <h3 style={{ color: "var(--foreground)", marginBottom: "1.5rem" }}>{model.name}</h3>
-        {fields.map((field) => (
-          <div key={field.key} style={{ marginBottom: "1.25rem" }}>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold", fontSize: "0.85rem", color: "var(--muted)" }}>
-              {field.label} {field.required && "*"}
-            </label>
-            {field.type === "textarea" ? (
-              <textarea
-                value={formData[field.key]}
-                onChange={(e) => handleChange(field.key, e.target.value)}
-                required={field.required}
-                placeholder={field.placeholder}
-                style={{ 
-                  width: "100%", 
-                  padding: "0.75rem", 
-                  borderRadius: "12px", 
-                  border: "1px solid var(--card-border)",
-                  backgroundColor: "var(--background)",
-                  color: "var(--foreground)",
-                  fontSize: "1rem"
-                }}
-                rows={4}
-              />
-            ) : (
-              <input
-                type={field.type === "currency" || field.type === "number" ? "number" : field.type}
-                value={formData[field.key]}
-                onChange={(e) => handleChange(field.key, e.target.value)}
-                required={field.required}
-                placeholder={field.placeholder}
-                style={{ 
-                  width: "100%", 
-                  padding: "0.75rem", 
-                  borderRadius: "12px", 
-                  border: "1px solid var(--card-border)",
-                  backgroundColor: "var(--background)",
-                  color: "var(--foreground)",
-                  fontSize: "1rem"
-                }}
-              />
-            )}
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: "2.5rem", color: "var(--foreground)" }}>
+      {/* Form Side */}
+      <div>
+        {/* @ts-ignore */}
+        {model.guidance && (
+          <div style={{ 
+            marginBottom: "2rem", 
+            padding: "1.5rem", 
+            backgroundColor: "rgba(59, 130, 246, 0.05)", 
+            borderRadius: "16px", 
+            border: "1px solid rgba(59, 130, 246, 0.2)",
+            display: "flex",
+            gap: "1rem",
+            alignItems: "flex-start"
+          }}>
+            <span style={{ fontSize: "1.5rem" }}>💡</span>
+            <div>
+              <h4 style={{ margin: "0 0 0.5rem 0", color: "var(--primary)" }}>Dicas do Especialista</h4>
+              <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--muted)", lineHeight: "1.6" }}>
+                {/* @ts-ignore */}
+                {model.guidance}
+              </p>
+            </div>
           </div>
-        ))}
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            width: "100%",
-            padding: "1rem",
-            backgroundColor: "var(--primary)",
-            color: "white",
-            border: "none",
-            borderRadius: "12px",
-            fontWeight: "bold",
-            fontSize: "1rem",
-            cursor: loading ? "not-allowed" : "pointer",
-            marginTop: "1rem"
-          }}
-        >
-          {loading ? t.wizard.loading : t.wizard.generate}
-        </button>
-      </form>
+        )}
 
+        <form onSubmit={handleSubmit} style={{ 
+          backgroundColor: "var(--card-bg)", 
+          padding: "2rem", 
+          borderRadius: "24px", 
+          boxShadow: "0 4px 6px var(--shadow)",
+          border: "1px solid var(--card-border)"
+        }}>
+          <h3 style={{ marginBottom: "1.5rem", color: "var(--foreground)" }}>{model.name}</h3>
+          
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+            {fields.map((field) => (
+              <div key={field.key} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <label style={{ fontWeight: "bold", fontSize: "0.85rem", color: "var(--muted)" }}>
+                  {field.label} {field.required && <span style={{ color: "#ef4444" }}>*</span>}
+                </label>
+                {field.type === "textarea" ? (
+                  <textarea
+                    value={formData[field.key] || ""}
+                    onChange={(e) => handleChange(field.key, e.target.value)}
+                    required={field.required}
+                    /* @ts-ignore */
+                    placeholder={model.variableHints?.[field.key] || field.placeholder || `Preencha o ${field.label.toLowerCase()}...`}
+                    style={{ 
+                      width: "100%", 
+                      padding: "0.75rem", 
+                      borderRadius: "12px", 
+                      border: "1px solid var(--card-border)",
+                      backgroundColor: "var(--background)",
+                      color: "var(--foreground)",
+                      fontSize: "1rem"
+                    }}
+                    rows={4}
+                  />
+                ) : (
+                  <input
+                    type={field.type}
+                    value={formData[field.key] || ""}
+                    onChange={(e) => handleChange(field.key, e.target.value)}
+                    required={field.required}
+                    /* @ts-ignore */
+                    placeholder={model.variableHints?.[field.key] || field.placeholder || `Preencha o ${field.label.toLowerCase()}...`}
+                    style={{ 
+                      width: "100%", 
+                      padding: "0.75rem", 
+                      borderRadius: "12px", 
+                      border: "1px solid var(--card-border)",
+                      backgroundColor: "var(--background)",
+                      color: "var(--foreground)",
+                      fontSize: "1rem"
+                    }}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              width: "100%",
+              padding: "1rem",
+              backgroundColor: "var(--primary)",
+              color: "white",
+              border: "none",
+              borderRadius: "12px",
+              fontWeight: "bold",
+              fontSize: "1rem",
+              cursor: loading ? "not-allowed" : "pointer",
+              marginTop: "2rem",
+              boxShadow: "0 4px 10px var(--shadow)"
+            }}
+          >
+            {loading ? t.wizard.loading : t.wizard.generate}
+          </button>
+        </form>
+      </div>
+
+      {/* Preview Side */}
       <div style={{ 
         backgroundColor: "var(--card-bg)", 
         border: "1px solid var(--card-border)", 
         padding: "2rem", 
         borderRadius: "24px", 
-        minHeight: "400px", 
+        minHeight: "500px", 
         position: "relative",
         boxShadow: "0 4px 6px var(--shadow)"
       }}>
@@ -191,20 +225,20 @@ export default function Wizard({ model }: { model: Model }) {
           <div 
             style={{ 
               backgroundColor: "white", 
-              color: "black", // Preview always white paper
-              padding: "2rem", 
+              color: "black",
+              padding: "3rem", 
               borderRadius: "8px",
               border: "1px solid #ddd", 
-              boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-              minHeight: "400px"
+              boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+              minHeight: "600px"
             }} 
             dangerouslySetInnerHTML={{ __html: result.html }} 
           />
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "300px", color: "var(--muted)" }}>
-            <span style={{ fontSize: "3rem", marginBottom: "1rem" }}>📄</span>
-            <p style={{ textAlign: "center" }}>
-              {loading ? t.wizard.loading : "Preencha o formulário para visualizar o documento."}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "400px", color: "var(--muted)" }}>
+            <span style={{ fontSize: "4rem", marginBottom: "1.5rem" }}>📄</span>
+            <p style={{ textAlign: "center", maxWidth: "250px" }}>
+              {loading ? t.wizard.loading : "Preencha o formulário para visualizar o documento em tempo real."}
             </p>
           </div>
         )}

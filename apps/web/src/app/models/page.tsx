@@ -125,14 +125,27 @@ export default async function ModelsPage({
                 border-color: var(--primary);
               }
             `}} />
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.5rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <span style={{ fontSize: "0.75rem", background: "rgba(59, 130, 246, 0.1)", color: "var(--primary)", padding: "0.4rem 1rem", borderRadius: "100px", fontWeight: "700", textTransform: "uppercase" }}>
                 {model.category?.name || "Geral"}
               </span>
+              {model.isVerified && (
+                <span title="Modelo validado por especialistas" style={{ fontSize: "0.75rem", background: "rgba(16, 185, 129, 0.1)", color: "#10b981", padding: "0.4rem 0.75rem", borderRadius: "8px", fontWeight: "bold", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
+                  🛡️ Verificado
+                </span>
+              )}
             </div>
             <h3 style={{ margin: "0 0 1rem 0", color: "var(--foreground)", fontSize: "1.5rem", fontWeight: "700" }}>{model.name}</h3>
             <p style={{ margin: 0, fontSize: "1rem", color: "var(--muted)", lineHeight: "1.6", flex: 1 }}>{model.description}</p>
-            <div style={{ marginTop: "2rem", paddingTop: "1.5rem", borderTop: "1px solid var(--card-border)", display: "flex", justifyContent: "space-between", color: "var(--muted)", fontSize: "0.875rem" }}>
+            
+            <div style={{ marginTop: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <div style={{ width: "100%", height: "4px", backgroundColor: "var(--card-border)", borderRadius: "2px" }}>
+                <div style={{ width: `${model.complianceScore}%`, height: "100%", backgroundColor: model.complianceScore > 70 ? "#10b981" : "#f59e0b", borderRadius: "2px" }}></div>
+              </div>
+              <span style={{ fontSize: "0.7rem", color: "var(--muted)", fontWeight: "bold" }}>{model.complianceScore}% Saúde Jurídica</span>
+            </div>
+
+            <div style={{ marginTop: "1.5rem", paddingTop: "1.5rem", borderTop: "1px solid var(--card-border)", display: "flex", justifyContent: "space-between", color: "var(--muted)", fontSize: "0.875rem" }}>
               <span>v{model.version}</span>
               <span style={{ color: "var(--primary)", fontWeight: "bold" }}>Gerar Agora →</span>
             </div>

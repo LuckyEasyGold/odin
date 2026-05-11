@@ -51,9 +51,27 @@ export default async function DashboardPage() {
           <div style={{ color: "var(--muted)", fontSize: "0.8rem", fontWeight: "bold", textTransform: "uppercase" }}>Modelos</div>
           <div style={{ fontSize: "1.75rem", fontWeight: "800", color: "var(--foreground)" }}>{myModels.length}</div>
         </div>
-        <div style={{ backgroundColor: "var(--card-bg)", padding: "1.5rem", borderRadius: "20px", boxShadow: "0 1px 3px var(--shadow)", border: "1px solid var(--card-border)" }}>
-          <div style={{ color: "var(--muted)", fontSize: "0.8rem", fontWeight: "bold", textTransform: "uppercase" }}>Saldo</div>
-          <div style={{ fontSize: "1.75rem", fontWeight: "800", color: "#10b981" }}>R$ {balance.toFixed(2)}</div>
+        
+        {/* Specialist Card */}
+        <div style={{ 
+          backgroundColor: session.user.isSpecialist ? "rgba(16, 185, 129, 0.1)" : "var(--card-bg)", 
+          padding: "1.5rem", 
+          borderRadius: "20px", 
+          boxShadow: "0 1px 3px var(--shadow)", 
+          border: `1px solid ${session.user.isSpecialist ? "#10b981" : "var(--card-border)"}`,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center"
+        }}>
+          <div style={{ color: session.user.isSpecialist ? "#10b981" : "var(--muted)", fontSize: "0.8rem", fontWeight: "bold", textTransform: "uppercase" }}>
+            {session.user.isSpecialist ? "🎖️ Perfil Especialista Ativo" : "Curadoria"}
+          </div>
+          <div style={{ fontSize: "0.9rem", color: "var(--foreground)", marginTop: "0.5rem" }}>
+            {session.user.isSpecialist 
+              ? `${session.user.specialty} Verificado` 
+              : "Torne-se um curador para emitir pareceres técnicos."
+            }
+          </div>
         </div>
       </div>
 

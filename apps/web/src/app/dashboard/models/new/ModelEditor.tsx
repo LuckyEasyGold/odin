@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { createModel } from "@/app/actions/models";
 import Link from "next/link";
+import { analyzeModelCompliance } from "@/lib/legalLinter";
 
 export default function ModelEditor({ categories, existingModels }: { categories: any[], existingModels: any[] }) {
   const [selectedModelId, setSelectedModelId] = useState("");
@@ -11,8 +12,11 @@ export default function ModelEditor({ categories, existingModels }: { categories
     name: "",
     description: "",
     category: "",
-    template: ""
+    template: "",
+    guidance: ""
   });
+
+  const compliance = useMemo(() => analyzeModelCompliance(formData.template), [formData.template]);
 
   const handleImport = (id: string) => {
     const model = existingModels.find(m => m.id === id);
@@ -123,22 +127,101 @@ export default function ModelEditor({ categories, existingModels }: { categories
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-          <label style={{ fontWeight: "bold", color: "#475569" }}>Corpo do Documento (Template)</label>
+          <label style={{ fontWeight: "bold", color: "#475569" }}>Dicas e Orientação do Especialista</label>
           <textarea 
-            name="template" 
-            value={formData.template}
-            onChange={(e) => setFormData({...formData, template: e.target.value})}
-            required 
-            rows={15}
-            style={{ 
-              padding: "1rem", 
-              borderRadius: "12px", 
-              border: "2px solid #e2e8f0", 
-              fontFamily: "monospace",
-              fontSize: "1rem",
-              lineHeight: "1.5"
-            }}
+            name="guidance" 
+            value={formData.guidance}
+            onChange={(e) => setFormData({...formData, guidance: e.target.value})}
+            placeholder="Explique para que serve este documento e dê dicas de preenchimento para o usuário..."
+            rows={3}
+            style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid #e2e8f0" }}
           />
+        </div>
+
+        {compliance.score > 0 && (
+          <div style={{ padding: "1.5rem", backgroundColor: "rgba(59, 130, 246, 0.05)", borderRadius: "16px", border: "1px solid rgba(59, 130, 246, 0.2)" }}>
+            <h4 style={{ margin: "0 0 1rem 0", color: "#1e40af" }}>✍️ Exemplos de Preenchimento (Placeholders)</h4>
+            <p style={{ fontSize: "0.8rem", color: "#1e40af", marginBottom: "1rem" }}>Defina o texto que aparecerá dentro de cada campo para guiar o usuário.</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              {compliance.foundClauses.map(clause => (
+                <div key={clause} style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                  <label style={{ fontSize: "0.75rem", fontWeight: "bold", color: "#1e40af" }}>Exemplo para {clause}:</label>
+                  <input 
+                    name={`hint_${clause.toLowerCase().replace(/ /g, "_")}`}
+                    placeholder={`Ex: Informação de ${clause}...`}
+                    style={{ padding: "0.5rem", borderRadius: "6px", border: "1px solid rgba(59, 130, 246, 0.3)" }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label style={{ fontWeight: "bold", color: "#475569" }}>Corpo do Documento (Template)</label>
+            <div style={{ 
+              fontSize: "0.75rem", 
+              padding: "0.25rem 0.75rem", 
+              borderRadius: "9999px", 
+              backgroundColor: compliance.score > 70 ? "#dcfce7" : "#fef9c3",
+              color: compliance.score > 70 ? "#166534" : "#854d0e",
+              fontWeight: "bold"
+            }}>
+              ⚖️ Saúde Jurídica: {compliance.score}%
+            </div>
+          </div>
+          
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 280px", gap: "1.5rem" }}>
+            <textarea 
+              name="template" 
+              value={formData.template}
+              onChange={(e) => setFormData({...formData, template: e.target.value})}
+              required 
+              rows={20}
+              style={{ 
+                padding: "1rem", 
+                borderRadius: "12px", 
+                border: "2px solid #e2e8f0", 
+                fontFamily: "monospace",
+                fontSize: "1rem",
+                lineHeight: "1.5",
+                backgroundColor: "var(--background)",
+                color: "var(--foreground)"
+              }}
+            />
+            
+            <div style={{ 
+              padding: "1.25rem", 
+              backgroundColor: "var(--card-bg)", 
+              borderRadius: "16px", 
+              border: "1px solid var(--card-border)",
+              fontSize: "0.85rem"
+            }}>
+              <h4 style={{ margin: "0 0 1rem 0", color: "var(--foreground)" }}>Checklist Jurídico</h4>
+              <ul style={{ listLines: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                {["Objeto", "Preço e Pagamento", "Prazo", "Rescisão", "Obrigações", "Foro"].map(clause => {
+                  const isPresent = compliance.foundClauses.includes(clause);
+                  return (
+                    <li key={clause} style={{ 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "0.5rem",
+                      color: isPresent ? "#10b981" : "var(--muted)",
+                      fontWeight: isPresent ? "bold" : "normal"
+                    }}>
+                      {isPresent ? "✅" : "⭕"} {clause}
+                    </li>
+                  );
+                })}
+              </ul>
+              {compliance.missingClauses.length > 0 && (
+                <div style={{ marginTop: "1.5rem", padding: "0.75rem", backgroundColor: "rgba(245, 158, 11, 0.1)", borderRadius: "8px", color: "#d97706", fontSize: "0.75rem" }}>
+                  <strong>Dica:</strong> Adicione as cláusulas marcadas com ⭕ para aumentar sua pontuação de conformidade.
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         <div style={{ 

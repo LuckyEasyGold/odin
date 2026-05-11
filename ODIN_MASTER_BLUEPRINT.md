@@ -1671,6 +1671,7 @@ Mitigação: evolução em fases.
 - Open core opcional no futuro
 - Transparência de decisões
 - Compatibilidade retroativa
+- Foco em padrões abertos
 
 ---
 

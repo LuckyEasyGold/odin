@@ -5,6 +5,7 @@ import { PrismaClient } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { analyzeModelCompliance } from "@/lib/legalLinter";
 
 const prisma = new PrismaClient();
 
@@ -34,9 +35,22 @@ export async function createModel(formData: FormData) {
   const description = formData.get("description") as string;
   const template = formData.get("template") as string;
   const isPublic = formData.get("isPublic") === "on";
+  const guidance = formData.get("guidance") as string;
+  
+  // Collect all hints
+  const variableHints: Record<string, string> = {};
+  formData.forEach((value, key) => {
+    if (key.startsWith("hint_")) {
+      const varName = key.replace("hint_", "");
+      variableHints[varName] = value as string;
+    }
+  });
   
   const categoryId = await handleCategory(formData.get("category") as string, formData);
   const slug = name.toLowerCase().replace(/ /g, "-").replace(/[^\w-]+/g, "") + "-" + Date.now();
+
+  // Run Linter
+  const compliance = analyzeModelCompliance(template);
 
   await prisma.model.create({
     data: {
@@ -47,6 +61,9 @@ export async function createModel(formData: FormData) {
       template,
       isPublic,
       isActive: true,
+      guidance,
+      variableHints,
+      complianceScore: compliance.score,
       createdBy: session.user.id,
       version: "1.0.0",
       schema: {},
@@ -66,15 +83,37 @@ export async function updateModel(id: string, formData: FormData) {
   const description = formData.get("description") as string;
   const template = formData.get("template") as string;
   const isPublic = formData.get("isPublic") === "on";
+  const guidance = formData.get("guidance") as string;
+
+  // Collect all hints
+  const variableHints: Record<string, string> = {};
+  formData.forEach((value, key) => {
+    if (key.startsWith("hint_")) {
+      const varName = key.replace("hint_", "");
+      variableHints[varName] = value as string;
+    }
+  });
 
   const categoryId = await handleCategory(formData.get("category") as string, formData);
 
   const model = await prisma.model.findUnique({ where: { id } });
   if (model?.createdBy !== session.user.id) throw new Error("Apenas o autor pode editar");
 
+  // Run Linter
+  const compliance = analyzeModelCompliance(template);
+
   await prisma.model.update({
     where: { id },
-    data: { name, description, categoryId, template, isPublic }
+    data: { 
+      name, 
+      description, 
+      categoryId, 
+      template, 
+      isPublic,
+      guidance,
+      variableHints,
+      complianceScore: compliance.score
+    }
   });
 
   revalidatePath("/models");
