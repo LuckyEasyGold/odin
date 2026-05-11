@@ -7,17 +7,22 @@ export class GenerationRepository {
   async create(data: {
     modelId: string;
     userId?: string;
-    inputs: Record<string, unknown>;
+    inputs: any;
     outputHtml?: string;
-    outputPdfUrl?: string;
-    outputJson?: Record<string, unknown>;
-    checksum?: string;
-  }): Promise<Generation> {
-    return this.prisma.generation.create({ data });
+    documentHash?: string;
+    status?: string;
+  }) {
+    return this.prisma.generation.create({
+      data,
+      include: { model: true }
+    });
   }
 
-  async findById(id: string): Promise<Generation | null> {
-    return this.prisma.generation.findUnique({ where: { id } });
+  async findById(id: string): Promise<any | null> {
+    return this.prisma.generation.findUnique({ 
+      where: { id },
+      include: { model: true }
+    });
   }
 
   async findByModelId(modelId: string): Promise<Generation[]> {

@@ -50,24 +50,61 @@ export default async function DashboardPage() {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ textAlign: "left", borderBottom: "1px solid #e2e8f0" }}>
-                <th style={{ padding: "1rem", color: "#64748b", fontWeight: "500" }}>Modelo</th>
-                <th style={{ padding: "1rem", color: "#64748b", fontWeight: "500" }}>Data</th>
-                <th style={{ padding: "1rem", color: "#64748b", fontWeight: "500" }}>Ações</th>
+                <th style={{ padding: "1rem", color: "#64748b" }}>Documento</th>
+                <th style={{ padding: "1rem", color: "#64748b" }}>Data</th>
+                <th style={{ padding: "1rem", color: "#64748b" }}>DNA Digital</th>
+                <th style={{ padding: "1rem", color: "#64748b" }}>Status</th>
+                <th style={{ padding: "1rem", color: "#64748b" }}>Ações</th>
               </tr>
             </thead>
             <tbody>
               {generations.map((gen: any) => (
                 <tr key={gen.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                  <td style={{ padding: "1rem", fontWeight: "500" }}>{gen.model?.name || "Modelo Removido"}</td>
-                  <td style={{ padding: "1rem", color: "#64748b", fontSize: "0.875rem" }}>{new Date(gen.createdAt).toLocaleString("pt-BR")}</td>
+                  <td style={{ padding: "1rem", fontWeight: "bold" }}>{gen.model?.name || "Modelo Removido"}</td>
+                  <td style={{ padding: "1rem", fontSize: "0.875rem" }}>
+                    {new Date(gen.createdAt).toLocaleDateString()}
+                  </td>
                   <td style={{ padding: "1rem" }}>
-                    <a 
-                      href={`http://localhost:3001/api/v1/generations/${gen.id}/download`} 
-                      target="_blank"
-                      style={{ color: "#2563eb", textDecoration: "none", fontSize: "0.875rem", fontWeight: "bold" }}
-                    >
-                      Baixar PDF
-                    </a>
+                    <code title={gen.documentHash} style={{ 
+                      fontSize: "0.75rem", 
+                      backgroundColor: "#f1f5f9", 
+                      padding: "0.2rem 0.4rem", 
+                      borderRadius: "4px",
+                      color: "#475569"
+                    }}>
+                      {gen.documentHash?.slice(0, 8) || "N/A"}
+                    </code>
+                  </td>
+                  <td style={{ padding: "1rem" }}>
+                    <span style={{ 
+                      padding: "0.25rem 0.5rem", 
+                      backgroundColor: gen.status === "SIGNED" ? "#ecfdf5" : "#fff7ed", 
+                      color: gen.status === "SIGNED" ? "#059669" : "#c2410c", 
+                      borderRadius: "9999px",
+                      fontSize: "0.75rem",
+                      fontWeight: "bold"
+                    }}>
+                      {gen.status === "SIGNED" ? "ASSINADO" : "PENDENTE"}
+                    </span>
+                  </td>
+                  <td style={{ padding: "1rem" }}>
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                      <Link href={`/models/${gen.model?.slug || ""}`} style={{ fontSize: "0.875rem", color: "#2563eb", textDecoration: "none" }}>
+                        Ver
+                      </Link>
+                      {gen.status !== "SIGNED" && (
+                        <button style={{ 
+                          fontSize: "0.875rem", 
+                          color: "#059669", 
+                          border: "none", 
+                          background: "none", 
+                          cursor: "pointer",
+                          fontWeight: "bold"
+                        }}>
+                          Assinar
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

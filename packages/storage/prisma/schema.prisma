@@ -92,7 +92,10 @@ model Generation {
   outputHtml  String?
   outputPdfUrl String?
   outputJson  Json?
-  checksum    String?
+  documentHash String?  // SHA-256 DNA
+  status      String   @default("COMPLETED") // PENDING_SIGNATURE, SIGNED, COMPLETED
+  signedAt    DateTime?
+  ipAddress   String?
   createdAt   DateTime @default(now())
   model       Model    @relation(fields: [modelId], references: [id])
   user        User?    @relation(fields: [userId], references: [id])

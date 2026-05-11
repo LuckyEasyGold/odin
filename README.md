@@ -34,22 +34,21 @@ Diferente de um simples gerador de PDF, o ODIN permite que qualquer sistema (ERP
 | 📑 Geração de PDF Profissional (Puppeteer A4) | ✅ Completo |
 | 🔐 Autenticação e Perfis (Auth.js / NextAuth) | ✅ Completo |
 | 📊 Dashboard do Usuário (Histórico e Carteira) | ✅ Completo |
+| 🛡️ DNA Digital (Hash SHA-256 de Integridade) | ✅ Completo |
+| ✍️ Fluxo de Assinatura Eletrônica Interno | ✅ Completo |
 | 💰 Sistema de Créditos e Marketplace | ✅ Completo |
 | 🔑 Gestão de Chaves de API para Devs | ✅ Completo |
-| ⭐ Sistema de Avaliações e Feedback | ✅ Completo |
-| ✅ Selos de Verificação de Modelos | ✅ Implementado |
 | 🔗 API REST estruturada para integrações | ✅ Funcional |
 
 ---
 
-## 🚀 Novidades da Fase 4 (Marketplace e Monetização)
+## 🚀 Novidades da Fase 5 (Integridade e Assinatura)
 
-O ODIN agora possui um ecossistema econômico sustentável:
-- **Carteira Virtual:** Gerenciamento de saldo e histórico de transações financeiras.
-- **Marketplace Profissional:** Modelos categorizados entre Gratuitos e Premium (Pagos).
-- **Portal do Desenvolvedor:** Geração e revogação de API Keys para automação externa.
-- **Segurança Avançada:** Implementação de hashing de senhas com **bcryptjs (Salt 12)** para proteção de dados sensíveis.
-- **Infraestrutura Financeira:** Preparado para integração com gateways de pagamento (Mercado Pago).
+O ODIN agora oferece garantias jurídicas e técnicas para seus documentos:
+- **DNA Digital:** Implementação de hashing SHA-256 para garantir a imutabilidade dos documentos gerados.
+- **Assinatura Eletrônica:** Fluxo próprio de aceite digital com registro de IP, Timestamp e vínculo de identidade.
+- **Trilha de Auditoria:** Cada documento assinado possui um registro permanente de integridade no banco de dados.
+- **Transparência:** Dashboard atualizado para exibição de hashes e status de assinatura em tempo real.
 
 ---
 

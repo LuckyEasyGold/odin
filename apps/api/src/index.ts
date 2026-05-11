@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import { renderDocument } from "@odin/engine";
 import * as dotenv from "dotenv";
 import path from "path";
+import crypto from "crypto";
 
 dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 import { ModelRepository, GenerationRepository, RatingRepository } from "@odin/storage";
@@ -71,11 +72,17 @@ app.post("/api/v1/generate", async (req: Request, res: Response) => {
 
     const result = await renderDocument(model.template, inputs || {}, { format });
     
+    // Generate document hash (DNA)
+    const contentToHash = format === "html" ? (result as string) : JSON.stringify(inputs);
+    const documentHash = crypto.createHash("sha256").update(contentToHash).digest("hex");
+
     const generation = await genRepo.create({
       modelId: model.id,
       userId,
       inputs: inputs || {},
       outputHtml: format === "html" ? (result as string) : undefined,
+      documentHash,
+      status: "PENDING_SIGNATURE" // New generations start as pending
     });
 
     if (format === "pdf") {
@@ -169,7 +176,40 @@ app.get("/api/v1/mcp/tools", (_req: Request, res: Response) => {
   });
 });
 
-const server = app.listen(PORT, () => {
+app.post("/api/v1/generations/:id/sign", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const ipAddress = req.ip || req.headers["x-forwarded-for"] || "unknown";
+
+  try {
+    const generation = await genRepo.findById(id);
+    if (!generation) return res.status(404).json({ error: "Document not found" });
+
+    if (generation.status === "SIGNED") {
+      return res.status(400).json({ error: "Document already signed" });
+    }
+
+    const updated = await prisma.generation.update({
+      where: { id },
+      data: {
+        status: "SIGNED",
+        signedAt: new Date(),
+        ipAddress: Array.isArray(ipAddress) ? ipAddress[0] : ipAddress,
+      }
+    });
+
+    res.json({ 
+      message: "Document signed successfully", 
+      id: updated.id,
+      signedAt: updated.signedAt,
+      hash: updated.documentHash
+    });
+  } catch (error) {
+    console.error("Signing error:", error);
+    res.status(500).json({ error: "Failed to sign document" });
+  }
+});
+
+app.listen(PORT, () => {
   console.log(`ODIN API running on port ${PORT}`);
 });
 
