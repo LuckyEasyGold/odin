@@ -21,6 +21,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <Link href="/dashboard" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "white", backgroundColor: "#334155" }}>
             📊 Visão Geral
           </Link>
+          <Link href="/dashboard/wallet" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "#94a3b8" }}>
+            💰 Minha Carteira
+          </Link>
+          <Link href="/dashboard/keys" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "#94a3b8" }}>
+            🔑 Chaves de API
+          </Link>
           <Link href="/models" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "#94a3b8" }}>
             📂 Explorar Modelos
           </Link>

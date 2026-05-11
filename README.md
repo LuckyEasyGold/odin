@@ -33,22 +33,22 @@ Diferente de um simples gerador de PDF, o ODIN permite que qualquer sistema (ERP
 |---|---|
 | 📑 Geração de PDF Profissional (Puppeteer A4) | ✅ Completo |
 | 🔐 Autenticação e Perfis (Auth.js / NextAuth) | ✅ Completo |
-| 📊 Dashboard do Usuário (Histórico de Documentos) | ✅ Completo |
-| 🌍 Localização Multilíngue (PT-BR, EN, ES) | ✅ Completo |
-| ⭐ Sistema de Avaliações e Feedback de Modelos | ✅ Completo |
+| 📊 Dashboard do Usuário (Histórico e Carteira) | ✅ Completo |
+| 💰 Sistema de Créditos e Marketplace | ✅ Completo |
+| 🔑 Gestão de Chaves de API para Devs | ✅ Completo |
+| ⭐ Sistema de Avaliações e Feedback | ✅ Completo |
 | ✅ Selos de Verificação de Modelos | ✅ Implementado |
 | 🔗 API REST estruturada para integrações | ✅ Funcional |
-| ☁️ Persistência Cloud Serverless (Neon DB) | ✅ Conectado |
 
 ---
 
-## 🚀 Novidades da Fase 3 (Autenticação e Multi-tenancy)
+## 🚀 Novidades da Fase 4 (Marketplace e Monetização)
 
-O ODIN agora é uma plataforma completa e segura:
-- **Gestão de Identidade:** Integração com Auth.js permitindo login, cadastro e sessões seguras.
-- **Área do Usuário:** Dashboard privado para visualizar e baixar novamente documentos gerados anteriormente.
-- **Segurança de Dados:** Os documentos agora são vinculados ao perfil do usuário, garantindo privacidade e organização.
-- **Infraestrutura Escalável:** Migração do schema Prisma para suportar perfis complexos no Neon PostgreSQL.
+O ODIN agora possui um ecossistema econômico sustentável:
+- **Carteira Virtual:** Gerenciamento de saldo e histórico de transações financeiras.
+- **Marketplace Profissional:** Modelos categorizados entre Gratuitos e Premium (Pagos).
+- **Portal do Desenvolvedor:** Geração e revogação de API Keys para automação externa.
+- **Infraestrutura Financeira:** Preparado para integração com gateways de pagamento (Mercado Pago).
 
 ---
 

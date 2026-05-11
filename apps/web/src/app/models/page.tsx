@@ -57,9 +57,34 @@ export default async function ModelsPage() {
                 }}>
                   {model.category}
                 </span>
-                {model.compliance?.status === "verified" && (
-                  <span title="Verificado" style={{ color: "#10b981" }}>✅</span>
-                )}
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  {Number(model.price) > 0 ? (
+                    <span style={{ 
+                      fontSize: "0.7rem", 
+                      backgroundColor: "#fef3c7", 
+                      color: "#92400e", 
+                      padding: "0.25rem 0.5rem", 
+                      borderRadius: "9999px",
+                      fontWeight: "bold"
+                    }}>
+                      R$ {Number(model.price).toFixed(2)}
+                    </span>
+                  ) : (
+                    <span style={{ 
+                      fontSize: "0.7rem", 
+                      backgroundColor: "#f0fdf4", 
+                      color: "#166534", 
+                      padding: "0.25rem 0.5rem", 
+                      borderRadius: "9999px",
+                      fontWeight: "bold"
+                    }}>
+                      GRÁTIS
+                    </span>
+                  )}
+                  {model.compliance?.status === "verified" && (
+                    <span title="Verificado" style={{ color: "#10b981" }}>✅</span>
+                  )}
+                </div>
               </div>
               <h3 style={{ margin: "0 0 0.5rem 0", color: "#1e293b", fontSize: "1.25rem" }}>{model.name}</h3>
               <p style={{ margin: 0, fontSize: "0.9rem", color: "#64748b", lineHeight: "1.5" }}>{model.description}</p>

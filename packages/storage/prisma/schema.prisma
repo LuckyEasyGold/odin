@@ -14,11 +14,13 @@ model User {
   password  String?
   fullName  String?
   avatarUrl String?
+  balance   Decimal  @default(0)
   createdAt DateTime @default(now())
   models    Model[]
   ratings   Rating[]
   apiKey    ApiKey[]
   generations Generation[]
+  transactions Transaction[]
 
   @@map("users")
 }
@@ -39,6 +41,7 @@ model Model {
   ratingCount Int      @default(0)
   downloads   Int      @default(0)
   forks       Int      @default(0)
+  price       Decimal  @default(0)
   license     String   @default("MIT")
   features    Json     @default("{}")
   compliance  Json     @default("{}")
@@ -51,6 +54,19 @@ model Model {
   generations Generation[]
 
   @@map("models")
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  userId      String
+  type        String   // "CREDIT" (purchase), "DEBIT" (usage), "EARNING" (royalties)
+  amount      Decimal
+  description String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("transactions")
 }
 
 model Rating {
