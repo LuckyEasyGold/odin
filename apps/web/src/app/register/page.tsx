@@ -62,6 +62,11 @@ export default function RegisterPage() {
         borderRadius: "16px",
         boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)"
       }}>
+        <div style={{ marginBottom: "1rem" }}>
+          <Link href="/" style={{ color: "#64748b", textDecoration: "none", fontSize: "0.875rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            ← Voltar para o Início
+          </Link>
+        </div>
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <h1 style={{ fontSize: "1.875rem", fontWeight: "bold", color: "#0f172a" }}>Criar Conta no ODIN</h1>
           <p style={{ color: "#64748b", marginTop: "0.5rem" }}>Junte-se à maior rede de infraestrutura de documentos</p>

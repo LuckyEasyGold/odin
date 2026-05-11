@@ -39,7 +39,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <div style={{ marginBottom: "1rem", fontSize: "0.875rem", color: "#94a3b8" }}>
             Logado como: <br/> <strong>{session.user?.name || session.user?.email}</strong>
           </div>
-          <form action={async () => { "use server"; await signOut(); }}>
+          <form action={async () => { 
+            "use server"; 
+            await signOut({ redirectTo: "/" }); 
+          }}>
             <button style={{ width: "100%", padding: "0.5rem", backgroundColor: "#ef4444", color: "white", border: "none", borderRadius: "6px", cursor: "pointer" }}>
               Sair
             </button>

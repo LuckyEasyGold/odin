@@ -36,7 +36,7 @@ Diferente de um simples gerador de PDF, o ODIN permite que qualquer sistema (ERP
 | 📊 Dashboard do Usuário (Histórico e Carteira) | ✅ Completo |
 | 🛡️ DNA Digital (Hash SHA-256 de Integridade) | ✅ Completo |
 | ✍️ Fluxo de Assinatura Eletrônica Interno | ✅ Completo |
-| 💰 Sistema de Créditos e Marketplace | ✅ Completo |
+| 🎨 Landing Page Premium e Navegação Inteligente | ✅ Completo |
 | 🔑 Gestão de Chaves de API para Devs | ✅ Completo |
 | 🔗 API REST estruturada para integrações | ✅ Funcional |
 
@@ -47,8 +47,8 @@ Diferente de um simples gerador de PDF, o ODIN permite que qualquer sistema (ERP
 O ODIN agora oferece garantias jurídicas e técnicas para seus documentos:
 - **DNA Digital:** Implementação de hashing SHA-256 para garantir a imutabilidade dos documentos gerados.
 - **Assinatura Eletrônica:** Fluxo próprio de aceite digital com registro de IP, Timestamp e vínculo de identidade.
+- **UX Refinada:** Landing Page moderna com Navbar inteligente (Login/Register/Dashboard) e fluxos de navegação otimizados.
 - **Trilha de Auditoria:** Cada documento assinado possui um registro permanente de integridade no banco de dados.
-- **Transparência:** Dashboard atualizado para exibição de hashes e status de assinatura em tempo real.
 
 ---
 
