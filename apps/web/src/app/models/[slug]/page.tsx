@@ -21,22 +21,29 @@ export default async function ModelDetailPage({ params }: { params: Promise<{ sl
 
   if (!model) {
     return (
-      <main style={{ padding: "2rem", textAlign: "center" }}>
+      <main style={{ padding: "2rem", textAlign: "center", backgroundColor: "var(--background)", color: "var(--foreground)", minHeight: "100vh" }}>
         <h1>{t.models.empty}</h1>
-        <Link href="/models">{t.models.back}</Link>
+        <Link href="/models" style={{ color: "var(--primary)" }}>{t.models.back}</Link>
       </main>
     );
   }
 
   return (
-    <main style={{ padding: "2rem", maxWidth: "1200px", margin: "0 auto" }}>
+    <main style={{ 
+      padding: "2rem", 
+      maxWidth: "1200px", 
+      margin: "0 auto", 
+      backgroundColor: "var(--background)", 
+      color: "var(--foreground)",
+      minHeight: "100vh"
+    }}>
       <header style={{ marginBottom: "2rem", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div>
-          <Link href="/models" style={{ color: "#666", textDecoration: "none", fontSize: "0.9rem" }}>
+          <Link href="/models" style={{ color: "var(--muted)", textDecoration: "none", fontSize: "0.9rem" }}>
             ← {t.models.back}
           </Link>
-          <h1 style={{ marginTop: "1rem" }}>{model.name}</h1>
-          <p style={{ color: "#666" }}>{model.description}</p>
+          <h1 style={{ marginTop: "1rem", color: "var(--foreground)" }}>{model.name}</h1>
+          <p style={{ color: "var(--muted)" }}>{model.description}</p>
         </div>
 
         <form action={async () => {
@@ -45,12 +52,13 @@ export default async function ModelDetailPage({ params }: { params: Promise<{ sl
         }}>
           <button type="submit" style={{ 
             padding: "0.75rem 1.5rem", 
-            backgroundColor: "#f1f5f9", 
-            color: "#1e293b", 
-            border: "1px solid #e2e8f0", 
+            backgroundColor: "var(--card-bg)", 
+            color: "var(--foreground)", 
+            border: "1px solid var(--card-border)", 
             borderRadius: "12px", 
             fontWeight: "bold",
-            cursor: "pointer"
+            cursor: "pointer",
+            boxShadow: "0 4px 6px var(--shadow)"
           }}>
             🔱 Fork (Criar minha versão)
           </button>

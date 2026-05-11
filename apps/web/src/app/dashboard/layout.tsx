@@ -10,15 +10,27 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   return (
-    <div style={{ display: "flex", minHeight: "calc(100vh - 73px)", backgroundColor: "#f1f5f9" }}>
+    <div style={{ 
+      display: "flex", 
+      minHeight: "calc(100vh - 73px)", 
+      backgroundColor: "var(--background)",
+      color: "var(--foreground)",
+      transition: "all 0.3s ease"
+    }}>
       {/* Sidebar */}
-      <aside style={{ width: "260px", backgroundColor: "#1e293b", color: "white", padding: "1.5rem" }}>
+      <aside style={{ 
+        width: "260px", 
+        backgroundColor: "var(--sidebar)", 
+        color: "white", 
+        padding: "1.5rem",
+        borderRight: "1px solid var(--card-border)"
+      }}>
         <div style={{ marginBottom: "2rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ fontSize: "0.7rem", fontWeight: "bold", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.1em" }}>Menu Painel</div>
+          <div style={{ fontSize: "0.7rem", fontWeight: "bold", color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.1em" }}>Menu Painel</div>
         </div>
 
         <nav style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-          <Link href="/dashboard" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "white", backgroundColor: "#334155" }}>
+          <Link href="/dashboard" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "white", backgroundColor: "rgba(255,255,255,0.1)" }}>
             📊 Visão Geral
           </Link>
           <Link href="/dashboard/wallet" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "#94a3b8" }}>
@@ -33,14 +45,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <Link href="/dashboard/models/new" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "#10b981", fontWeight: "bold" }}>
             ✨ Criar Novo Modelo
           </Link>
-          <Link href="/dashboard/settings" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "#94a3b8" }}>
-            ⚙️ Configurações
-          </Link>
         </nav>
 
         <div style={{ marginTop: "auto", paddingTop: "2rem" }}>
           <div style={{ marginBottom: "1rem", fontSize: "0.875rem", color: "#94a3b8" }}>
-            Logado como: <br/> <strong>{session.user?.name || session.user?.email}</strong>
+            Usuário: <br/> <strong>{session.user?.name || session.user?.email}</strong>
           </div>
           <form action={async () => { 
             "use server"; 
@@ -54,7 +63,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       </aside>
 
       {/* Main Content */}
-      <main style={{ flex: 1, padding: "2rem" }}>
+      <main style={{ flex: 1, padding: "2rem", backgroundColor: "var(--background)" }}>
         {children}
       </main>
     </div>

@@ -1,3 +1,4 @@
+// @ts-ignore
 import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
 import { getTranslation } from "@/locales";
@@ -79,7 +80,7 @@ export default async function ModelsPage({
               style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: "12px", border: "1px solid var(--card-border)", backgroundColor: "var(--background)", color: "var(--foreground)", fontSize: "1rem" }}
             >
               <option value="">Todas</option>
-              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              {categories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
           <div>

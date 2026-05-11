@@ -36,8 +36,10 @@ export default function Wizard({ model }: { model: Model }) {
       key: v,
       label: v.charAt(0).toUpperCase() + v.slice(1).replace(/_/g, " "),
       type: "text",
-      required: true
-    }));
+      required: true,
+      placeholder: "",
+      defaultValue: ""
+    })) as Field[];
   })();
 
   const [formData, setFormData] = useState<Record<string, any>>(
@@ -84,12 +86,18 @@ export default function Wizard({ model }: { model: Model }) {
   };
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
-      <form onSubmit={handleSubmit} style={{ backgroundColor: "#f9fafb", padding: "1.5rem", borderRadius: "8px" }}>
-        <h3>{model.name}</h3>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "2rem" }}>
+      <form onSubmit={handleSubmit} style={{ 
+        backgroundColor: "var(--card-bg)", 
+        padding: "2rem", 
+        borderRadius: "24px",
+        border: "1px solid var(--card-border)",
+        boxShadow: "0 4px 6px var(--shadow)"
+      }}>
+        <h3 style={{ color: "var(--foreground)", marginBottom: "1.5rem" }}>{model.name}</h3>
         {fields.map((field) => (
-          <div key={field.key} style={{ marginBottom: "1rem" }}>
-            <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: "bold" }}>
+          <div key={field.key} style={{ marginBottom: "1.25rem" }}>
+            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold", fontSize: "0.85rem", color: "var(--muted)" }}>
               {field.label} {field.required && "*"}
             </label>
             {field.type === "textarea" ? (
@@ -98,7 +106,15 @@ export default function Wizard({ model }: { model: Model }) {
                 onChange={(e) => handleChange(field.key, e.target.value)}
                 required={field.required}
                 placeholder={field.placeholder}
-                style={{ width: "100%", padding: "0.5rem", borderRadius: "4px", border: "1px solid #ccc" }}
+                style={{ 
+                  width: "100%", 
+                  padding: "0.75rem", 
+                  borderRadius: "12px", 
+                  border: "1px solid var(--card-border)",
+                  backgroundColor: "var(--background)",
+                  color: "var(--foreground)",
+                  fontSize: "1rem"
+                }}
                 rows={4}
               />
             ) : (
@@ -108,7 +124,15 @@ export default function Wizard({ model }: { model: Model }) {
                 onChange={(e) => handleChange(field.key, e.target.value)}
                 required={field.required}
                 placeholder={field.placeholder}
-                style={{ width: "100%", padding: "0.5rem", borderRadius: "4px", border: "1px solid #ccc" }}
+                style={{ 
+                  width: "100%", 
+                  padding: "0.75rem", 
+                  borderRadius: "12px", 
+                  border: "1px solid var(--card-border)",
+                  backgroundColor: "var(--background)",
+                  color: "var(--foreground)",
+                  fontSize: "1rem"
+                }}
               />
             )}
           </div>
@@ -118,57 +142,74 @@ export default function Wizard({ model }: { model: Model }) {
           disabled={loading}
           style={{
             width: "100%",
-            padding: "0.75rem",
-            backgroundColor: "#2563eb",
+            padding: "1rem",
+            backgroundColor: "var(--primary)",
             color: "white",
             border: "none",
-            borderRadius: "4px",
+            borderRadius: "12px",
+            fontWeight: "bold",
+            fontSize: "1rem",
             cursor: loading ? "not-allowed" : "pointer",
+            marginTop: "1rem"
           }}
         >
           {loading ? t.wizard.loading : t.wizard.generate}
         </button>
       </form>
 
-      <div style={{ border: "1px solid #eee", padding: "1.5rem", borderRadius: "8px", minHeight: "400px", position: "relative" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-          <h3 style={{ margin: 0 }}>{t.wizard.preview}</h3>
+      <div style={{ 
+        backgroundColor: "var(--card-bg)", 
+        border: "1px solid var(--card-border)", 
+        padding: "2rem", 
+        borderRadius: "24px", 
+        minHeight: "400px", 
+        position: "relative",
+        boxShadow: "0 4px 6px var(--shadow)"
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+          <h3 style={{ margin: 0, color: "var(--foreground)" }}>{t.wizard.preview}</h3>
           {result?.generationId && (
             <button
               onClick={handleDownload}
               style={{
-                padding: "0.5rem 1rem",
+                padding: "0.6rem 1.25rem",
                 backgroundColor: "#10b981",
                 color: "white",
                 border: "none",
-                borderRadius: "4px",
+                borderRadius: "10px",
                 cursor: "pointer",
-                fontSize: "0.8rem"
+                fontWeight: "bold",
+                fontSize: "0.85rem"
               }}
             >
-              {t.wizard.generate} (PDF)
+              Baixar (PDF)
             </button>
           )}
         </div>
-        {result?.html && (
+        
+        {result?.html ? (
           <div 
             style={{ 
               backgroundColor: "white", 
-              padding: "1rem", 
+              color: "black", // Preview always white paper
+              padding: "2rem", 
+              borderRadius: "8px",
               border: "1px solid #ddd", 
-              boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
-              minHeight: "300px"
+              boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+              minHeight: "400px"
             }} 
             dangerouslySetInnerHTML={{ __html: result.html }} 
           />
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "300px", color: "var(--muted)" }}>
+            <span style={{ fontSize: "3rem", marginBottom: "1rem" }}>📄</span>
+            <p style={{ textAlign: "center" }}>
+              {loading ? t.wizard.loading : "Preencha o formulário para visualizar o documento."}
+            </p>
+          </div>
         )}
-        {result?.error && <p style={{ color: "red" }}>{result.error}</p>}
-        {!result && !loading && (
-          <p style={{ color: "#999", textAlign: "center", marginTop: "100px" }}>
-            Preencha o formulário para visualizar o documento.
-          </p>
-        )}
-        {loading && <p style={{ textAlign: "center", marginTop: "100px" }}>{t.wizard.loading}</p>}
+        
+        {result?.error && <p style={{ color: "#ef4444", marginTop: "1rem" }}>{result.error}</p>}
       </div>
     </div>
   );
