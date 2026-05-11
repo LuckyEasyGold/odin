@@ -1,0 +1,41 @@
+{
+  "module": "api",
+  "version": "1.0.0",
+  "description": "REST API for ODIN document generation",
+  "agentRole": "API Gateway",
+  "exports": [
+    {
+      "name": "GET /api/v1/models",
+      "return": "Model[]",
+      "description": "List all available models"
+    },
+    {
+      "name": "GET /api/v1/models/:id",
+      "return": "Model",
+      "description": "Get a specific model by ID"
+    },
+    {
+      "name": "POST /api/v1/models",
+      "params": ["body: Model"],
+      "return": "Model",
+      "description": "Create a new model"
+    },
+    {
+      "name": "POST /api/v1/generate",
+      "params": ["body: { modelId: string, inputs: Record<string, unknown> }"],
+      "return": "{ generationId: string, url: string }",
+      "description": "Generate a document from a model"
+    },
+    {
+      "name": "GET /api/v1/mcp/tools",
+      "return": "Tool[]",
+      "description": "List available MCP tools for agent discovery"
+    }
+  ],
+  "dependencies": ["core", "engine", "storage"],
+  "capabilities": [
+    "rest-api",
+    "document-generation",
+    "model-management"
+  ]
+}

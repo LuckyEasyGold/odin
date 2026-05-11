@@ -1,0 +1,33 @@
+{
+  "name": "@odin/engine",
+  "version": "1.0.0",
+  "description": "Document rendering engine with Handlebars and PDF support",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --build --watch",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@odin/core": "file:../core",
+    "handlebars": "^4.7.8",
+    "puppeteer": "^22.14.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0"
+  }
+}

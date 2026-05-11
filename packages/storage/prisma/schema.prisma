@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  fullName  String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  models    Model[]
+  ratings   Rating[]
+  apiKey    ApiKey[]
+  generations Generation[]
+
+  @@map("users")
+}
+
+model Model {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  name        String
+  description String?
+  category    String
+  subcategory String?
+  version     String
+  template    String
+  schema      Json
+  fields      Json
+  tags        String[]
+  rating      Decimal  @default(0)
+  ratingCount Int      @default(0)
+  downloads   Int      @default(0)
+  forks       Int      @default(0)
+  license     String   @default("MIT")
+  features    Json     @default("{}")
+  compliance  Json     @default("{}")
+  createdBy   String
+  creator     User     @relation(fields: [createdBy], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isActive    Boolean  @default(true)
+  ratings     Rating[]
+  generations Generation[]
+
+  @@map("models")
+}
+
+model Rating {
+  id        String   @id @default(uuid())
+  modelId   String
+  userId    String
+  rating    Int      @default(3)
+  comment   String?
+  weight    Decimal  @default(1)
+  createdAt DateTime @default(now())
+  model     Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([modelId, userId])
+  @@map("ratings")
+}
+
+model Generation {
+  id          String   @id @default(uuid())
+  modelId     String
+  userId      String?
+  inputs      Json
+  outputHtml  String?
+  outputPdfUrl String?
+  outputJson  Json?
+  checksum    String?
+  createdAt   DateTime @default(now())
+  model       Model    @relation(fields: [modelId], references: [id])
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@map("generations")
+}
+
+model ApiKey {
+  id               String   @id @default(uuid())
+  userId           String
+  name             String
+  keyHash          String
+  lastUsedAt       DateTime?
+  rateLimitPerHour Int      @default(1000)
+  createdAt        DateTime @default(now())
+  isActive         Boolean  @default(true)
+  user             User     @relation(fields: [userId], references: [id])
+
+  @@map("api_keys")
+}

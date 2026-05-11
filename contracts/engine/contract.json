@@ -1,0 +1,33 @@
+{
+  "module": "engine",
+  "version": "1.0.0",
+  "description": "Document rendering engine with Handlebars and PDF support",
+  "agentRole": "Document Renderer",
+  "exports": [
+    {
+      "name": "renderDocument",
+      "params": [
+        "template: string",
+        "data: Record<string, unknown>",
+        "options?: RenderOptions"
+      ],
+      "return": "Promise<Buffer | string>",
+      "description": "Render a Handlebars template to HTML or PDF"
+    },
+    {
+      "name": "renderFromTemplate",
+      "params": [
+        "docTemplate: DocumentTemplate",
+        "data: Record<string, unknown>"
+      ],
+      "return": "Promise<Buffer>",
+      "description": "Render from a DocumentTemplate instance"
+    }
+  ],
+  "dependencies": ["core"],
+  "capabilities": [
+    "handlebars-rendering",
+    "pdf-generation",
+    "html-rendering"
+  ]
+}

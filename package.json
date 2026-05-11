@@ -1,0 +1,31 @@
+{
+  "name": "odin",
+  "version": "1.0.0",
+  "description": "Open Document Infrastructure Network - Document automation platform",
+  "author": "Vinícius Ramos <viniciusrinramos@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "homepage": "https://codeberg.org/whodo/odin",
+  "repository": {
+    "type": "git",
+    "url": "https://codeberg.org/whodo/odin.git"
+  },
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter @odin/api dev\" \"pnpm --filter @odin/web dev\"",
+    "build": "pnpm run build --parallel",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "format": "biome format --write .",
+    "format:check": "biome format --check .",
+    "lint": "biome lint .",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.0",
+    "concurrently": "^8.2.0",
+    "husky": "^9.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^2.1.9"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

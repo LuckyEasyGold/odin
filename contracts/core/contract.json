@@ -1,0 +1,64 @@
+{
+  "module": "core",
+  "version": "1.0.0",
+  "description": "Core types, schemas and interfaces for ODIN",
+  "agentRole": "Type Definitions Provider",
+  "exports": [
+    {
+      "name": "Model",
+      "type": "interface",
+      "description": "Represents a document template model"
+    },
+    {
+      "name": "Field",
+      "type": "interface",
+      "description": "Field definition for document inputs"
+    },
+    {
+      "name": "Generation",
+      "type": "interface",
+      "description": "Document generation record"
+    },
+    {
+      "name": "Rating",
+      "type": "interface",
+      "description": "User rating for a model"
+    },
+    {
+      "name": "ApiKey",
+      "type": "interface",
+      "description": "API key for authentication"
+    },
+    {
+      "name": "DocumentTemplate",
+      "type": "interface",
+      "description": "Template definition for document generation"
+    },
+    {
+      "name": "RenderOptions",
+      "type": "interface",
+      "description": "Options for document rendering"
+    },
+    {
+      "name": "modelSchema",
+      "type": "schema",
+      "description": "Zod schema for Model validation"
+    },
+    {
+      "name": "fieldSchema",
+      "type": "schema",
+      "description": "Zod schema for Field validation"
+    },
+    {
+      "name": "documentTemplateSchema",
+      "type": "schema",
+      "description": "Zod schema for DocumentTemplate validation"
+    }
+  ],
+  "dependencies": [],
+  "capabilities": [
+    "schema-validation",
+    "type-safety",
+    "runtime-validation"
+  ]
+}

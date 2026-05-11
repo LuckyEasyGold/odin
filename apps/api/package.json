@@ -1,0 +1,27 @@
+{
+  "name": "@odin/api",
+  "version": "1.0.0",
+  "description": "API Gateway for ODIN",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "test": "vitest",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@odin/core": "file:../../packages/core",
+    "@odin/engine": "file:../../packages/engine",
+    "@odin/storage": "file:..\\..\\packages\\storage",
+    "@prisma/client": "^5.22.0",
+    "express": "^4.18.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.6.2",
+    "prisma": "^5.22.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.4.0"
+  }
+}

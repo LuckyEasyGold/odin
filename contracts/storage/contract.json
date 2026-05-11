@@ -1,0 +1,30 @@
+{
+  "module": "storage",
+  "version": "1.0.0",
+  "description": "Storage layer with Prisma for ODIN",
+  "agentRole": "Data Persistence",
+  "exports": [
+    {
+      "name": "ModelRepository",
+      "description": "Repository for Model CRUD operations"
+    },
+    {
+      "name": "GenerationRepository",
+      "description": "Repository for Generation storage"
+    },
+    {
+      "name": "RatingRepository",
+      "description": "Repository for Rating persistence"
+    },
+    {
+      "name": "ApiKeyRepository",
+      "description": "Repository for API key management"
+    }
+  ],
+  "dependencies": ["core"],
+  "capabilities": [
+    "postgresql",
+    "object-storage",
+    "crud-operations"
+  ]
+}
