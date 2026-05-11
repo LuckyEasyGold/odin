@@ -48,6 +48,7 @@ O ODIN agora possui um ecossistema econômico sustentável:
 - **Carteira Virtual:** Gerenciamento de saldo e histórico de transações financeiras.
 - **Marketplace Profissional:** Modelos categorizados entre Gratuitos e Premium (Pagos).
 - **Portal do Desenvolvedor:** Geração e revogação de API Keys para automação externa.
+- **Segurança Avançada:** Implementação de hashing de senhas com **bcryptjs (Salt 12)** para proteção de dados sensíveis.
 - **Infraestrutura Financeira:** Preparado para integração com gateways de pagamento (Mercado Pago).
 
 ---
