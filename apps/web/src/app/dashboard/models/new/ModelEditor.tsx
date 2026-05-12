@@ -226,18 +226,40 @@ export default function ModelEditor({ categories, existingModels }: { categories
 
         <div style={{ 
           display: "flex", 
-          alignItems: "center", 
-          gap: "1rem", 
-          padding: "1rem", 
+          flexDirection: "column", 
+          gap: "1.5rem",
+          padding: "1.5rem", 
           backgroundColor: "#f8fafc", 
-          borderRadius: "12px",
+          borderRadius: "16px",
           border: "1px solid #e2e8f0"
         }}>
-          <input type="checkbox" name="isPublic" id="isPublic" defaultChecked style={{ width: "20px", height: "20px" }} />
-          <label htmlFor="isPublic">
-            <strong style={{ display: "block" }}>Tornar este modelo Público</strong>
-            <span style={{ fontSize: "0.875rem", color: "#64748b" }}>Permitir que outros vejam e façam Fork deste modelo.</span>
-          </label>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <input type="checkbox" name="isPublic" id="isPublic" defaultChecked style={{ width: "20px", height: "20px" }} />
+            <label htmlFor="isPublic">
+              <strong style={{ display: "block" }}>Tornar este modelo Público</strong>
+              <span style={{ fontSize: "0.875rem", color: "#64748b" }}>Permitir que outros vejam e façam Fork deste modelo.</span>
+            </label>
+          </div>
+
+          <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: "1.5rem" }}>
+            <label style={{ fontWeight: "bold", color: "#475569", display: "block", marginBottom: "0.5rem" }}>💰 Valor por Geração (Marketplace)</label>
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <div style={{ position: "relative", flex: 1 }}>
+                <span style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "#64748b", fontWeight: "bold" }}>R$</span>
+                <input 
+                  type="number" 
+                  name="price" 
+                  step="0.01" 
+                  defaultValue="0.00"
+                  style={{ width: "100%", padding: "0.75rem 0.75rem 0.75rem 2.5rem", borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: "1.1rem" }} 
+                />
+              </div>
+              <div style={{ flex: 2, fontSize: "0.8rem", color: "#64748b", lineHeight: "1.4" }}>
+                Defina <strong>0.00</strong> para modelos gratuitos.<br/>
+                Para modelos pagos, você recebe <strong>80%</strong> do valor e o ODIN retém <strong>20%</strong> de taxa de infraestrutura.
+              </div>
+            </div>
+          </div>
         </div>
 
         <button type="submit" style={{ 

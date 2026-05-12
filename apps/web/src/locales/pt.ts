@@ -1,39 +1,60 @@
 export const pt = {
   common: {
-    title: "ODIN",
-    description: "Open Document Infrastructure Network",
-  },
-  home: {
-    hero: {
-      title: "Crie Documentos Profissionais",
-      description: "Gere orçamentos, contratos, propostas e muito mais com nossa plataforma de geração de documentos baseada em modelos.",
+    title: "ODIN Infrastructure",
+    subtitle: "A fundação para seus documentos profissionais",
+    description: "Gere orçamentos, contratos, propostas e muito mais com nossa plataforma de geração de documentos baseada em modelos.",
+    nav: {
+      home: "Início",
+      models: "Modelos",
+      dashboard: "Painel",
+      apiKey: "Chaves de API",
+      webhooks: "Webhooks",
+      explore: "Explorar",
+      createModel: "Criar Modelo",
+      docs: "Docs",
+      login: "Entrar",
+      logout: "Sair"
     },
     actions: {
       browse: "Explorar Modelos",
       apiDoc: "Documentação da API",
+      mcp: "Abrir no Cursor/Claude",
+      start: "Começar Agora"
+    }
+  },
+  home: {
+    hero: {
+      title: "Crie Documentos Profissionais",
+      description: "Infraestrutura de documentos aberta, descentralizada e colaborativa.",
+    },
+    actions: {
+      browse: "Explorar Modelos"
     },
     popular: {
-      title: "Modelos Populares",
-      budget: "Proposta de Orçamento",
-      contract: "Contrato de Prestação de Serviço",
-      proposal: "Proposta Comercial",
-    },
+      title: "Modelos Populares"
+    }
   },
   models: {
-    title: "Modelos de Documentos",
-    description: "Explore nossa biblioteca de modelos estruturados.",
-    empty: "Nenhum modelo encontrado.",
-    back: "Voltar para Início",
+    title: "Modelos Profissionais",
+    subtitle: "Escolha um modelo e comece a gerar",
+    search: "Buscar modelos (ex: Contrato, TI, Obras...)",
+    verified: "Verificado",
+    compliance: "Saúde Jurídica",
+    categories: {
+      all: "Todos",
+      it: "TI & Software",
+      legal: "Jurídico",
+      commercial: "Comercial",
+      construction: "Obras"
+    }
   },
   wizard: {
-    title: "Gerar Documento",
-    generate: "Gerar PDF",
+    title: "Configurar Documento",
     preview: "Pré-visualização",
+    generate: "Gerar Documento",
     loading: "Gerando...",
+    download: "Baixar PDF",
     success: "Documento gerado com sucesso!",
-    error: "Erro ao gerar documento.",
-    fields: {
-      required: "Campo obrigatório",
-    },
-  },
+    error: "Erro ao gerar documento"
+  }
 };

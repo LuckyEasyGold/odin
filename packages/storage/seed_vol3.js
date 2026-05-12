@@ -88,6 +88,15 @@ const modelLibraryVol3 = [
 
 async function main() {
   console.log("Iniciando injeção final Vol 3...");
+
+  const systemUser = await prisma.user.findUnique({
+    where: { username: "system" }
+  });
+
+  if (!systemUser) {
+    throw new Error("Usuário 'system' não encontrado. Rode o prisma/seed.ts primeiro.");
+  }
+
   for (const group of modelLibraryVol3) {
     const category = await prisma.category.findUnique({ where: { name: group.category } });
     if (!category) continue;
@@ -101,7 +110,7 @@ async function main() {
           template: m.template,
           isPublic: true,
           isActive: true,
-          createdBy: USER_ID,
+          createdBy: systemUser.id,
           version: "1.0.0",
           schema: {},
           fields: {}

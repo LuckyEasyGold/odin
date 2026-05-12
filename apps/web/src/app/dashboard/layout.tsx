@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { auth, signOut } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { getTranslation } from "@/locales";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
+  const t = getTranslation("pt"); // Future: Get from user profile or cookie
 
   if (!session) {
     redirect("/login");
@@ -31,19 +33,22 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
         <nav style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
           <Link href="/dashboard" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "white", backgroundColor: "rgba(255,255,255,0.1)" }}>
-            📊 Visão Geral
+            📊 {t.common.nav.dashboard}
           </Link>
           <Link href="/dashboard/wallet" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "#94a3b8" }}>
             💰 Minha Carteira
           </Link>
           <Link href="/dashboard/keys" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "#94a3b8" }}>
-            🔑 Chaves de API
+            🔑 {t.common.nav.apiKey}
+          </Link>
+          <Link href="/dashboard/webhooks" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "#94a3b8" }}>
+            📡 {t.common.nav.webhooks}
           </Link>
           <Link href="/models" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "#94a3b8" }}>
-            📂 Explorar Modelos
+            📂 {t.common.nav.explore}
           </Link>
           <Link href="/dashboard/models/new" style={{ padding: "0.75rem", borderRadius: "8px", textDecoration: "none", color: "#10b981", fontWeight: "bold" }}>
-            ✨ Criar Novo Modelo
+            ✨ {t.common.nav.createModel}
           </Link>
         </nav>
 

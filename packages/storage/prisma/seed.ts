@@ -31,7 +31,7 @@ async function main() {
       slug: "orcamento-servicos",
       name: "Proposta de Orçamento de Serviços",
       description: "Modelo padrão para orçamentos de prestação de serviços diversos.",
-      category: "Financeiro",
+      categoryName: "Financeiro",
       version: "1.0.0",
       template: `
         <div style="font-family: sans-serif; padding: 40px;">
@@ -76,7 +76,7 @@ async function main() {
       slug: "social-media-management",
       name: "Gestão de Redes Sociais",
       description: "Pacote mensal de gestão de conteúdo e engajamento para redes sociais.",
-      category: "Marketing",
+      categoryName: "Marketing",
       version: "1.0.0",
       template: `
         <div style="font-family: 'Helvetica', sans-serif; padding: 40px; border: 10px solid #f3f4f6;">
@@ -132,7 +132,7 @@ async function main() {
       slug: "web-development-service",
       name: "Desenvolvimento de Web Site/Landing Page",
       description: "Proposta técnica para criação de sites institucionais ou páginas de vendas.",
-      category: "TI",
+      categoryName: "TI",
       version: "1.1.0",
       template: `
         <div style="font-family: 'Courier New', Courier, monospace; padding: 40px; color: #1e293b;">

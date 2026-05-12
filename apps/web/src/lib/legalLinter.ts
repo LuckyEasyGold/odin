@@ -11,12 +11,14 @@ export interface LinterResult {
 }
 
 const CRITICAL_CLAUSES = [
-  { name: "Objeto", keywords: ["objeto", "objetivo", "descrição dos serviços", "prestação de"], weight: 20 },
-  { name: "Preço e Pagamento", keywords: ["preço", "valor", "pagamento", "remuneração", "honorários"], weight: 20 },
-  { name: "Prazo", keywords: ["prazo", "vigência", "duração", "período"], weight: 15 },
+  { name: "Identificação das Partes", keywords: ["contratante", "contratada", "partes", "cpf", "cnpj", "endereço"], weight: 15 },
+  { name: "Objeto", keywords: ["objeto", "objetivo", "descrição dos serviços", "prestação de"], weight: 15 },
+  { name: "Preço e Pagamento", keywords: ["preço", "valor", "pagamento", "remuneração", "honorários"], weight: 15 },
+  { name: "Prazo", keywords: ["prazo", "vigência", "duração", "período"], weight: 10 },
   { name: "Rescisão", keywords: ["rescisão", "distrato", "extinção", "cancelamento", "multa"], weight: 15 },
-  { name: "Obrigações", keywords: ["obrigações", "deveres", "responsabilidades"], weight: 15 },
-  { name: "Foro", keywords: ["foro", "comarca", "jurisdição", "dirimir"], weight: 15 },
+  { name: "Obrigações", keywords: ["obrigações", "deveres", "responsabilidades"], weight: 10 },
+  { name: "Confidencialidade", keywords: ["confidencialidade", "sigilo", "informações confidenciais"], weight: 10 },
+  { name: "Foro", keywords: ["foro", "comarca", "jurisdição", "dirimir"], weight: 10 },
 ];
 
 export function analyzeModelCompliance(template: string): LinterResult {

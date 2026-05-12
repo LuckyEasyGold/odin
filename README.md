@@ -1,32 +1,69 @@
-# ODIN - Open Document Infrastructure Network 🔱🛡️
+# ODIN - Open Document Infrastructure Network 🔱🛡️⚖️
 
-O ODIN é uma infraestrutura de documentos aberta, descentralizada e colaborativa, projetada para profissionais autônomos, empresas e integração com Inteligência Artificial.
-
-## 🚀 Estado Atual: Fase 6 (Ecossistema Colaborativo)
-
-A plataforma evoluiu para um ecossistema completo de gestão e geração de documentos profissionais.
-
-### Principais Funcionalidades:
-- **Biblioteca Profissional:** 40+ modelos reais em 20 categorias (Jurídico, Comercial, TI, Engenharia, Confeitaria, Obras, etc.).
-- **Geração Inteligente:** Auto-parser de variáveis `{{ }}` que cria formulários instantaneamente.
-- **Ecossistema Colaborativo:** Sistema de **Forks** (criação de versões baseadas em modelos existentes) e visibilidade **Público/Privado**.
-- **DNA Digital:** Assinatura eletrônica e prova de integridade via SHA-256.
-- **API & MCP:** Integração nativa com agentes de IA via Model Context Protocol.
-
-## 🛠️ Tecnologias
-- **Frontend:** Next.js 15 (App Router), TypeScript, Vanilla CSS (Premium Design).
-- **Backend/API:** Node.js, MCP Protocol.
-- **Banco de Dados:** PostgreSQL (Neon) com Prisma ORM.
-- **Autenticação:** NextAuth.js.
-
-## 🏃 Como Rodar
-1. Instale as dependências: `pnpm install`
-2. Configure o `.env` (Banco Neon e NextAuth).
-3. Sincronize o banco: `pnpm db:push`
-4. Inicie o servidor: `pnpm dev`
-
-## 📖 Documentação
-Acesse `/docs` no navegador para detalhes sobre a API e integração com IA.
+> **A infraestrutura padrão para criação, validação e automação de documentos profissionais com segurança jurídica e inteligência.**
 
 ---
-*ODIN - Onde o documento encontra a inteligência.*
+
+## 🌟 O que é o ODIN?
+
+O **ODIN** não é apenas um site para preencher contratos. É uma **Rede de Infraestrutura Aberta** concebida para transformar o conhecimento técnico e jurídico em modelos de documentos que são ao mesmo tempo **reutilizáveis**, **programáveis** e **extremamente confiáveis**.
+
+### Para Leigos e Gestores (O Valor)
+Se você precisa de documentos que não apenas pareçam profissionais, mas que sigam as melhores práticas do mercado e da lei, o ODIN é seu assistente. Ele garante que:
+- **Você não esqueça cláusulas críticas:** Nosso linter jurídico avisa se faltar algo essencial.
+- **Os dados estejam corretos:** O preenchimento é guiado e validado em tempo real.
+- **Tudo seja rastreável:** Cada documento gerado possui um "DNA digital" (hash) único.
+
+### Para Desenvolvedores (A Potência)
+O ODIN foi construído com uma arquitetura modular ("API-First"), permitindo que você integre a geração de documentos complexos em qualquer sistema em minutos.
+- **SDK & CLI:** Ferramentas prontas para automação.
+- **MCP (Model Context Protocol):** Compatível com agentes de IA (como Claude e Gemini).
+- **Webhooks:** Receba notificações quando um documento for assinado ou gerado.
+
+---
+
+## 🚀 Como o ODIN funciona?
+
+O ecossistema ODIN é dividido em três grandes pilares:
+
+1.  **A Biblioteca (Registry):** Um catálogo de modelos de alta utilidade criados pela comunidade e verificados por especialistas.
+2.  **O Motor (Engine):** Transforma dados simples em documentos complexos (PDF/HTML) com design impecável.
+3.  **O Selo de Confiança (Compliance):** Um sistema de auditoria que garante que cada modelo atenda a requisitos mínimos de segurança jurídica.
+
+---
+
+## 🛠️ Comece Agora
+
+Escolha seu perfil abaixo para as instruções ideais:
+
+### 👤 Sou um Usuário / Criador de Modelos
+- **[Guia de Conceitos (Leigos)](/docs/CONCEITO.md)**: Entenda o que é um modelo, uma variável e como a verificação funciona.
+- **Dashboard**: Acesse a interface web para criar e gerenciar seus documentos.
+
+### 💻 Sou um Desenvolvedor
+- **[Guia do Desenvolvedor](/docs/GUIA_DESENVOLVEDOR.md)**: Documentação da API, SDK e exemplos de integração.
+- **CLI**: `npx odin list` para explorar os modelos via terminal.
+
+---
+
+## 🏗️ Arquitetura Técnica
+
+O projeto é um monorepo modular:
+- `apps/web`: Interface Next.js premium para usuários finais.
+- `apps/api`: Gateway REST/MCP de alta performance.
+- `packages/engine`: Motor de renderização agnóstico.
+- `packages/storage`: Camada de persistência com Prisma & PostgreSQL.
+- `packages/sdk-node`: Biblioteca oficial para integração Node.js.
+
+---
+
+## 📜 Roadmap de Evolução
+- [x] **Fase 1 (MVP)**: Geração básica e catálogo.
+- [x] **Fase 2 (Compliance)**: Linter jurídico e selos de verificação.
+- [x] **Fase 3 (Ecossistema)**: CLI, SDK e suporte a Agentes de IA (MCP).
+- [ ] **Fase 4 (Assinatura)**: Fluxo completo de assinatura digital integrada.
+- [ ] **Fase 5 (Blockchain)**: Registro imutável de integridade.
+
+---
+
+*ODIN - Onde o documento encontra a inteligência e a lei.* ⚖️🔱

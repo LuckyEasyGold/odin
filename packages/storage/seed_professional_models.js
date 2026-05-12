@@ -237,6 +237,15 @@ const modelLibrary = [
 async function main() {
   console.log("Iniciando limpeza e repovoamento da biblioteca...");
   
+  // 0. Buscar usuário do sistema
+  const systemUser = await prisma.user.findUnique({
+    where: { username: "system" }
+  });
+
+  if (!systemUser) {
+    throw new Error("Usuário 'system' não encontrado. Rode o prisma/seed.ts primeiro.");
+  }
+
   // 1. Limpar modelos existentes
   await prisma.model.deleteMany({});
   console.log("Modelos antigos removidos.");
@@ -262,7 +271,7 @@ async function main() {
           template: m.template,
           isPublic: true,
           isActive: true,
-          createdBy: "system", // Or a valid system user ID
+          createdBy: systemUser.id,
           version: "1.0.0",
           schema: {},
           fields: {}

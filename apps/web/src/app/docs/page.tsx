@@ -4,84 +4,178 @@ export default function DocsPage() {
   return (
     <main style={{ 
       padding: "4rem 2rem", 
-      maxWidth: "1000px", 
+      maxWidth: "1100px", 
       margin: "0 auto",
-      lineHeight: "1.6",
-      color: "#334155"
+      lineHeight: "1.7",
+      color: "var(--foreground)",
+      backgroundColor: "var(--background)",
+      minHeight: "100vh"
     }}>
-      <header style={{ marginBottom: "4rem" }}>
-        <h1 style={{ fontSize: "3rem", fontWeight: "800", color: "#0f172a", marginBottom: "1rem" }}>
-          Documentação da API ODIN
+      {/* Hero Section */}
+      <header style={{ marginBottom: "5rem", textAlign: "center" }}>
+        <h1 style={{ fontSize: "3.5rem", fontWeight: "900", marginBottom: "1.5rem", letterSpacing: "-0.02em" }}>
+          Central de Conhecimento ODIN 🔱
         </h1>
-        <p style={{ fontSize: "1.25rem", color: "#64748b" }}>
-          Integre a geração de documentos profissionais diretamente no seu software ou fluxo de trabalho de IA.
+        <p style={{ fontSize: "1.25rem", color: "var(--muted)", maxWidth: "800px", margin: "0 auto" }}>
+          Tudo o que você precisa saber para criar, gerenciar e integrar documentos profissionais com inteligência e conformidade.
         </p>
       </header>
 
-      {/* Introdução */}
-      <section style={{ marginBottom: "4rem" }}>
-        <h2 style={{ color: "#0f172a", borderBottom: "2px solid #f1f5f9", paddingBottom: "0.5rem", marginBottom: "1.5rem" }}>
-          1. Introdução
-        </h2>
-        <p>
-          A API do ODIN permite que você utilize nossa vasta biblioteca de modelos profissionais para gerar documentos dinâmicos. 
-          Nossa infraestrutura suporta tanto chamadas REST tradicionais quanto o protocolo <strong>MCP (Model Context Protocol)</strong>, 
-          permitindo que agentes de IA "entendam" e criem documentos complexos em seu nome.
-        </p>
-      </section>
+      {/* Grid de Navegação Rápida */}
+      <nav style={{ 
+        display: "grid", 
+        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", 
+        gap: "1rem", 
+        marginBottom: "6rem" 
+      }}>
+        {["Fundamentos", "Biblioteca", "Editor", "Compliance", "Finanças", "Desenvolvedores", "Segurança"].map((item) => (
+          <a key={item} href={`#${item.toLowerCase()}`} style={{
+            padding: "1rem",
+            textAlign: "center",
+            backgroundColor: "var(--card-bg)",
+            border: "1px solid var(--card-border)",
+            borderRadius: "12px",
+            color: "var(--foreground)",
+            textDecoration: "none",
+            fontWeight: "700",
+            transition: "all 0.2s ease"
+          }}>
+            {item}
+          </a>
+        ))}
+      </nav>
 
-      {/* Autenticação */}
-      <section style={{ marginBottom: "4rem" }}>
-        <h2 style={{ color: "#0f172a", borderBottom: "2px solid #f1f5f9", paddingBottom: "0.5rem", marginBottom: "1.5rem" }}>
-          2. Autenticação
+      {/* 1. Fundamentos */}
+      <section id="fundamentos" style={{ marginBottom: "6rem" }}>
+        <h2 style={{ fontSize: "2rem", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          🔱 1. Fundamentos do ODIN
         </h2>
         <p>
-          Todas as requisições devem incluir sua chave de API no cabeçalho <code>x-api-key</code>. 
-          Você pode gerar suas chaves no seu <Link href="/dashboard/keys" style={{ color: "#3b82f6", fontWeight: "600" }}>Dashboard</Link>.
+          O ODIN (Open Document Infrastructure Network) é uma infraestrutura aberta projetada para padronizar a criação de documentos. 
+          Ao contrário de editores de texto comuns, o ODIN trata documentos como <strong>dados estruturados</strong>.
         </p>
-        <div style={{ backgroundColor: "#1e293b", color: "#e2e8f0", padding: "1rem", borderRadius: "12px", fontFamily: "monospace", fontSize: "0.9rem" }}>
-          x-api-key: odin_live_xxxxxxxxxxxxxxxx
+        <div style={{ backgroundColor: "rgba(37, 99, 235, 0.05)", padding: "1.5rem", borderRadius: "16px", borderLeft: "4px solid #2563eb", marginTop: "1rem" }}>
+          <strong>Conceito Chave:</strong> Um documento no ODIN nasce de um <strong>Modelo</strong> (molde) preenchido com <strong>Inputs</strong> (dados), resultando em um artefato final imutável.
         </div>
       </section>
 
-      {/* Endpoint de Geração */}
-      <section style={{ marginBottom: "4rem" }}>
-        <h2 style={{ color: "#0f172a", borderBottom: "2px solid #f1f5f9", paddingBottom: "0.5rem", marginBottom: "1.5rem" }}>
-          3. Gerar Documento (POST)
+      {/* 2. Biblioteca */}
+      <section id="biblioteca" style={{ marginBottom: "6rem" }}>
+        <h2 style={{ fontSize: "2rem", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          🏛️ 2. Biblioteca & Busca
         </h2>
-        <p>Use este endpoint para fundir dados dinâmicos com um modelo existente.</p>
-        <div style={{ marginBottom: "1rem" }}>
-          <span style={{ backgroundColor: "#10b981", color: "white", padding: "0.2rem 0.6rem", borderRadius: "6px", fontWeight: "bold", fontSize: "0.8rem", marginRight: "0.5rem" }}>POST</span>
-          <code>/api/v1/generate</code>
+        <p>
+          Nossa biblioteca é categorizada para facilitar o acesso. Você encontrará modelos de:
+        </p>
+        <ul style={{ paddingLeft: "1.5rem", marginTop: "1rem" }}>
+          <li><strong>Jurídico:</strong> Contratos, Termos de Uso, Procurações.</li>
+          <li><strong>Comercial:</strong> Orçamentos, Propostas, Recibos.</li>
+          <li><strong>Imobiliário:</strong> Contratos de Locação, Compra e Venda.</li>
+        </ul>
+        <p style={{ marginTop: "1rem" }}>
+          Modelos com o selo 🛡️ foram verificados por nossa equipe de curadoria técnica.
+        </p>
+      </section>
+
+      {/* 3. Editor */}
+      <section id="editor" style={{ marginBottom: "6rem" }}>
+        <h2 style={{ fontSize: "2rem", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          ✍️ 3. Criação de Modelos (Editor)
+        </h2>
+        <p>
+          Qualquer usuário pode criar modelos usando a sintaxe <strong>Handlebars</strong>.
+        </p>
+        <div style={{ backgroundColor: "#1e293b", color: "#e2e8f0", padding: "1.5rem", borderRadius: "12px", fontFamily: "monospace", margin: "1rem 0" }}>
+          {`Olá {{nome_cliente}}, segue sua proposta de R$ {{valor_total}}.`}
         </div>
+        <p>
+          Ao criar um modelo, você pode definir <strong>Dicas de Orientação</strong> para cada variável, ajudando quem for preencher o documento a não cometer erros.
+        </p>
+      </section>
+
+      {/* 4. Compliance */}
+      <section id="compliance" style={{ marginBottom: "6rem" }}>
+        <h2 style={{ fontSize: "2rem", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          🛡️ 4. Curadoria & Compliance
+        </h2>
+        <p>
+          O ODIN possui um <strong>Legal Linter</strong> integrado. Ao salvar um modelo, o sistema analisa automaticamente:
+        </p>
+        <ul style={{ paddingLeft: "1.5rem", marginTop: "1rem" }}>
+          <li>Cláusula de Foro e Rescisão.</li>
+          <li>Identificação clara das partes.</li>
+          <li>Definição de preço e prazos.</li>
+        </ul>
+        <p style={{ marginTop: "1rem" }}>
+          Modelos de alta qualidade recebem um <strong>Score de Compliance</strong>. Especialistas podem revisar modelos da comunidade e conferir o selo de verificação oficial.
+        </p>
+      </section>
+
+      {/* 5. Finanças */}
+      <section id="finanças" style={{ marginBottom: "6rem" }}>
+        <h2 style={{ fontSize: "2rem", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          💰 5. Carteira & Marketplace
+        </h2>
+        <p>
+          O ODIN permite a monetização de modelos de alta qualidade:
+        </p>
+        <ul style={{ paddingLeft: "1.5rem", marginTop: "1rem" }}>
+          <li><strong>Saldo:</strong> Adicione créditos para gerar modelos premium.</li>
+          <li><strong>Ganhos de Autoria:</strong> Se você criar um modelo verificado e colocá-lo como pago, você recebe <strong>80% do valor</strong> de cada geração feita por outros usuários.</li>
+          <li><strong>Histórico:</strong> Acompanhe todas as transações na sua <Link href="/dashboard/wallet" style={{ color: "#3b82f6" }}>Carteira</Link>.</li>
+        </ul>
+      </section>
+
+      {/* 6. Desenvolvedores */}
+      <section id="desenvolvedores" style={{ marginBottom: "6rem" }}>
+        <h2 style={{ fontSize: "2rem", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          🔑 6. Developer Hub (Integração)
+        </h2>
+        <p>Para desenvolvedores, oferecemos três formas de integração:</p>
         
-        <h4 style={{ marginBottom: "0.5rem" }}>Corpo da Requisição (JSON):</h4>
-        <pre style={{ backgroundColor: "#f8fafc", padding: "1.5rem", borderRadius: "12px", border: "1px solid #e2e8f0", overflowX: "auto" }}>
-{`{
-  "modelId": "id-do-modelo",
-  "inputs": {
-    "cliente": "João Silva",
-    "valor": "1.500,00"
-  },
-  "format": "pdf"
-}`}
-        </pre>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem", marginTop: "2rem" }}>
+          <div style={{ padding: "1.5rem", border: "1px solid var(--card-border)", borderRadius: "16px" }}>
+            <h4 style={{ marginBottom: "0.5rem" }}>REST API</h4>
+            <p style={{ fontSize: "0.9rem", color: "var(--muted)" }}>Endpoints padrão JSON para gerar documentos via HTTP.</p>
+            <code style={{ fontSize: "0.8rem", display: "block", marginTop: "1rem" }}>POST /api/v1/generate</code>
+          </div>
+          <div style={{ padding: "1.5rem", border: "1px solid var(--card-border)", borderRadius: "16px" }}>
+            <h4 style={{ marginBottom: "0.5rem" }}>ODIN CLI</h4>
+            <p style={{ fontSize: "0.9rem", color: "var(--muted)" }}>Ferramenta de linha de comando para automação em servidores.</p>
+            <code style={{ fontSize: "0.8rem", display: "block", marginTop: "1rem" }}>npx odin generate</code>
+          </div>
+          <div style={{ padding: "1.5rem", border: "1px solid var(--card-border)", borderRadius: "16px" }}>
+            <h4 style={{ marginBottom: "0.5rem" }}>MCP Protocol</h4>
+            <p style={{ fontSize: "0.9rem", color: "var(--muted)" }}>Conecte o ODIN ao Claude Desktop ou Cursor para gerar documentos via IA.</p>
+          </div>
+        </div>
       </section>
 
-      {/* Integração MCP */}
-      <section style={{ marginBottom: "4rem", backgroundColor: "#eff6ff", padding: "2rem", borderRadius: "24px", border: "1px solid #dbeafe" }}>
-        <h2 style={{ color: "#1e40af", marginBottom: "1rem" }}>⚡ Integração com IA (MCP)</h2>
+      {/* 7. Segurança */}
+      <section id="segurança" style={{ marginBottom: "6rem" }}>
+        <h2 style={{ fontSize: "2rem", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          📑 7. Segurança & Integridade
+        </h2>
         <p>
-          O ODIN é compatível com o <strong>Model Context Protocol</strong> da Anthropic. 
-          Isso significa que você pode conectar o ODIN diretamente ao Claude Desktop ou qualquer IDE compatível.
+          Cada documento gerado pelo ODIN é único e rastreável:
         </p>
-        <p>URL do Servidor MCP:</p>
-        <code>http://localhost:3001/api/v1/mcp</code>
+        <ul style={{ paddingLeft: "1.5rem", marginTop: "1rem" }}>
+          <li><strong>Document DNA:</strong> Um hash SHA-256 é gerado no momento da criação.</li>
+          <li><strong>Audit Trail:</strong> Registramos o endereço IP e o carimbo de tempo da geração.</li>
+          <li><strong>Assinatura Digital:</strong> O status do documento muda para "Signed" quando validado eletronicamente.</li>
+        </ul>
       </section>
 
-      {/* Footer Docs */}
-      <footer style={{ marginTop: "6rem", textAlign: "center", color: "#94a3b8", fontSize: "0.875rem" }}>
-        <p>© 2026 ODIN Infrastructure. Todos os direitos reservados.</p>
+      <footer style={{ 
+        marginTop: "10rem", 
+        paddingTop: "4rem", 
+        borderTop: "1px solid var(--card-border)", 
+        textAlign: "center", 
+        color: "var(--muted)", 
+        fontSize: "0.875rem" 
+      }}>
+        <p>🔱 ODIN - Onde o documento encontra a inteligência e a lei.</p>
+        <p style={{ marginTop: "0.5rem" }}>© 2026 ODIN Infrastructure Network.</p>
       </footer>
     </main>
   );

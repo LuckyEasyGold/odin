@@ -168,25 +168,26 @@ export default function Wizard({ model }: { model: Model }) {
             ))}
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: "100%",
-              padding: "1rem",
-              backgroundColor: "var(--primary)",
-              color: "white",
-              border: "none",
-              borderRadius: "12px",
-              fontWeight: "bold",
-              fontSize: "1rem",
-              cursor: loading ? "not-allowed" : "pointer",
-              marginTop: "2rem",
-              boxShadow: "0 4px 10px var(--shadow)"
-            }}
-          >
-            {loading ? t.wizard.loading : t.wizard.generate}
-          </button>
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: "100%",
+                padding: "1.25rem",
+                backgroundColor: "#2563eb",
+                color: "white",
+                border: "none",
+                borderRadius: "16px",
+                fontSize: "1.1rem",
+                fontWeight: "bold",
+                cursor: loading ? "not-allowed" : "pointer",
+                boxShadow: "0 10px 15px -3px rgba(37, 99, 235, 0.3)",
+                transition: "all 0.2s ease",
+                marginTop: "2rem"
+              }}
+            >
+              {loading ? "Processando..." : (Number(model.price) > 0 ? `🚀 Gerar por R$ ${Number(model.price).toFixed(2)}` : "🚀 Gerar Documento")}
+            </button>
         </form>
       </div>
 

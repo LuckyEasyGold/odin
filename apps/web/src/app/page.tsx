@@ -85,20 +85,36 @@ export default async function Home() {
                     cursor: "pointer"
                   }}
                 >
-                  <div style={{ 
-                    color: "#2563eb", 
-                    fontSize: "0.7rem", 
-                    fontWeight: "800", 
-                    marginBottom: "1rem",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
-                    background: "rgba(37, 99, 235, 0.1)",
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "9999px",
-                    display: "inline-block",
-                    width: "fit-content"
-                  }}>
-                    {model.category?.name || "Documento"}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+                    <div style={{ 
+                      color: "#2563eb", 
+                      fontSize: "0.7rem", 
+                      fontWeight: "800", 
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      background: "rgba(37, 99, 235, 0.1)",
+                      padding: "0.25rem 0.75rem",
+                      borderRadius: "9999px"
+                    }}>
+                      {model.category?.name || "Documento"}
+                    </div>
+                    {/* @ts-ignore */}
+                    {model.compliance?.status === "verified" && (
+                      <div style={{ 
+                        display: "flex", 
+                        alignItems: "center", 
+                        gap: "4px",
+                        fontSize: "0.7rem",
+                        fontWeight: "700",
+                        color: "#0891b2",
+                        background: "linear-gradient(135deg, #ecfeff 0%, #cffafe 100%)",
+                        padding: "0.25rem 0.6rem",
+                        borderRadius: "8px",
+                        border: "1px solid #a5f3fc"
+                      }}>
+                        <span style={{ fontSize: "0.8rem" }}>🛡️</span> Verificado
+                      </div>
+                    )}
                   </div>
                   <h4 style={{ color: "var(--foreground)", margin: "0 0 0.75rem 0", fontSize: "1.25rem", fontWeight: "700" }}>{model.name}</h4>
                   <p style={{ color: "var(--muted)", fontSize: "0.95rem", margin: 0, lineHeight: "1.5", flex: 1 }}>{model.description}</p>

@@ -3,6 +3,12 @@ Parte 1 — Manifesto, Visão Estratégica e Objetivos do Projeto
 
 > "Uma infraestrutura aberta para criação, validação, automação e gestão de documentos profissionais via API."
 
+## 📑 Sumário de Navegação
+- [Manifesto e Visão](#1-manifesto-do-projeto)
+- [Arquitetura e Módulos](#parte-3--o-ecossistema-de-módulos-do-odin)
+- [Modelo de Dados e APIs](#parte-4--modelo-de-dados-banco-de-dados-e-especificação-das-apis)
+- [Roadmap Estratégico](#81-roadmap-estratégico)
+
 ---
 
 # 1. MANIFESTO DO PROJETO

@@ -36,6 +36,7 @@ export async function createModel(formData: FormData) {
   const template = formData.get("template") as string;
   const isPublic = formData.get("isPublic") === "on";
   const guidance = formData.get("guidance") as string;
+  const price = parseFloat(formData.get("price") as string || "0");
   
   // Collect all hints
   const variableHints: Record<string, string> = {};
@@ -60,6 +61,7 @@ export async function createModel(formData: FormData) {
       categoryId,
       template,
       isPublic,
+      price,
       isActive: true,
       guidance,
       variableHints,
@@ -84,6 +86,7 @@ export async function updateModel(id: string, formData: FormData) {
   const template = formData.get("template") as string;
   const isPublic = formData.get("isPublic") === "on";
   const guidance = formData.get("guidance") as string;
+  const price = parseFloat(formData.get("price") as string || "0");
 
   // Collect all hints
   const variableHints: Record<string, string> = {};
@@ -110,6 +113,7 @@ export async function updateModel(id: string, formData: FormData) {
       categoryId, 
       template, 
       isPublic,
+      price,
       guidance,
       variableHints,
       complianceScore: compliance.score
@@ -145,4 +149,32 @@ export async function forkModel(id: string) {
 
   revalidatePath("/dashboard");
   redirect(`/dashboard/models/${newModel.id}/edit`);
+}
+export async function verifyModel(id: string, curatorNote?: string) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Não autorizado");
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id }
+  });
+
+  if (!user?.isSpecialist) {
+    throw new Error("Apenas especialistas podem verificar modelos");
+  }
+
+  await prisma.model.update({
+    where: { id },
+    data: {
+      isVerified: true,
+      curatorNote: curatorNote || "Verificado por especialista ODIN",
+      compliance: {
+        status: "verified",
+        validatedBy: [user.id],
+        validatedAt: new Date().toISOString()
+      }
+    }
+  });
+
+  revalidatePath(`/models`);
+  revalidatePath(`/dashboard`);
 }

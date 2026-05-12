@@ -22,6 +22,7 @@ model User {
   models    Model[]
   ratings   Rating[]
   apiKey    ApiKey[]
+  webhooks  Webhook[]
   generations Generation[]
   transactions Transaction[]
 
@@ -46,12 +47,12 @@ model Model {
   ratingCount Int      @default(0)
   downloads   Int      @default(0)
   forks       Int      @default(0)
-  price       Decimal  @default(0)
   license     String   @default("MIT")
   features    Json     @default("{}")
   compliance  Json     @default("{}")
   guidance    String?  // Texto explicativo do modelo (Dicas do especialista)
   variableHints Json?  // Exemplos/Mockups para cada variável {{...}}
+  price       Decimal  @default(0) // Valor para gerar o documento
   isVerified  Boolean  @default(false)
   complianceScore Int  @default(0)
   curatorNote String?
@@ -142,4 +143,16 @@ model ApiKey {
   user             User     @relation(fields: [userId], references: [id])
 
   @@map("api_keys")
+}
+model Webhook {
+  id         String   @id @default(uuid())
+  userId     String
+  url        String
+  events     String[] // e.g., ["document.generated", "document.signed"]
+  secret     String   // Used for HMAC signature
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@map("webhooks")
 }
