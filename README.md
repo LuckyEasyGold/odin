@@ -61,7 +61,7 @@ O projeto é um monorepo modular:
 - [x] **Fase 1 (MVP)**: Geração básica e catálogo.
 - [x] **Fase 2 (Compliance)**: Linter jurídico e selos de verificação.
 - [x] **Fase 3 (Ecossistema)**: CLI, SDK e suporte a Agentes de IA (MCP).
-- [ ] **Fase 4 (Assinatura)**: Fluxo completo de assinatura digital integrada.
+- [x] **Fase 4 (Assinatura)**: Fluxo completo de assinatura digital integrada (Documenso).
 - [ ] **Fase 5 (Blockchain)**: Registro imutável de integridade.
 
 ---

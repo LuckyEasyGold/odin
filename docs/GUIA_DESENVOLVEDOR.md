@@ -29,9 +29,13 @@ Retorna um array com todos os modelos públicos e verificados.
     "cliente": "Empresa X",
     "valor": 1500
   },
-  "format": "pdf" 
+  "format": "pdf",
+  "signers": [
+    { "name": "Nome", "email": "email@exemplo.com", "order": 1 }
+  ]
 }
 ```
+*Veja o [Guia de Assinaturas](./FLUXO_ASSINATURAS.md) para mais detalhes.*
 
 ---
 

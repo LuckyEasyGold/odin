@@ -42,3 +42,5 @@ export async function renderFromTemplate(
   }
   return result;
 }
+
+export * from "./signatures";

@@ -28,7 +28,7 @@ export default function DocsPage() {
         gap: "1rem", 
         marginBottom: "6rem" 
       }}>
-        {["Fundamentos", "Biblioteca", "Editor", "Compliance", "Finanças", "Desenvolvedores", "Segurança"].map((item) => (
+        {["Fundamentos", "Biblioteca", "Editor", "Compliance", "Finanças", "Assinaturas", "Desenvolvedores", "Segurança"].map((item) => (
           <a key={item} href={`#${item.toLowerCase()}`} style={{
             padding: "1rem",
             textAlign: "center",
@@ -126,10 +126,33 @@ export default function DocsPage() {
         </ul>
       </section>
 
-      {/* 6. Desenvolvedores */}
+      {/* 5.1 Assinaturas */}
+      <section id="assinaturas" style={{ marginBottom: "6rem" }}>
+        <h2 style={{ fontSize: "2rem", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          ✍️ 6. Assinaturas Eletrônicas
+        </h2>
+        <p>
+          O ODIN integra-se com o <strong>Documenso</strong> para oferecer um fluxo completo de assinatura digital.
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem", marginTop: "1.5rem" }}>
+          <div style={{ padding: "1.5rem", backgroundColor: "var(--card-bg)", borderRadius: "16px", border: "1px solid var(--card-border)" }}>
+            <h4 style={{ marginBottom: "0.5rem" }}>Fluxo Integrado</h4>
+            <p style={{ fontSize: "0.9rem", color: "var(--muted)" }}>Adicione signatários diretamente no momento da geração do documento.</p>
+          </div>
+          <div style={{ padding: "1.5rem", backgroundColor: "var(--card-bg)", borderRadius: "16px", border: "1px solid var(--card-border)" }}>
+            <h4 style={{ marginBottom: "0.5rem" }}>Status em Tempo Real</h4>
+            <p style={{ fontSize: "0.9rem", color: "var(--muted)" }}>Acompanhe quem já assinou e quem ainda falta através do dashboard.</p>
+          </div>
+        </div>
+        <p style={{ marginTop: "1.5rem" }}>
+          Ao preencher um documento, você pode adicionar o <strong>Nome</strong> e <strong>E-mail</strong> das partes interessadas. O ODIN cuidará do envio dos e-mails de convite e da coleta das assinaturas juridicamente válidas.
+        </p>
+      </section>
+
+      {/* 7. Desenvolvedores */}
       <section id="desenvolvedores" style={{ marginBottom: "6rem" }}>
         <h2 style={{ fontSize: "2rem", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          🔑 6. Developer Hub (Integração)
+          🔑 7. Developer Hub (Integração)
         </h2>
         <p>Para desenvolvedores, oferecemos três formas de integração:</p>
         
@@ -151,10 +174,10 @@ export default function DocsPage() {
         </div>
       </section>
 
-      {/* 7. Segurança */}
+      {/* 8. Segurança */}
       <section id="segurança" style={{ marginBottom: "6rem" }}>
         <h2 style={{ fontSize: "2rem", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          📑 7. Segurança & Integridade
+          📑 8. Segurança & Integridade
         </h2>
         <p>
           Cada documento gerado pelo ODIN é único e rastreável:
@@ -162,7 +185,7 @@ export default function DocsPage() {
         <ul style={{ paddingLeft: "1.5rem", marginTop: "1rem" }}>
           <li><strong>Document DNA:</strong> Um hash SHA-256 é gerado no momento da criação.</li>
           <li><strong>Audit Trail:</strong> Registramos o endereço IP e o carimbo de tempo da geração.</li>
-          <li><strong>Assinatura Digital:</strong> O status do documento muda para "Signed" quando validado eletronicamente.</li>
+          <li><strong>Assinatura Eletrônica:</strong> Integração oficial com Documenso para assinaturas com validade jurídica.</li>
         </ul>
       </section>
 

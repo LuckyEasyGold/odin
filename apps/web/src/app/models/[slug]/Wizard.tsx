@@ -46,10 +46,19 @@ export default function Wizard({ model }: { model: Model }) {
     fields.reduce((acc, f) => ({ ...acc, [f.key]: f.defaultValue || "" }), {})
   );
   const [loading, setLoading] = useState(false);
+  const [signers, setSigners] = useState<{ name: string; email: string }[]>([]);
   const [result, setResult] = useState<{ html?: string; generationId?: string; error?: string } | null>(null);
 
   const handleChange = (key: string, value: any) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const addSigner = () => setSigners([...signers, { name: "", email: "" }]);
+  const removeSigner = (index: number) => setSigners(signers.filter((_, i) => i !== index));
+  const updateSigner = (index: number, key: 'name' | 'email', value: string) => {
+    const newSigners = [...signers];
+    newSigners[index][key] = value;
+    setSigners(newSigners);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -66,6 +75,7 @@ export default function Wizard({ model }: { model: Model }) {
           inputs: formData,
           format: "html",
           userId: session?.user?.id,
+          signers: signers.filter(s => s.name && s.email)
         }),
       });
 
@@ -166,6 +176,84 @@ export default function Wizard({ model }: { model: Model }) {
                 )}
               </div>
             ))}
+          </div>
+
+          <div style={{ marginTop: "2rem", borderTop: "1px solid var(--card-border)", paddingTop: "1.5rem" }}>
+            <h4 style={{ marginBottom: "1rem", fontSize: "0.95rem", color: "var(--foreground)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <span>✍️</span> Assinatura Eletrônica (Opcional)
+            </h4>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              {signers.map((signer, index) => (
+                <div key={index} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                  <input
+                    placeholder="Nome"
+                    value={signer.name}
+                    onChange={(e) => updateSigner(index, "name", e.target.value)}
+                    style={{ 
+                      flex: 1, 
+                      padding: "0.6rem", 
+                      borderRadius: "8px", 
+                      border: "1px solid var(--card-border)",
+                      fontSize: "0.85rem",
+                      backgroundColor: "var(--background)",
+                      color: "var(--foreground)"
+                    }}
+                  />
+                  <input
+                    placeholder="E-mail"
+                    type="email"
+                    value={signer.email}
+                    onChange={(e) => updateSigner(index, "email", e.target.value)}
+                    style={{ 
+                      flex: 1, 
+                      padding: "0.6rem", 
+                      borderRadius: "8px", 
+                      border: "1px solid var(--card-border)",
+                      fontSize: "0.85rem",
+                      backgroundColor: "var(--background)",
+                      color: "var(--foreground)"
+                    }}
+                  />
+                  <button 
+                    type="button" 
+                    onClick={() => removeSigner(index)}
+                    style={{ 
+                      background: "none", 
+                      border: "none", 
+                      color: "#ef4444", 
+                      cursor: "pointer",
+                      fontSize: "1.2rem",
+                      padding: "0 0.5rem"
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={addSigner}
+              style={{
+                background: "none",
+                border: "1px dashed var(--card-border)",
+                color: "#2563eb",
+                padding: "0.75rem",
+                borderRadius: "8px",
+                marginTop: "1rem",
+                width: "100%",
+                cursor: "pointer",
+                fontSize: "0.85rem",
+                fontWeight: "500"
+              }}
+            >
+              + Adicionar Signatário
+            </button>
+            <p style={{ fontSize: "0.75rem", color: "var(--muted)", marginTop: "0.5rem" }}>
+              Os signatários receberão um e-mail para assinar o documento digitalmente via Documenso.
+            </p>
           </div>
 
             <button

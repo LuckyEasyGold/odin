@@ -108,9 +108,9 @@ model Generation {
   outputPdfUrl String?
   outputJson  Json?
   documentHash String?  // SHA-256 DNA
-  status      String   @default("COMPLETED") // PENDING_SIGNATURE, SIGNED, COMPLETED
-  signedAt    DateTime?
-  ipAddress   String?
+  externalSignatureId String?
+  signatureStatus     String?   // PENDING_SIGNATURE, SIGNED, COMPLETED, DECLINED
+  signers             Signer[]
   createdAt   DateTime @default(now())
   model       Model    @relation(fields: [modelId], references: [id])
   user        User?    @relation(fields: [userId], references: [id])
@@ -155,4 +155,18 @@ model Webhook {
   user       User     @relation(fields: [userId], references: [id])
 
   @@map("webhooks")
+}
+
+model Signer {
+  id           String     @id @default(uuid())
+  generationId String
+  email        String
+  name         String
+  status       String     @default("PENDING") // PENDING, SIGNED, DECLINED
+  order        Int        @default(0)
+  signatureId  String?    // ID interno no provedor (Documenso)
+  signedAt     DateTime?
+  generation   Generation @relation(fields: [generationId], references: [id], onDelete: Cascade)
+
+  @@map("signers")
 }

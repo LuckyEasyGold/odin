@@ -110,7 +110,23 @@ export default async function DashboardPage() {
                 <div key={g.id} style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                   <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#10b981" }}></div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: "0.9rem", fontWeight: "500", color: "var(--foreground)" }}>{g.model.name}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <div style={{ fontSize: "0.9rem", fontWeight: "500", color: "var(--foreground)" }}>{g.model.name}</div>
+                      {g.signatureStatus && (
+                        <span style={{ 
+                          fontSize: "0.6rem", 
+                          padding: "2px 6px", 
+                          borderRadius: "4px", 
+                          backgroundColor: g.signatureStatus === 'COMPLETED' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+                          color: g.signatureStatus === 'COMPLETED' ? '#10b981' : '#f59e0b',
+                          border: `1px solid ${g.signatureStatus === 'COMPLETED' ? '#10b981' : '#f59e0b'}`,
+                          textTransform: "uppercase",
+                          fontWeight: "bold"
+                        }}>
+                          {g.signatureStatus}
+                        </span>
+                      )}
+                    </div>
                     <div style={{ fontSize: "0.7rem", color: "var(--muted)" }}>{new Date(g.createdAt).toLocaleDateString()}</div>
                   </div>
                 </div>

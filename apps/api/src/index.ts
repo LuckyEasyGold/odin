@@ -1,7 +1,7 @@
 import express from "express";
 import type { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { renderDocument } from "@odin/engine";
+import { renderDocument, DocumensoProvider } from "@odin/engine";
 import * as dotenv from "dotenv";
 import path from "path";
 import crypto from "crypto";
@@ -9,6 +9,7 @@ import crypto from "crypto";
 dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 import { ModelRepository, GenerationRepository, RatingRepository } from "@odin/storage";
 import { dispatchWebhook } from "./lib/webhooks";
+import { handleDocumensoWebhook } from "./webhooks/documenso";
 
 const app = express();
 const PORT = process.env.API_PORT || 3001;
@@ -213,10 +214,42 @@ app.post("/api/v1/generate", async (req: Request, res: Response) => {
       inputs: inputs || {},
       outputHtml: format === "html" ? (result as string) : undefined,
       documentHash,
-      status: "PENDING_SIGNATURE"
+      status: signers?.length > 0 ? "PENDING_SIGNATURE" : "COMPLETED",
+      signatureStatus: signers?.length > 0 ? "PENDING" : undefined,
+      signers: signers
     });
 
-    if (format === "pdf") {
+    // If signers are provided and we have a PDF, initiate electronic signature
+    if (signers?.length > 0 && (format === "pdf" || format === "html")) {
+      try {
+        const apiKey = process.env.DOCUMENSO_API_KEY;
+        if (apiKey) {
+          const provider = new DocumensoProvider(apiKey);
+          // If we only have HTML, we need to render PDF first for Documenso
+          const pdfBuffer = format === "pdf" 
+            ? (result as Buffer) 
+            : await renderDocument(model.template, inputs || {}, { format: "pdf" }) as Buffer;
+
+          const signatureResponse = await provider.createDocument({
+            title: `${model.name} - ${generation.id}`,
+            file: pdfBuffer,
+            recipients: signers
+          });
+
+          await prisma.generation.update({
+            where: { id: generation.id },
+            data: { 
+              externalSignatureId: signatureResponse.externalId,
+              signatureStatus: "SENT"
+            }
+          });
+        }
+      } catch (sigError) {
+        console.error("Signature initiation failed:", sigError);
+      }
+    }
+
+    if (format === "pdf" && (!signers || signers.length === 0)) {
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader("Content-Disposition", `attachment; filename=documento-${generation.id}.pdf`);
       return res.send(result);
@@ -225,7 +258,8 @@ app.post("/api/v1/generate", async (req: Request, res: Response) => {
     res.json({ 
       generationId: generation.id, 
       html: format === "html" ? result : undefined,
-      message: "Document generated" 
+      externalSignatureId: (generation as any).externalSignatureId,
+      message: signers?.length > 0 ? "Document generated and sent for signature" : "Document generated" 
     });
   } catch (error) {
     console.error("Generation error:", error);
@@ -375,6 +409,9 @@ app.post("/api/v1/generations/:id/sign", async (req: Request, res: Response) => 
     res.status(500).json({ error: "Failed to sign document" });
   }
 });
+
+// Signature Webhooks
+app.post("/webhooks/documenso", handleDocumensoWebhook);
 
 app.listen(PORT, () => {
   console.log(`ODIN API running on port ${PORT}`);
