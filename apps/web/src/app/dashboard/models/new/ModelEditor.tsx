@@ -200,7 +200,7 @@ export default function ModelEditor({ categories, existingModels }: { categories
               fontSize: "0.85rem"
             }}>
               <h4 style={{ margin: "0 0 1rem 0", color: "var(--foreground)" }}>Checklist Jurídico</h4>
-              <ul style={{ listLines: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                 {["Objeto", "Preço e Pagamento", "Prazo", "Rescisão", "Obrigações", "Foro"].map(clause => {
                   const isPresent = compliance.foundClauses.includes(clause);
                   return (
