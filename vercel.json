@@ -2,8 +2,13 @@
   "version": 2,
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/api/v1/(.*)",
+      "destination": "/apps/api/src/index.ts"
+    },
+    {
+      "source": "/webhooks/(.*)",
       "destination": "/apps/api/src/index.ts"
     }
   ]
 }
+
