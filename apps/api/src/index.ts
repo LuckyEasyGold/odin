@@ -58,7 +58,7 @@ async function authenticateApiKey(req: Request, res: Response, next: Function) {
 
     next();
   } catch (error) {
-    res.status(500).json({ error: "Authentication error" });
+    res.status(500).json({ error: "Authentication error", details: (error as Error).message });
   }
 }
 
@@ -132,7 +132,7 @@ apiRouter.get("/models/:id/ratings", async (req: Request, res: Response) => {
     const ratings = await ratingRepo.findByModelId(id);
     res.json(ratings);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch ratings" });
+    res.status(500).json({ error: "Failed to fetch ratings", details: (error as Error).message });
   }
 });
 
@@ -150,7 +150,7 @@ apiRouter.post("/models/:id/ratings", async (req: Request, res: Response) => {
     await modelRepo.recalculateRating(id);
     res.status(201).json(newRating);
   } catch (error) {
-    res.status(400).json({ error: "Failed to submit rating" });
+    res.status(400).json({ error: "Failed to submit rating", details: (error as Error).message });
   }
 });
 
@@ -176,7 +176,7 @@ apiRouter.get("/models/:id", async (req: Request, res: Response) => {
     if (!model) return res.status(404).json({ error: "Model not found" });
     res.json(model);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch model" });
+    res.status(500).json({ error: "Failed to fetch model", details: (error as Error).message });
   }
 });
 
@@ -308,7 +308,7 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Generation error:", error);
-    res.status(500).json({ error: "Generation failed" });
+    res.status(500).json({ error: "Generation failed", details: (error as Error).message });
   }
 });
 

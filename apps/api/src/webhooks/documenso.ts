@@ -77,9 +77,9 @@ export async function handleDocumensoWebhook(req: Request, res: Response) {
       }
     }
 
-    res.status(200).json({ success: true });
+    res.json({ success: true });
   } catch (error) {
     console.error("[Webhook] Error processing Documenso webhook:", error);
-    res.status(500).json({ error: "Internal server error" });
+    (res as Response).status(500).json({ error: "Internal server error" });
   }
 }
