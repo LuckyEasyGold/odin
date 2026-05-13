@@ -135,10 +135,10 @@ Ser a principal infraestrutura open source global para criação, validação e 
 - Consolidar comunidade
 
 ## Longo Prazo
-- Assinatura eletrônica
-- Compliance avançado
+- Assinatura eletrônica nativa (Autoridade ODIN)
+- Portal de validação de integridade documental
 - Marketplace de especialistas
-- Registro de integridade
+- Registro imutável (Hash DNA)
 - Smart contracts
 
 ---
@@ -1524,16 +1524,20 @@ Desenvolvedores passam a incorporar o ODIN em seus próprios sistemas.
 
 ---
 
-# 85. FASE 4 — ASSINATURA ELETRÔNICA
+# 85. FASE 4 — AUTORIDADE DE ASSINATURA E INTEGRIDADE (NATIVA)
+
+## Objetivo
+Tornar o ODIN a fonte primária de verdade para a integridade e validade jurídica dos documentos gerados.
 
 ## Escopo
-- Integração com plataformas como [Documenso](https://documenso.com?utm_source=chatgpt.com)
-- Fluxos de assinatura
-- Trilhas de auditoria
-- Carimbo do tempo
+- **Assinatura Nativa (ODIN-Sign)**: Fluxo próprio de colheita de assinaturas sem dependência de terceiros.
+- **Portal de Verificação Pública**: Interface para validação de documentos via Hash ou QR Code.
+- **Certificado de Autenticidade**: Geração de folha de rosto com trilha de auditoria detalhada.
+- **Audit Trail**: Log imutável de eventos (geração, visualização, assinatura).
+- **QR Code de Integridade**: Inserção automática de código de validação em todos os PDFs.
 
 ## Critério de Sucesso
-Documentos podem ser gerados e assinados no mesmo fluxo.
+Qualquer pessoa com o documento em mãos pode validar sua autenticidade diretamente no portal do ODIN.
 
 ---
 

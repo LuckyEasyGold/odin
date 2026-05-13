@@ -1,21 +1,22 @@
 import Handlebars from "handlebars";
 import puppeteer from "puppeteer";
 import type { DocumentTemplate, RenderOptions } from "@odin/core";
+import crypto from "crypto";
 
 export async function renderDocument(
   template: string,
   data: Record<string, unknown>,
   options?: RenderOptions
-): Promise<Buffer | string> {
+): Promise<{ content: Buffer | string; hash?: string }> {
   const compiled = Handlebars.compile(template);
   const html = compiled(data);
 
   if (options?.format === "html") {
-    return html;
+    return { content: html };
   }
 
   if (options?.format === "json") {
-    return JSON.stringify({ html, data });
+    return { content: JSON.stringify({ html, data }) };
   }
 
   let browser;
@@ -39,7 +40,11 @@ export async function renderDocument(
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "networkidle0" });
     const pdf = await page.pdf({ format: "A4", printBackground: true });
-    return pdf as Buffer;
+    
+    // Calculate SHA-256 hash (Document DNA)
+    const hash = crypto.createHash("sha256").update(pdf).digest("hex");
+    
+    return { content: pdf as Buffer, hash };
   } finally {
     if (browser) await browser.close();
   }
@@ -48,12 +53,12 @@ export async function renderDocument(
 export async function renderFromTemplate(
   docTemplate: DocumentTemplate,
   data: Record<string, unknown>
-): Promise<Buffer> {
+): Promise<{ content: Buffer; hash: string }> {
   const result = await renderDocument(docTemplate.template, data, { format: "pdf" });
-  if (typeof result === "string") {
+  if (typeof result.content === "string") {
     throw new Error("Expected Buffer from PDF render");
   }
-  return result;
+  return { content: result.content, hash: result.hash! };
 }
 
 export * from "./signatures";

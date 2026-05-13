@@ -247,11 +247,9 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
       ]);
     }
 
-    const result = await renderDocument(model.template, inputs || {}, { format });
-    
-    // Generate document hash (DNA)
-    const contentToHash = format === "html" ? (result as string) : JSON.stringify(inputs);
-    const documentHash = crypto.createHash("sha256").update(contentToHash).digest("hex");
+    const renderResult = await renderDocument(model.template, inputs || {}, { format });
+    const result = renderResult.content;
+    const documentHash = renderResult.hash || crypto.createHash("sha256").update(result as string).digest("hex");
 
     const generation = await genRepo.create({
       modelId: model.id,
@@ -273,7 +271,7 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
           // If we only have HTML, we need to render PDF first for Documenso
           const pdfBuffer = format === "pdf" 
             ? (result as Buffer) 
-            : await renderDocument(model.template, inputs || {}, { format: "pdf" }) as Buffer;
+            : (await renderDocument(model.template, inputs || {}, { format: "pdf" })).content as Buffer;
 
           const signatureResponse = await provider.createDocument({
             title: `${model.name} - ${generation.id}`,
@@ -300,11 +298,14 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
       return res.send(result);
     }
 
+    const webUrl = process.env.NEXT_PUBLIC_WEB_URL || `${req.protocol}://${req.get('host')}`;
+
     res.json({ 
       generationId: generation.id, 
       html: format === "html" ? result : undefined,
       externalSignatureId: (generation as any).externalSignatureId,
-      message: signers?.length > 0 ? "Document generated and sent for signature" : "Document generated" 
+      signatureUrl: `${webUrl}/sign/${generation.id}`,
+      message: signers?.length > 0 ? "Document generated and ready for signature" : "Document generated" 
     });
   } catch (error) {
     console.error("Generation error:", error);
@@ -322,11 +323,11 @@ apiRouter.get("/generations/:id/download", async (req: Request, res: Response) =
     if (!model) return res.status(404).json({ error: "Model not found" });
 
     // Re-render as PDF for download
-    const pdf = await renderDocument(model.template, generation.inputs as any, { format: "pdf" });
+    const { content } = await renderDocument(model.template, generation.inputs as any, { format: "pdf" });
     
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename=documento-${id}.pdf`);
-    res.send(pdf);
+    res.send(content);
   } catch (error) {
     res.status(500).json({ error: "Download failed" });
   }
@@ -408,6 +409,88 @@ apiRouter.post("/generations/:id/sign", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Signing error:", error);
     res.status(500).json({ error: "Failed to sign document" });
+  }
+});
+
+// Public verification endpoint
+apiRouter.get("/verify/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const generation = await prisma.generation.findUnique({
+      where: { id },
+      include: { model: { select: { name: true, version: true } } }
+    });
+
+    if (!generation) {
+      return res.status(404).json({ error: "Document not found" });
+    }
+
+    res.json({
+      valid: true,
+      documentId: generation.id,
+      modelName: generation.model.name,
+      modelVersion: generation.model.version,
+      hash: generation.documentHash,
+      createdAt: generation.createdAt,
+      signers: await prisma.signer.findMany({ where: { generationId: generation.id } })
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Verification failed", details: (error as Error).message });
+  }
+});
+
+// Native signing endpoint
+apiRouter.post("/generations/:id/sign", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { email, name, signatureData } = req.body;
+
+    const generation = await prisma.generation.findUnique({
+      where: { id },
+      include: { signers: true }
+    });
+
+    if (!generation) {
+      return res.status(404).json({ error: "Document not found" });
+    }
+
+    const signer = generation.signers.find(s => s.email === email);
+    if (!signer) {
+      return res.status(403).json({ error: "Signer not authorized for this document" });
+    }
+
+    if (signer.status === "SIGNED") {
+      return res.status(400).json({ error: "Document already signed by this user" });
+    }
+
+    // Update signer status
+    await prisma.signer.update({
+      where: { id: signer.id },
+      data: {
+        status: "SIGNED",
+        signedAt: new Date(),
+        signatureId: signatureData // Optional: digital signature representation
+      }
+    });
+
+    // Check if all signed
+    const allSigners = await prisma.signer.findMany({ where: { generationId: id } });
+    const allSigned = allSigners.every(s => s.status === "SIGNED");
+
+    if (allSigned) {
+      await prisma.generation.update({
+        where: { id },
+        data: {
+          status: "SIGNED",
+          signatureStatus: "COMPLETED",
+          signedAt: new Date()
+        }
+      });
+    }
+
+    res.json({ success: true, message: "Document signed successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Signing failed", details: (error as Error).message });
   }
 });
 

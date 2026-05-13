@@ -47,7 +47,7 @@ export default function Wizard({ model }: { model: Model }) {
   );
   const [loading, setLoading] = useState(false);
   const [signers, setSigners] = useState<{ name: string; email: string }[]>([]);
-  const [result, setResult] = useState<{ html?: string; generationId?: string; error?: string } | null>(null);
+  const [result, setResult] = useState<{ html?: string; generationId?: string; signatureUrl?: string; error?: string } | null>(null);
 
   const handleChange = (key: string, value: any) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
@@ -83,7 +83,11 @@ export default function Wizard({ model }: { model: Model }) {
       if (!response.ok) throw new Error("Generation failed");
 
       const data = await response.json();
-      setResult({ html: data.html, generationId: data.generationId });
+      setResult({ 
+        html: data.html, 
+        generationId: data.generationId,
+        signatureUrl: data.signatureUrl
+      });
     } catch (error) {
       setResult({ error: t.wizard.error });
     } finally {
@@ -326,12 +330,44 @@ export default function Wizard({ model }: { model: Model }) {
             dangerouslySetInnerHTML={{ __html: result.html }} 
           />
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "400px", color: "var(--muted)" }}>
-            <span style={{ fontSize: "4rem", marginBottom: "1.5rem" }}>📄</span>
-            <p style={{ textAlign: "center", maxWidth: "250px" }}>
-              {loading ? t.wizard.loading : "Preencha o formulário para visualizar o documento em tempo real."}
-            </p>
-          </div>
+          <>
+            {result?.signatureUrl && (
+              <div style={{ 
+                marginTop: '1.5rem', 
+                padding: '1.5rem', 
+                background: 'rgba(59, 130, 246, 0.1)', 
+                borderRadius: '16px', 
+                border: '1px solid rgba(59, 130, 246, 0.2)',
+                textAlign: 'left'
+              }}>
+                <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', fontWeight: 600, color: '#3b82f6' }}>🔗 Link de Assinatura Nativa</p>
+                <p style={{ margin: '0 0 1rem 0', fontSize: '0.8rem', opacity: 0.8 }}>Envie este link para os signatários colherem a assinatura digital no ODIN:</p>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <input 
+                    readOnly 
+                    value={result.signatureUrl} 
+                    style={{ flex: 1, padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--card-border)', fontSize: '0.8rem', background: 'var(--background)', color: 'var(--foreground)' }} 
+                  />
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(result.signatureUrl);
+                      alert("Link copiado!");
+                    }}
+                    style={{ padding: '0.5rem 1rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', fontSize: '0.8rem', cursor: 'pointer' }}
+                  >
+                    Copiar
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div style={{ display: "flex", gap: "1rem", marginTop: "2rem", justifyContent: "center", flexDirection: "column", alignItems: "center", minHeight: "400px", color: "var(--muted)" }}>
+              <span style={{ fontSize: "4rem", marginBottom: "1.5rem" }}>📄</span>
+              <p style={{ textAlign: "center", maxWidth: "250px" }}>
+                {loading ? t.wizard.loading : "Preencha o formulário para visualizar o documento em tempo real."}
+              </p>
+            </div>
+          </>
         )}
         
         {result?.error && <p style={{ color: "#ef4444", marginTop: "1rem" }}>{result.error}</p>}
