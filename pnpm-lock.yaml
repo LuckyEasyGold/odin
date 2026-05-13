@@ -107,6 +107,9 @@ importers:
       '@types/react':
         specifier: ^18.3.0
         version: 18.3.28
+      prisma:
+        specifier: 5.22.0
+        version: 5.22.0
       typescript:
         specifier: ^5.4.0
         version: 5.9.3

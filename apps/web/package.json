@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "cd ../.. && prisma generate --schema=./packages/storage/prisma/schema.prisma",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -21,6 +22,7 @@
     "@types/bcryptjs": "^3.0.0",
     "@types/node": "^22.0.0",
     "@types/react": "^18.3.0",
+    "prisma": "5.22.0",
     "typescript": "^5.4.0"
   }
 }
