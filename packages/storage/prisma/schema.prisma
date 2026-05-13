@@ -111,6 +111,9 @@ model Generation {
   externalSignatureId String?
   signatureStatus     String?   // PENDING_SIGNATURE, SIGNED, COMPLETED, DECLINED
   signers             Signer[]
+  status              String    @default("COMPLETED")
+  signedAt            DateTime?
+  ipAddress           String?
   createdAt   DateTime @default(now())
   model       Model    @relation(fields: [modelId], references: [id])
   user        User?    @relation(fields: [userId], references: [id])

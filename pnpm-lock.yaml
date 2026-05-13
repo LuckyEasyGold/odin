@@ -41,10 +41,16 @@ importers:
       axios:
         specifier: ^1.7.0
         version: 1.16.0
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
       express:
         specifier: ^4.18.0
         version: 4.22.1
     devDependencies:
+      '@types/dotenv':
+        specifier: ^8.2.3
+        version: 8.2.3
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
@@ -172,6 +178,10 @@ importers:
       axios:
         specifier: ^1.7.0
         version: 1.16.0
+    devDependencies:
+      typescript:
+        specifier: ^5.4.0
+        version: 5.9.3
 
   packages/storage:
     dependencies:
@@ -970,6 +980,10 @@ packages:
 
   '@types/cookie@0.6.0':
     resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
+
+  '@types/dotenv@8.2.3':
+    resolution: {integrity: sha512-g2FXjlDX/cYuc5CiQvyU/6kkbP1JtmGzh0obW50zD7OKeILVL0NSpPWLXVfqoAGQjom2/SLLx9zHq0KXvD6mbw==}
+    deprecated: This is a stub types definition. dotenv provides its own type definitions, so you do not need this installed.
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
@@ -2732,6 +2746,10 @@ snapshots:
       '@types/node': 25.6.2
 
   '@types/cookie@0.6.0': {}
+
+  '@types/dotenv@8.2.3':
+    dependencies:
+      dotenv: 17.4.2
 
   '@types/estree@1.0.8': {}
 

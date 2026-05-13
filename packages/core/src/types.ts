@@ -48,6 +48,12 @@ export interface Model {
   downloads: number;
   forks: number;
   license: "MIT" | "Apache-2.0" | "GPL-3.0" | "CC-BY-SA";
+  price: number;
+  isVerified: boolean;
+  complianceScore: number;
+  curatorNote?: string;
+  country: string;
+  isPublic: boolean;
   createdBy: string;
   createdAt: string;
   updatedAt: string;
@@ -73,7 +79,9 @@ export interface Generation {
   outputHtml?: string;
   outputPdfUrl?: string;
   outputJson?: Record<string, unknown>;
-  checksum?: string;
+  documentHash?: string;
+  externalSignatureId?: string;
+  signatureStatus?: string;
   createdAt: string;
 }
 

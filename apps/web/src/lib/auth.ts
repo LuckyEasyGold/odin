@@ -41,6 +41,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               id: user.id,
               name: user.fullName,
               image: user.avatarUrl,
+              isSpecialist: user.isSpecialist,
+              specialty: user.specialty,
             };
           }
         }
@@ -52,12 +54,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.isSpecialist = (user as any).isSpecialist;
+        token.specialty = (user as any).specialty;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         (session.user as any).id = token.id;
+        (session.user as any).isSpecialist = token.isSpecialist;
+        (session.user as any).specialty = token.specialty;
       }
       return session;
     },

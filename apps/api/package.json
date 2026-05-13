@@ -16,9 +16,11 @@
     "@odin/storage": "file:..\\..\\packages\\storage",
     "@prisma/client": "^5.22.0",
     "axios": "^1.7.0",
+    "dotenv": "^17.4.2",
     "express": "^4.18.0"
   },
   "devDependencies": {
+    "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.6",
     "@types/node": "^25.6.2",
     "prisma": "^5.22.0",

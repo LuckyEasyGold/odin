@@ -28,7 +28,7 @@ export class DocumensoProvider implements ISignatureProvider {
 
     formData.append("payload", JSON.stringify(payload));
     
-    const fileBlob = new Blob([options.file], { type: "application/pdf" });
+    const fileBlob = new Blob([new Uint8Array(options.file)], { type: "application/pdf" });
     formData.append("file", fileBlob, "document.pdf");
 
     const response = await fetch(`${this.baseUrl}/documents`, {

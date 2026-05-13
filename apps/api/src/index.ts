@@ -121,7 +121,7 @@ app.get("/api/v1/models", async (_req: Request, res: Response) => {
 
 app.get("/api/v1/models/:id", async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     let model = await modelRepo.findById(id);
     if (!model) {
       model = await modelRepo.findBySlug(id);
@@ -144,7 +144,7 @@ app.post("/api/v1/models", async (req: Request, res: Response) => {
 });
 
 app.post("/api/v1/generate", async (req: Request, res: Response) => {
-  const { modelId, inputs, format = "html", userId: bodyUserId } = req.body;
+  const { modelId, inputs, format = "html", userId: bodyUserId, signers } = req.body;
   const user = (req as any).user; // From API Key
   const activeUserId = user?.id || bodyUserId;
 
@@ -168,7 +168,6 @@ app.post("/api/v1/generate", async (req: Request, res: Response) => {
       }
 
       // ATOMIC TRANSACTION: Pay author, Pay platform, Deduct from user
-      const platformShare = price * 0.2;
       const authorShare = price * 0.8;
 
       await prisma.$transaction([
@@ -269,7 +268,7 @@ app.post("/api/v1/generate", async (req: Request, res: Response) => {
 
 app.get("/api/v1/generations/:id/download", async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const generation = await genRepo.findById(id);
     if (!generation) return res.status(404).json({ error: "Generation not found" });
 
@@ -289,7 +288,7 @@ app.get("/api/v1/generations/:id/download", async (req: Request, res: Response) 
 
 app.post("/api/v1/models/:id/ratings", async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { userId, rating, comment } = req.body;
 
     if (!userId) return res.status(400).json({ error: "User ID is required" });
@@ -312,7 +311,7 @@ app.post("/api/v1/models/:id/ratings", async (req: Request, res: Response) => {
 
 app.get("/api/v1/models/:id/ratings", async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const ratings = await ratingRepo.findByModelId(id);
     res.json(ratings);
   } catch (error) {
@@ -322,7 +321,7 @@ app.get("/api/v1/models/:id/ratings", async (req: Request, res: Response) => {
 
 app.post("/api/v1/models/:id/fork", async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { slug } = req.body;
     const forked = await modelRepo.fork(id, slug || `${id}-fork`);
     res.status(201).json(forked);
@@ -368,14 +367,14 @@ app.get("/api/v1/mcp/tools", (_req: Request, res: Response) => {
 });
 
 app.post("/api/v1/generations/:id/sign", async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const ipAddress = req.ip || req.headers["x-forwarded-for"] || "unknown";
 
   try {
     const generation = await genRepo.findById(id);
     if (!generation) return res.status(404).json({ error: "Document not found" });
 
-    if (generation.status === "SIGNED") {
+    if ((generation as any).status === "SIGNED") {
       return res.status(400).json({ error: "Document already signed" });
     }
 
@@ -384,8 +383,8 @@ app.post("/api/v1/generations/:id/sign", async (req: Request, res: Response) => 
       data: {
         status: "SIGNED",
         signedAt: new Date(),
-        ipAddress: Array.isArray(ipAddress) ? ipAddress[0] : ipAddress,
-      }
+        ipAddress: Array.isArray(ipAddress) ? ipAddress[0] : (ipAddress as string),
+      } as any
     });
 
     // Notify Webhooks
@@ -393,7 +392,7 @@ app.post("/api/v1/generations/:id/sign", async (req: Request, res: Response) => 
       dispatchWebhook(updated.userId, "document.signed", {
         generationId: updated.id,
         modelId: updated.modelId,
-        signedAt: updated.signedAt,
+        signedAt: (updated as any).signedAt,
         hash: updated.documentHash
       });
     }
@@ -401,7 +400,7 @@ app.post("/api/v1/generations/:id/sign", async (req: Request, res: Response) => 
     res.json({ 
       message: "Document signed successfully", 
       id: updated.id,
-      signedAt: updated.signedAt,
+      signedAt: (updated as any).signedAt,
       hash: updated.documentHash
     });
   } catch (error) {
@@ -417,5 +416,5 @@ app.listen(PORT, () => {
   console.log(`ODIN API running on port ${PORT}`);
 });
 
-export { app, server };
+export { app };
 export default app;
