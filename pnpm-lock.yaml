@@ -11,6 +11,9 @@ importers:
       '@prisma/client':
         specifier: 5.22.0
         version: 5.22.0(prisma@5.22.0)
+      express:
+        specifier: ^4.18.0
+        version: 4.22.1
     devDependencies:
       '@biomejs/biome':
         specifier: ^1.8.0
