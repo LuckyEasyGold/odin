@@ -35,9 +35,9 @@ export interface Model {
   id: string;
   slug: string;
   name: string;
-  description?: string;
+  description?: string | null;
   category: string;
-  subcategory?: string;
+  subcategory?: string | null;
   version: string;
   template: string;
   schema: Record<string, unknown>;
@@ -90,7 +90,7 @@ export interface Rating {
   modelId: string;
   userId: string;
   rating: number;
-  comment?: string;
+  comment?: string | null;
   isTechnical: boolean;
   isApproval: boolean;
   weight: any;
