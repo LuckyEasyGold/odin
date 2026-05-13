@@ -1,0 +1,25 @@
+{
+  "name": "@odin/mcp-server",
+  "version": "1.0.0",
+  "description": "MCP Server for ODIN infrastructure",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "odin-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.1",
+    "@odin/sdk": "workspace:*",
+    "dotenv": "^17.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.4.0",
+    "ts-node": "^10.9.2"
+  }
+}
