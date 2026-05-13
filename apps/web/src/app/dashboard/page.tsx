@@ -54,11 +54,11 @@ export default async function DashboardPage() {
         
         {/* Specialist Card */}
         <div style={{ 
-          backgroundColor: session.user.isSpecialist ? "rgba(16, 185, 129, 0.1)" : "var(--card-bg)", 
+          backgroundColor: (session.user as any).isSpecialist ? "rgba(16, 185, 129, 0.1)" : "var(--card-bg)", 
           padding: "1.5rem", 
           borderRadius: "20px", 
           boxShadow: "0 1px 3px var(--shadow)", 
-          border: `1px solid ${session.user.isSpecialist ? "#10b981" : "var(--card-border)"}`,
+          border: `1px solid ${(session.user as any).isSpecialist ? "#10b981" : "var(--card-border)"}`,
           display: "flex",
           flexDirection: "column",
           justifyContent: "center"
