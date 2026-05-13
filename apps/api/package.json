@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "pnpm --filter @odin/core build && pnpm --filter @odin/engine build && pnpm --filter @odin/storage build && tsc",
     "dev": "tsx watch src/index.ts",
     "test": "vitest",
     "start": "node dist/index.js"
@@ -13,7 +13,7 @@
   "dependencies": {
     "@odin/core": "file:../../packages/core",
     "@odin/engine": "file:../../packages/engine",
-    "@odin/storage": "file:..\\..\\packages\\storage",
+    "@odin/storage": "file:../../packages/storage",
     "@prisma/client": "^5.22.0",
     "axios": "^1.7.0",
     "dotenv": "^17.4.2",
