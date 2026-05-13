@@ -24,6 +24,8 @@ export default async function ModelDetailPage({ params }: { params: Promise<{ sl
   const t = getTranslation("pt") as any;
   const session = await auth();
   const model = await getModel(slug);
+  const compliance = model?.compliance as { status?: string } | null;
+
 
 
   if (!model) {
@@ -51,7 +53,7 @@ export default async function ModelDetailPage({ params }: { params: Promise<{ sl
           </Link>
           <h1 style={{ marginTop: "1rem", color: "var(--foreground)", display: "flex", alignItems: "center", gap: "1rem" }}>
             {model.name}
-            {model.compliance?.status === "verified" && (
+            {compliance?.status === "verified" && (
               <span style={{ 
                 fontSize: "0.8rem", 
                 backgroundColor: "rgba(8, 145, 178, 0.1)", 
@@ -68,7 +70,7 @@ export default async function ModelDetailPage({ params }: { params: Promise<{ sl
             )}
           </h1>
           <p style={{ color: "var(--muted)" }}>{model.description}</p>
-          {model.compliance?.status === "verified" && (
+          {compliance?.status === "verified" && (
             <p style={{ fontSize: "0.85rem", color: "#0891b2", marginTop: "0.5rem" }}>
               💡 Este modelo foi revisado tecnicamente e atende aos padrões de compliance do ODIN.
             </p>
@@ -77,7 +79,7 @@ export default async function ModelDetailPage({ params }: { params: Promise<{ sl
 
         <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
           {/* Specialist Verification Button */}
-          {session?.user?.isSpecialist && model.compliance?.status !== "verified" && (
+          {session?.user?.isSpecialist && compliance?.status !== "verified" && (
             <form action={async () => {
               "use server";
               await verifyModel(model.id);
