@@ -36,9 +36,9 @@ export default function RatingSection({ modelId }: { modelId: string }) {
     fetchRatings();
   }, [modelId]);
 
-  const fetchRatings = async () => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
     try {
-      const res = await fetch(`http://localhost:3001/api/v1/models/${modelId}/ratings`);
+      const res = await fetch(`${apiUrl}/api/v1/models/${modelId}/ratings`);
       if (res.ok) {
         const data = await res.json();
         setRatings(data);
@@ -56,7 +56,8 @@ export default function RatingSection({ modelId }: { modelId: string }) {
       if (isSpecialist) {
         await submitTechnicalReview(modelId, userRating, comment, isApproval);
       } else {
-        await fetch(`http://localhost:3001/api/v1/models/${modelId}/ratings`, {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+        await fetch(`${apiUrl}/api/v1/models/${modelId}/ratings`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ 

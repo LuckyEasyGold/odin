@@ -7,7 +7,8 @@ import { auth } from "@/lib/auth";
 
 async function getModel(slug: string) {
   try {
-    const res = await fetch(`http://localhost:3001/api/v1/models/${slug}`, { cache: "no-store" });
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    const res = await fetch(`${apiUrl}/api/v1/models/${slug}`, { cache: "no-store" });
     if (!res.ok) return null;
     return res.json();
   } catch (error) {
@@ -17,7 +18,7 @@ async function getModel(slug: string) {
 
 export default async function ModelDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const t = getTranslation("pt");
+  const t = getTranslation("pt") as any;
   const session = await auth();
   const model = await getModel(slug);
 

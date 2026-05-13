@@ -92,7 +92,8 @@ export default function Wizard({ model }: { model: Model }) {
 
   const handleDownload = async () => {
     if (!result?.generationId) return;
-    window.open(`http://localhost:3001/api/v1/generations/${result.generationId}/download`, "_blank");
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    window.open(`${apiUrl}/api/v1/generations/${result.generationId}/download`, "_blank");
   };
 
   return (
