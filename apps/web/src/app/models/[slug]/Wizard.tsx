@@ -274,7 +274,7 @@ export default function Wizard({ model }: { model: Model }) {
                 marginTop: "2rem"
               }}
             >
-              {loading ? "Processando..." : (Number(model.price) > 0 ? `🚀 Gerar por R$ ${Number(model.price).toFixed(2)}` : "🚀 Gerar Documento")}
+              {loading ? "Processando..." : (Number((model as any).price) > 0 ? `🚀 Gerar por R$ ${Number((model as any).price).toFixed(2)}` : "🚀 Gerar Documento")}
             </button>
         </form>
       </div>
