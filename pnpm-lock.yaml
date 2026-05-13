@@ -52,7 +52,7 @@ importers:
         specifier: file:../../packages/engine
         version: link:../../packages/engine
       '@odin/storage':
-        specifier: file:..\..\packages\storage
+        specifier: file:../../packages/storage
         version: link:../../packages/storage
       '@prisma/client':
         specifier: ^5.22.0
