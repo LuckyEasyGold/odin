@@ -1,18 +1,18 @@
 {
   "version": 2,
   "functions": {
-    "apps/api/src/index.ts": {
+    "api/v1.ts": {
       "maxDuration": 15
     }
   },
   "rewrites": [
     {
       "source": "/api/v1/:path*",
-      "destination": "/apps/api/src/index.ts"
+      "destination": "/api/v1"
     },
     {
       "source": "/webhooks/:path*",
-      "destination": "/apps/api/src/index.ts"
+      "destination": "/api/v1"
     }
   ]
 }
