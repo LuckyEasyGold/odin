@@ -119,7 +119,7 @@ export default async function ModelDetailPage({ params }: { params: Promise<{ sl
         </div>
       </header>
 
-      <Wizard model={model} />
+      <Wizard model={model as any} />
 
       <RatingSection modelId={model.id} />
     </main>
