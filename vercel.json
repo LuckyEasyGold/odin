@@ -1,18 +1,12 @@
 {
   "version": 2,
-  "functions": {
-    "apps/api/src/index.ts": {
-      "runtime": "nodejs20.x",
-      "maxDuration": 10
-    }
-  },
   "rewrites": [
     {
-      "source": "/api/v1/(.*)",
+      "source": "/api/v1/:path*",
       "destination": "/apps/api/src/index.ts"
     },
     {
-      "source": "/webhooks/(.*)",
+      "source": "/webhooks/:path*",
       "destination": "/apps/api/src/index.ts"
     }
   ]
