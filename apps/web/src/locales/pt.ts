@@ -46,7 +46,9 @@ export const pt = {
       legal: "Jurídico",
       commercial: "Comercial",
       construction: "Obras"
-    }
+    },
+    empty: "Modelo não encontrado",
+    back: "Voltar para Modelos"
   },
   wizard: {
     title: "Configurar Documento",

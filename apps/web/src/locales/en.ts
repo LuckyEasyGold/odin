@@ -46,7 +46,9 @@ export const en = {
       legal: "Legal",
       commercial: "Commercial",
       construction: "Construction"
-    }
+    },
+    empty: "Model not found",
+    back: "Back to Models"
   },
   wizard: {
     title: "Configure Document",
