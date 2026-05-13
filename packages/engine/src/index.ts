@@ -18,17 +18,30 @@ export async function renderDocument(
     return JSON.stringify({ html, data });
   }
 
-  const browser = await puppeteer.launch({
-    headless: true,
-  });
+  let browser;
+  
+  if (process.env.VERCEL) {
+    const chromium = require("@sparticuz/chromium");
+    const puppeteerCore = require("puppeteer-core");
+    browser = await puppeteerCore.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+    });
+  } else {
+    browser = await puppeteer.launch({
+      headless: true,
+    });
+  }
 
   try {
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "networkidle0" });
     const pdf = await page.pdf({ format: "A4", printBackground: true });
-    return pdf;
+    return pdf as Buffer;
   } finally {
-    await browser.close();
+    if (browser) await browser.close();
   }
 }
 

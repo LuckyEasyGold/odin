@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@odin/storage", "@odin/core"],
+  transpilePackages: ["@odin/storage", "@odin/core", "@odin/engine"],
 };
 
 
