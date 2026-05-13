@@ -1,5 +1,10 @@
 {
   "version": 2,
+  "functions": {
+    "apps/api/src/index.ts": {
+      "maxDuration": 15
+    }
+  },
   "rewrites": [
     {
       "source": "/api/v1/:path*",

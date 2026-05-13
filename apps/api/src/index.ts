@@ -119,6 +119,46 @@ app.get("/api/v1/models", async (_req: Request, res: Response) => {
   }
 });
 
+// Mover as rotas mais específicas para CIMA da rota genérica :id
+app.get("/api/v1/models/:id/ratings", async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const ratings = await ratingRepo.findByModelId(id);
+    res.json(ratings);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch ratings" });
+  }
+});
+
+app.post("/api/v1/models/:id/ratings", async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const { userId, rating, comment } = req.body;
+    if (!userId) return res.status(400).json({ error: "User ID is required" });
+    const newRating = await ratingRepo.create({
+      modelId: id,
+      userId,
+      rating,
+      comment
+    });
+    await modelRepo.recalculateRating(id);
+    res.status(201).json(newRating);
+  } catch (error) {
+    res.status(400).json({ error: "Failed to submit rating" });
+  }
+});
+
+app.post("/api/v1/models/:id/fork", async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const { slug } = req.body;
+    const forked = await modelRepo.fork(id, slug || `${id}-fork`);
+    res.status(201).json(forked);
+  } catch (error) {
+    res.status(400).json({ error: "Fork failed" });
+  }
+});
+
 app.get("/api/v1/models/:id", async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
@@ -286,49 +326,8 @@ app.get("/api/v1/generations/:id/download", async (req: Request, res: Response) 
   }
 });
 
-app.post("/api/v1/models/:id/ratings", async (req: Request, res: Response) => {
-  try {
-    const id = req.params.id as string;
-    const { userId, rating, comment } = req.body;
 
-    if (!userId) return res.status(400).json({ error: "User ID is required" });
 
-    const newRating = await ratingRepo.create({
-      modelId: id,
-      userId,
-      rating,
-      comment
-    });
-
-    // Sync average rating in Model
-    await modelRepo.recalculateRating(id);
-
-    res.status(201).json(newRating);
-  } catch (error) {
-    res.status(400).json({ error: "Failed to submit rating" });
-  }
-});
-
-app.get("/api/v1/models/:id/ratings", async (req: Request, res: Response) => {
-  try {
-    const id = req.params.id as string;
-    const ratings = await ratingRepo.findByModelId(id);
-    res.json(ratings);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch ratings" });
-  }
-});
-
-app.post("/api/v1/models/:id/fork", async (req: Request, res: Response) => {
-  try {
-    const id = req.params.id as string;
-    const { slug } = req.body;
-    const forked = await modelRepo.fork(id, slug || `${id}-fork`);
-    res.status(201).json(forked);
-  } catch (error) {
-    res.status(400).json({ error: "Fork failed" });
-  }
-});
 
 app.get("/api/v1/mcp/tools", (_req: Request, res: Response) => {
   res.json({
