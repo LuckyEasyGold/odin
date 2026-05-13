@@ -23,12 +23,9 @@ export default async function ModelDetailPage({ params }: { params: Promise<{ sl
   const { slug } = await params;
   const t = getTranslation("pt") as any;
   const session = await auth();
-  const model = await getModel(slug);
-  const compliance = model?.compliance as { status?: string } | null;
-
-
-
-  if (!model) {
+  const rawModel = await getModel(slug);
+  
+  if (!rawModel) {
     return (
       <main style={{ padding: "2rem", textAlign: "center", backgroundColor: "var(--background)", color: "var(--foreground)", minHeight: "100vh" }}>
         <h1>{t.models.empty}</h1>
@@ -36,6 +33,10 @@ export default async function ModelDetailPage({ params }: { params: Promise<{ sl
       </main>
     );
   }
+
+  // Serialize to plain object to handle Decimal fields from Prisma
+  const model = JSON.parse(JSON.stringify(rawModel));
+  const compliance = model.compliance as { status?: string } | null;
 
   return (
     <main style={{ 

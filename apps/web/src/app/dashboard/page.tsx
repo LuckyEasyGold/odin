@@ -9,7 +9,7 @@ export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  const [totalGenerations, rawModels, recentGenerations] = await Promise.all([
+  const [totalGenerations, rawModels, rawRecentGenerations] = await Promise.all([
     prisma.generation.count({ where: { userId: session.user.id } }),
     prisma.model.findMany({
       where: { createdBy: session.user.id },
@@ -24,15 +24,8 @@ export default async function DashboardPage() {
     })
   ]);
 
-  const myModels = rawModels.map((m: any) => ({
-    ...m,
-    price: Number(m.price),
-    rating: Number(m.rating),
-    createdAt: m.createdAt.toISOString(),
-    updatedAt: m.updatedAt.toISOString(),
-  }));
-
-  const balance = 0;
+  const myModels = JSON.parse(JSON.stringify(rawModels));
+  const recentGenerations = JSON.parse(JSON.stringify(rawRecentGenerations));
 
   return (
     <div style={{ padding: "1rem" }}>

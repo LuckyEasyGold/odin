@@ -24,11 +24,14 @@ export default async function ModelsPage({
   if (category) where.categoryId = category;
   if (author) where.creator = { name: { contains: author, mode: "insensitive" } };
 
-  const models = await prisma.model.findMany({
+  const rawModels = await prisma.model.findMany({
     where,
     include: { category: true, creator: true },
     orderBy: { createdAt: "desc" }
   });
+
+  const models = JSON.parse(JSON.stringify(rawModels));
+
 
   const categories = await prisma.category.findMany({
     where: { parentId: null },
