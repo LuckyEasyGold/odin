@@ -23,7 +23,7 @@ const ratingRepo = new RatingRepository(prisma);
 app.use(express.json());
 
 // Debug route to see what path Express receives
-app.use((req, res, next) => {
+app.use((req, _res, next) => {
   console.log(`[DEBUG] Request Path: ${req.path}, URL: ${req.url}`);
   next();
 });
