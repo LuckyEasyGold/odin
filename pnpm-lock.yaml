@@ -92,7 +92,7 @@ importers:
         specifier: ^2.11.2
         version: 2.11.2(@prisma/client@5.22.0(prisma@5.22.0))
       '@odin/storage':
-        specifier: workspace:*
+        specifier: file:../../packages/storage
         version: link:../../packages/storage
       '@prisma/client':
         specifier: 5.22.0
