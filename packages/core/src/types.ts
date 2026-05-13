@@ -89,10 +89,12 @@ export interface Rating {
   id: string;
   modelId: string;
   userId: string;
-  rating: 1 | 2 | 3 | 4 | 5;
+  rating: number;
   comment?: string;
-  weight: number;
-  createdAt: string;
+  isTechnical: boolean;
+  isApproval: boolean;
+  weight: any;
+  createdAt: string | Date;
 }
 
 export interface ApiKey {
@@ -100,9 +102,9 @@ export interface ApiKey {
   userId: string;
   name: string;
   keyHash: string;
-  lastUsedAt?: string;
+  lastUsedAt?: string | Date | null;
   rateLimitPerHour: number;
-  createdAt: string;
+  createdAt: string | Date;
   isActive: boolean;
 }
 
