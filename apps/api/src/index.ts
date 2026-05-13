@@ -1,5 +1,5 @@
 import express from "express";
-import type { Request, Response } from "express";
+import type { Request, Response, Express } from "express";
 import { PrismaClient } from "@prisma/client";
 import { renderDocument, DocumensoProvider } from "@odin/engine";
 import * as dotenv from "dotenv";
@@ -11,7 +11,7 @@ import { ModelRepository, GenerationRepository, RatingRepository } from "@odin/s
 import { dispatchWebhook } from "./lib/webhooks";
 import { handleDocumensoWebhook } from "./webhooks/documenso";
 
-const app = express();
+const app: Express = express();
 const PORT = process.env.API_PORT || 3001;
 const prisma = new PrismaClient();
 
