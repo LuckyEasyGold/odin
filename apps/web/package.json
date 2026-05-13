@@ -5,7 +5,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "cd ../.. && prisma generate --schema=./packages/storage/prisma/schema.prisma",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
