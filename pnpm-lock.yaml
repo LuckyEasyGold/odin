@@ -91,6 +91,12 @@ importers:
       '@auth/prisma-adapter':
         specifier: ^2.11.2
         version: 2.11.2(@prisma/client@5.22.0(prisma@5.22.0))
+      '@odin/storage':
+        specifier: workspace:*
+        version: link:../../packages/storage
+      '@prisma/client':
+        specifier: 5.22.0
+        version: 5.22.0(prisma@5.22.0)
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
