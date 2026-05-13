@@ -67,7 +67,8 @@ export default function Wizard({ model }: { model: Model }) {
     setResult(null);
 
     try {
-      const response = await fetch("http://localhost:3001/api/v1/generate", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+      const response = await fetch(`${apiUrl}/api/v1/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -92,7 +93,7 @@ export default function Wizard({ model }: { model: Model }) {
 
   const handleDownload = async () => {
     if (!result?.generationId) return;
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
     window.open(`${apiUrl}/api/v1/generations/${result.generationId}/download`, "_blank");
   };
 

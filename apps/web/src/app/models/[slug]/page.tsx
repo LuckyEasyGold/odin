@@ -4,14 +4,17 @@ import Wizard from "./Wizard";
 import RatingSection from "./RatingSection";
 import { forkModel, verifyModel } from "@/app/actions/models";
 import { auth } from "@/lib/auth";
+import { PrismaClient } from "@prisma/client";
+import { ModelRepository } from "@odin/storage";
+
+const prisma = new PrismaClient();
+const modelRepo = new ModelRepository(prisma);
 
 async function getModel(slug: string) {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-    const res = await fetch(`${apiUrl}/api/v1/models/${slug}`, { cache: "no-store" });
-    if (!res.ok) return null;
-    return res.json();
+    return await modelRepo.findBySlug(slug);
   } catch (error) {
+    console.error("Error fetching model:", error);
     return null;
   }
 }
@@ -21,6 +24,7 @@ export default async function ModelDetailPage({ params }: { params: Promise<{ sl
   const t = getTranslation("pt") as any;
   const session = await auth();
   const model = await getModel(slug);
+
 
   if (!model) {
     return (
