@@ -3,11 +3,11 @@
   "rewrites": [
     {
       "source": "/api/v1/:path*",
-      "destination": "/apps/api/src/index.ts"
+      "destination": "/api/v1"
     },
     {
       "source": "/webhooks/:path*",
-      "destination": "/apps/api/src/index.ts"
+      "destination": "/api/v1"
     }
   ]
 }
