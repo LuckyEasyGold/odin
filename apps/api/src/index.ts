@@ -22,6 +22,12 @@ const ratingRepo = new RatingRepository(prisma);
 
 app.use(express.json());
 
+// Debug route to see what path Express receives
+app.use((req, res, next) => {
+  console.log(`[DEBUG] Request Path: ${req.path}, URL: ${req.url}`);
+  next();
+});
+
 // Auth Middleware for API Keys
 async function authenticateApiKey(req: Request, res: Response, next: Function) {
   const apiKey = req.headers["x-api-key"] as string;
@@ -74,11 +80,12 @@ app.get("/", (_req: Request, res: Response) => {
   });
 });
 
-app.get("/api/v1/me", async (req: Request, res: Response) => {
+const apiRouter = express.Router();
+
+apiRouter.get("/me", async (req: Request, res: Response) => {
   const user = (req as any).user;
   if (!user) return res.status(401).json({ error: "Unauthorized" });
 
-  // Refresh user data from DB to get latest balance
   const dbUser = await prisma.user.findUnique({
     where: { id: user.id }
   });
@@ -96,7 +103,7 @@ app.get("/api/v1/me", async (req: Request, res: Response) => {
   });
 });
 
-app.get("/api/v1", (_req: Request, res: Response) => {
+apiRouter.get("/", (_req: Request, res: Response) => {
   res.json({
     version: "v1",
     endpoints: [
@@ -109,7 +116,7 @@ app.get("/api/v1", (_req: Request, res: Response) => {
   });
 });
 
-app.get("/api/v1/models", async (_req: Request, res: Response) => {
+apiRouter.get("/models", async (_req: Request, res: Response) => {
   try {
     const models = await modelRepo.findAll();
     res.json(models);
@@ -119,8 +126,7 @@ app.get("/api/v1/models", async (_req: Request, res: Response) => {
   }
 });
 
-// Mover as rotas mais específicas para CIMA da rota genérica :id
-app.get("/api/v1/models/:id/ratings", async (req: Request, res: Response) => {
+apiRouter.get("/models/:id/ratings", async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     const ratings = await ratingRepo.findByModelId(id);
@@ -130,7 +136,7 @@ app.get("/api/v1/models/:id/ratings", async (req: Request, res: Response) => {
   }
 });
 
-app.post("/api/v1/models/:id/ratings", async (req: Request, res: Response) => {
+apiRouter.post("/models/:id/ratings", async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     const { userId, rating, comment } = req.body;
@@ -148,7 +154,7 @@ app.post("/api/v1/models/:id/ratings", async (req: Request, res: Response) => {
   }
 });
 
-app.post("/api/v1/models/:id/fork", async (req: Request, res: Response) => {
+apiRouter.post("/models/:id/fork", async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     const { slug } = req.body;
@@ -159,7 +165,7 @@ app.post("/api/v1/models/:id/fork", async (req: Request, res: Response) => {
   }
 });
 
-app.get("/api/v1/models/:id", async (req: Request, res: Response) => {
+apiRouter.get("/models/:id", async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     let model = await modelRepo.findById(id);
@@ -174,7 +180,7 @@ app.get("/api/v1/models/:id", async (req: Request, res: Response) => {
   }
 });
 
-app.post("/api/v1/models", async (req: Request, res: Response) => {
+apiRouter.post("/models", async (req: Request, res: Response) => {
   try {
     const model = await modelRepo.create(req.body);
     res.status(201).json(model);
@@ -183,7 +189,7 @@ app.post("/api/v1/models", async (req: Request, res: Response) => {
   }
 });
 
-app.post("/api/v1/generate", async (req: Request, res: Response) => {
+apiRouter.post("/generate", async (req: Request, res: Response) => {
   const { modelId, inputs, format = "html", userId: bodyUserId, signers } = req.body;
   const user = (req as any).user; // From API Key
   const activeUserId = user?.id || bodyUserId;
@@ -306,7 +312,7 @@ app.post("/api/v1/generate", async (req: Request, res: Response) => {
   }
 });
 
-app.get("/api/v1/generations/:id/download", async (req: Request, res: Response) => {
+apiRouter.get("/generations/:id/download", async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     const generation = await genRepo.findById(id);
@@ -326,10 +332,7 @@ app.get("/api/v1/generations/:id/download", async (req: Request, res: Response) 
   }
 });
 
-
-
-
-app.get("/api/v1/mcp/tools", (_req: Request, res: Response) => {
+apiRouter.get("/mcp/tools", (_req: Request, res: Response) => {
   res.json({
     tools: [
       { 
@@ -365,7 +368,7 @@ app.get("/api/v1/mcp/tools", (_req: Request, res: Response) => {
   });
 });
 
-app.post("/api/v1/generations/:id/sign", async (req: Request, res: Response) => {
+apiRouter.post("/generations/:id/sign", async (req: Request, res: Response) => {
   const id = req.params.id as string;
   const ipAddress = req.ip || req.headers["x-forwarded-for"] || "unknown";
 
@@ -408,7 +411,11 @@ app.post("/api/v1/generations/:id/sign", async (req: Request, res: Response) => 
   }
 });
 
-// Signature Webhooks
+// Mount the router at both /api/v1 and root / for resilience
+app.use("/api/v1", apiRouter);
+app.use("/", apiRouter);
+
+// Specific routes for root-level or legacy support
 app.post("/webhooks/documenso", handleDocumensoWebhook);
 
 app.listen(PORT, () => {
