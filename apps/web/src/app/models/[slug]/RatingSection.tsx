@@ -36,6 +36,7 @@ export default function RatingSection({ modelId }: { modelId: string }) {
     fetchRatings();
   }, [modelId]);
 
+  const fetchRatings = async () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
     try {
       const res = await fetch(`${apiUrl}/api/v1/models/${modelId}/ratings`);
