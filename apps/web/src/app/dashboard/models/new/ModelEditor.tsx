@@ -25,7 +25,8 @@ export default function ModelEditor({ categories, existingModels }: { categories
         name: `${model.name} (Cópia)`,
         description: model.description || "",
         category: model.categoryId || "",
-        template: model.template
+        template: model.template,
+        guidance: model.guidance || ""
       });
       setSelectedModelId(id);
     }
