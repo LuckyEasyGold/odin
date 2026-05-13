@@ -167,9 +167,32 @@ export default function DocsPage() {
             <p style={{ fontSize: "0.9rem", color: "var(--muted)" }}>Ferramenta de linha de comando para automação em servidores.</p>
             <code style={{ fontSize: "0.8rem", display: "block", marginTop: "1rem" }}>npx odin generate</code>
           </div>
-          <div style={{ padding: "1.5rem", border: "1px solid var(--card-border)", borderRadius: "16px" }}>
-            <h4 style={{ marginBottom: "0.5rem" }}>MCP Protocol</h4>
-            <p style={{ fontSize: "0.9rem", color: "var(--muted)" }}>Conecte o ODIN ao Claude Desktop ou Cursor para gerar documentos via IA.</p>
+          <div id="mcp" style={{ padding: "2rem", border: "2px solid var(--primary)", borderRadius: "24px", backgroundColor: "rgba(37, 99, 235, 0.02)", gridColumn: "1 / -1" }}>
+            <h3 style={{ marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>🤖 Protocolo MCP (Agentes de IA)</h3>
+            <p style={{ marginBottom: "1.5rem" }}>
+              O ODIN suporta nativamente o <strong>Model Context Protocol</strong>. Isso permite que agentes de IA (como Claude, Cursor ou ChatGPT) 
+              "entendam" e operem a plataforma ODIN diretamente, como se fossem ferramentas integradas ao cérebro da IA.
+            </p>
+            
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+              <div>
+                <h4 style={{ marginBottom: "0.75rem" }}>Como Configurar (Cursor/Claude)</h4>
+                <ol style={{ paddingLeft: "1.25rem", fontSize: "0.9rem", color: "var(--muted)" }}>
+                  <li>Abra as configurações de MCP no seu editor/agente.</li>
+                  <li>Adicione um novo servidor do tipo <strong>command</strong>.</li>
+                  <li>Use o comando: <code style={{ backgroundColor: "var(--card-bg)", padding: "0.2rem 0.4rem" }}>npx @odin/mcp-server</code></li>
+                  <li>Configure a variável de ambiente <code style={{ backgroundColor: "var(--card-bg)", padding: "0.2rem 0.4rem" }}>ODIN_API_KEY</code> com sua chave.</li>
+                </ol>
+              </div>
+              <div>
+                <h4 style={{ marginBottom: "0.75rem" }}>Exemplos de Prompts</h4>
+                <ul style={{ paddingLeft: "1.25rem", fontSize: "0.9rem", color: "var(--muted)", fontStyle: "italic" }}>
+                  <li>"Liste os modelos de contrato disponíveis no ODIN."</li>
+                  <li>"Verifique meu saldo atual na carteira do ODIN."</li>
+                  <li>"Gere um contrato de prestação de serviços usando o modelo 'contrato-ti-v1' para o cliente 'Tech Solutions' com valor de R$ 5.000."</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </section>

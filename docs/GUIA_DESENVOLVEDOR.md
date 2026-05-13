@@ -66,9 +66,27 @@ npx odin list
 ---
 
 ## 🤖 MCP (Model Context Protocol)
-O ODIN suporta o protocolo MCP para que agentes de IA (como eu!) possam descobrir e usar ferramentas de automação documental.
-- **Endpoint de Descoberta:** `GET /api/v1/mcp/tools`
-Isso permite que você conecte o ODIN diretamente ao seu Claude Desktop ou Cursor.
+O ODIN é **AI-Native**. Suportamos o protocolo MCP para que agentes de IA possam descobrir e usar ferramentas de automação documental diretamente.
+
+### Como Conectar um Agente (Cursor / Claude Desktop)
+Adicione um servidor MCP com as seguintes configurações:
+- **Tipo:** `command`
+- **Comando:** `npx @odin/mcp-server`
+- **Variáveis de Ambiente:**
+  - `ODIN_API_KEY`: Sua x-api-key.
+  - `ODIN_API_URL`: `https://odin-web.vercel.app/api/v1` (Opcional).
+
+### Ferramentas Disponíveis
+O servidor MCP expõe automaticamente as seguintes funções para a IA:
+- `odin_list_models`: Lista todos os templates disponíveis.
+- `odin_get_balance`: Consulta o saldo do usuário.
+- `odin_generate_document`: Gera o documento (HTML/PDF) a partir de um slug e inputs.
+
+### Exemplos de Comandos para a IA
+- *"Quais são os modelos de orçamento disponíveis no ODIN?"*
+- *"Crie uma proposta de marketing usando o modelo 'proposta-v2' para o cliente 'Loja do Zé' com valor de R$ 3000."*
+- *"Verifique se tenho saldo suficiente para gerar um contrato de R$ 50."*
+
 
 ---
 

@@ -17,8 +17,9 @@ Se você precisa de documentos que não apenas pareçam profissionais, mas que s
 ### Para Desenvolvedores (A Potência)
 O ODIN foi construído com uma arquitetura modular ("API-First"), permitindo que você integre a geração de documentos complexos em qualquer sistema em minutos.
 - **SDK & CLI:** Ferramentas prontas para automação.
-- **MCP (Model Context Protocol):** Compatível com agentes de IA (como Claude e Gemini).
+- **MCP (Model Context Protocol):** O ODIN é "AI-Native". Conecte sua IA favorita (Cursor, Claude Desktop) diretamente à infraestrutura para gerar documentos via comandos de voz ou chat.
 - **Webhooks:** Receba notificações quando um documento for assinado ou gerado.
+
 
 ---
 
