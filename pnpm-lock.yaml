@@ -17,6 +17,9 @@ importers:
       husky:
         specifier: ^9.0.0
         version: 9.1.7
+      prisma:
+        specifier: 5.22.0
+        version: 5.22.0
       typescript:
         specifier: ^5.4.0
         version: 5.9.3
