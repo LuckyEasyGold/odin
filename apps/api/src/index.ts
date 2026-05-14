@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import { renderDocument, DocumensoProvider } from "@odin/engine";
 import * as dotenv from "dotenv";
 import path from "path";
+import { emailService } from "./services/email";
 import crypto from "crypto";
 
 dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
@@ -247,11 +248,20 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
       ]);
     }
 
-    const renderResult = await renderDocument(model.template, inputs || {}, { format });
+    const webUrl = process.env.NEXT_PUBLIC_WEB_URL || `${req.protocol}://${req.get('host')}`;
+    const tempGenId = crypto.randomUUID(); // Predetermine ID for URL
+    const verificationUrl = `${webUrl}/verify/${tempGenId}`;
+
+    const renderResult = await renderDocument(model.template, inputs || {}, { 
+      format,
+      verificationUrl: format === "pdf" ? verificationUrl : undefined,
+      documentId: tempGenId
+    });
     const result = renderResult.content;
     const documentHash = renderResult.hash || crypto.createHash("sha256").update(result as string).digest("hex");
 
     const generation = await genRepo.create({
+      id: tempGenId,
       modelId: model.id,
       userId: activeUserId,
       inputs: inputs || {},
@@ -261,6 +271,20 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
       signatureStatus: signers?.length > 0 ? "PENDING" : undefined,
       signers: signers
     });
+
+    const signatureUrl = `${webUrl}/sign/${generation.id}`;
+
+    // Send emails to signers
+    if (signers && signers.length > 0) {
+      for (const signer of signers) {
+        await emailService.sendSignatureRequest(
+          signer.email,
+          signer.name,
+          model.name,
+          signatureUrl
+        );
+      }
+    }
 
     // If signers are provided and we have a PDF, initiate electronic signature
     if (signers?.length > 0 && (format === "pdf" || format === "html")) {

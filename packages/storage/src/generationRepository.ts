@@ -5,6 +5,7 @@ export class GenerationRepository {
   constructor(private prisma: PrismaClient) {}
 
   async create(data: {
+    id?: string;
     modelId: string;
     userId?: string;
     inputs: any;

@@ -239,6 +239,37 @@ export default function Wizard({ model }: { model: Model }) {
               ))}
             </div>
 
+            {result?.signatureUrl && (
+              <div style={{ 
+                marginTop: '1.5rem',
+                marginBottom: '1.5rem', 
+                padding: '1.25rem', 
+                background: 'rgba(59, 130, 246, 0.1)', 
+                borderRadius: '12px', 
+                border: '1px solid rgba(59, 130, 246, 0.2)',
+                textAlign: 'left'
+              }}>
+                <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.85rem', fontWeight: 600, color: '#3b82f6' }}>🔗 Link de Assinatura Nativa</p>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <input 
+                    readOnly 
+                    value={result.signatureUrl} 
+                    style={{ flex: 1, padding: '0.4rem', borderRadius: '6px', border: '1px solid var(--card-border)', fontSize: '0.75rem', background: 'var(--background)', color: 'var(--foreground)' }} 
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(result.signatureUrl || "");
+                      alert("Link copiado!");
+                    }}
+                    style={{ padding: '0.4rem 0.8rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer' }}
+                  >
+                    Copiar
+                  </button>
+                </div>
+              </div>
+            )}
+
             <button
               type="button"
               onClick={addSigner}
@@ -258,7 +289,7 @@ export default function Wizard({ model }: { model: Model }) {
               + Adicionar Signatário
             </button>
             <p style={{ fontSize: "0.75rem", color: "var(--muted)", marginTop: "0.5rem" }}>
-              Os signatários receberão um e-mail para assinar o documento digitalmente via Documenso.
+              Os signatários receberão um e-mail para assinar o documento digitalmente via ODIN SIGN.
             </p>
           </div>
 
@@ -330,44 +361,12 @@ export default function Wizard({ model }: { model: Model }) {
             dangerouslySetInnerHTML={{ __html: result.html }} 
           />
         ) : (
-          <>
-            {result?.signatureUrl && (
-              <div style={{ 
-                marginTop: '1.5rem', 
-                padding: '1.5rem', 
-                background: 'rgba(59, 130, 246, 0.1)', 
-                borderRadius: '16px', 
-                border: '1px solid rgba(59, 130, 246, 0.2)',
-                textAlign: 'left'
-              }}>
-                <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', fontWeight: 600, color: '#3b82f6' }}>🔗 Link de Assinatura Nativa</p>
-                <p style={{ margin: '0 0 1rem 0', fontSize: '0.8rem', opacity: 0.8 }}>Envie este link para os signatários colherem a assinatura digital no ODIN:</p>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <input 
-                    readOnly 
-                    value={result.signatureUrl} 
-                    style={{ flex: 1, padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--card-border)', fontSize: '0.8rem', background: 'var(--background)', color: 'var(--foreground)' }} 
-                  />
-                  <button 
-                    onClick={() => {
-                      navigator.clipboard.writeText(result.signatureUrl);
-                      alert("Link copiado!");
-                    }}
-                    style={{ padding: '0.5rem 1rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', fontSize: '0.8rem', cursor: 'pointer' }}
-                  >
-                    Copiar
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <div style={{ display: "flex", gap: "1rem", marginTop: "2rem", justifyContent: "center", flexDirection: "column", alignItems: "center", minHeight: "400px", color: "var(--muted)" }}>
-              <span style={{ fontSize: "4rem", marginBottom: "1.5rem" }}>📄</span>
-              <p style={{ textAlign: "center", maxWidth: "250px" }}>
-                {loading ? t.wizard.loading : "Preencha o formulário para visualizar o documento em tempo real."}
-              </p>
-            </div>
-          </>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "400px", color: "var(--muted)" }}>
+            <span style={{ fontSize: "4rem", marginBottom: "1.5rem" }}>📄</span>
+            <p style={{ textAlign: "center", maxWidth: "250px" }}>
+              {loading ? t.wizard.loading : "Preencha o formulário para visualizar o documento em tempo real."}
+            </p>
+          </div>
         )}
         
         {result?.error && <p style={{ color: "#ef4444", marginTop: "1rem" }}>{result.error}</p>}
