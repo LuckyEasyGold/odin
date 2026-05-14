@@ -73,8 +73,11 @@ export async function renderDocument(
       format: "A4", 
       printBackground: true,
       displayHeaderFooter: !!options?.verificationUrl,
+      headerTemplate: '<div></div>',
       footerTemplate: footerTemplate || '<div></div>',
-      margin: options?.verificationUrl ? { top: '40px', bottom: '80px', left: '40px', right: '40px' } : undefined
+      margin: options?.verificationUrl 
+        ? { top: '40px', bottom: '80px', left: '40px', right: '40px' } 
+        : { top: '20px', bottom: '20px', left: '20px', right: '20px' }
     });
     
     // Calculate SHA-256 hash (Document DNA)

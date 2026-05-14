@@ -332,8 +332,12 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
       message: signers?.length > 0 ? "Document generated and ready for signature" : "Document generated" 
     });
   } catch (error) {
-    console.error("Generation error:", error);
-    res.status(500).json({ error: "Generation failed", details: (error as Error).message });
+    console.error("FULL GENERATION ERROR:", error);
+    res.status(500).json({ 
+      error: "Generation failed", 
+      message: (error as Error).message,
+      stack: process.env.NODE_ENV === 'development' ? (error as Error).stack : undefined
+    });
   }
 });
 
