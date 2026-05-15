@@ -23,15 +23,4 @@
     }
   ]
 }
-    },
-    {
-      "outputDirectory": "apps/api/dist",
-      "rootDirectory": "apps/api",
-      "buildCommand": "cd ../../ && pnpm --filter @odin/core build && pnpm --filter @odin/storage build && pnpm --filter @odin/engine build && cd apps/api && pnpm build",
-      "installCommand": "cd ../../ && pnpm install --frozen-lockfile && pnpm --filter @odin/core build && pnpm --filter @odin/storage build && pnpm --filter @odin/engine build && cd apps/api && pnpm install --frozen-lockfile",
-      "developmentConfiguration": {
-        "framework": "node"
-      }
-    }
-  ]
-}
+
