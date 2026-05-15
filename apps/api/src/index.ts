@@ -176,9 +176,11 @@ apiRouter.get("/models", async (_req: Request, res: Response) => {
 apiRouter.get("/models/:id/ratings", async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
+    console.log("Fetching ratings for model:", id);
     const ratings = await ratingRepo.findByModelId(id);
     res.json(ratings);
   } catch (error) {
+    console.error("Fetch ratings error:", error);
     res.status(500).json({ error: "Failed to fetch ratings", details: (error as Error).message });
   }
 });
@@ -238,12 +240,16 @@ apiRouter.post("/models", async (req: Request, res: Response) => {
 
 apiRouter.post("/generate", async (req: Request, res: Response) => {
   const { modelId, inputs, format = "html", userId: bodyUserId, signers } = req.body;
+  console.log("Generate request:", { modelId, format, hasSigners: !!signers?.length });
   const user = (req as any).user;
   const activeUserId = user?.id || bodyUserId;
 
   try {
     let model = await modelRepo.findById(modelId);
-    if (!model) model = await modelRepo.findBySlug(modelId);
+    if (!model) {
+      console.log("Model not found by ID, trying slug:", modelId);
+      model = await modelRepo.findBySlug(modelId);
+    }
 
     if (!model) return res.status(404).json({ error: "Model not found" });
 
