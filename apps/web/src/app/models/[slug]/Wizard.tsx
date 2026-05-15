@@ -184,7 +184,7 @@ export default function Wizard({ model }: { model: Model }) {
             ))}
           </div>
 
-          <div style={{ marginTop: "2rem", borderTop: "1px solid var(--card-border)", paddingTop: "1.5rem" }}>
+          <div style={{ marginTop: "2.5rem", borderTop: "1px solid var(--card-border)", paddingTop: "1.5rem" }}>
             <h4 style={{ marginBottom: "1rem", fontSize: "0.95rem", color: "var(--foreground)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <span>✍️</span> Assinatura Eletrônica (Opcional)
             </h4>

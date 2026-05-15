@@ -46,13 +46,13 @@ importers:
   apps/api:
     dependencies:
       '@odin/core':
-        specifier: file:../../packages/core
+        specifier: workspace:*
         version: link:../../packages/core
       '@odin/engine':
-        specifier: file:../../packages/engine
+        specifier: workspace:*
         version: link:../../packages/engine
       '@odin/storage':
-        specifier: file:../../packages/storage
+        specifier: workspace:*
         version: link:../../packages/storage
       '@prisma/client':
         specifier: ^5.22.0
@@ -92,7 +92,7 @@ importers:
         specifier: ^2.11.2
         version: 2.11.2(@prisma/client@5.22.0(prisma@5.22.0))
       '@odin/storage':
-        specifier: file:../../packages/storage
+        specifier: workspace:*
         version: link:../../packages/storage
       '@prisma/client':
         specifier: 5.22.0
@@ -136,7 +136,7 @@ importers:
         version: link:../../packages/core
       '@odin/engine':
         specifier: file:../../packages/engine
-        version: link:../../packages/engine
+        version: file:packages/engine(typescript@5.9.3)
       bullmq:
         specifier: ^4.0.0
         version: 4.18.3
@@ -185,7 +185,7 @@ importers:
   packages/engine:
     dependencies:
       '@odin/core':
-        specifier: file:../core
+        specifier: workspace:*
         version: link:../core
       '@sparticuz/chromium':
         specifier: ^148.0.0
@@ -248,7 +248,7 @@ importers:
   packages/storage:
     dependencies:
       '@odin/core':
-        specifier: file:../core
+        specifier: workspace:*
         version: link:../core
       '@prisma/client':
         specifier: ^5.22.0
@@ -890,6 +890,9 @@ packages:
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
+
+  '@odin/engine@file:packages/engine':
+    resolution: {directory: packages/engine, type: directory}
 
   '@panva/hkdf@1.2.1':
     resolution: {integrity: sha512-6oclG6Y3PiDFcoyk8srjLfVKyMfVCKJ27JwNPViuXziFpmdz+MZnZN/aKY0JGXgYuO/VghU0jcOAZgWXZ1Dmrw==}
@@ -3051,6 +3054,23 @@ snapshots:
 
   '@next/swc-win32-x64-msvc@15.0.0':
     optional: true
+
+  '@odin/engine@file:packages/engine(typescript@5.9.3)':
+    dependencies:
+      '@odin/core': link:packages/core
+      '@sparticuz/chromium': 148.0.0
+      handlebars: 4.7.9
+      puppeteer: 22.15.0(typescript@5.9.3)
+      puppeteer-core: 24.43.1
+      qrcode: 1.5.4
+    transitivePeerDependencies:
+      - bare-abort-controller
+      - bare-buffer
+      - bufferutil
+      - react-native-b4a
+      - supports-color
+      - typescript
+      - utf-8-validate
 
   '@panva/hkdf@1.2.1': {}
 

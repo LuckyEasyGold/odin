@@ -1,10 +1,7 @@
-// @ts-ignore
-import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { getTranslation } from "@/locales";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export default async function Home() {
   const session = await auth();

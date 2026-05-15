@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",
-    "@odin/storage": "file:../../packages/storage",
+    "@odin/storage": "workspace:*",
     "@prisma/client": "5.22.0",
     "bcryptjs": "^3.0.3",
     "next": "15.0.0",

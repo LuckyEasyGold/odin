@@ -12,6 +12,48 @@ export interface ExtendedRenderOptions extends RenderOptions {
   verificationUrl?: string;
   documentId?: string;
   documentHash?: string;
+  signers?: Array<{ name: string; email: string; order?: number }>;
+}
+
+// Footer HTML com Selo de Autenticidade para injeção direta no conteúdo
+async function buildVerificationFooter(
+  verificationUrl: string,
+  documentHash?: string,
+  signers?: Array<{ name: string; email: string; order?: number }>
+): Promise<string> {
+  try {
+    const qrCode = await generateVerificationQRCode(verificationUrl);
+    const dateStr = new Date().toLocaleDateString("pt-BR");
+    
+    const signersInfo = signers && signers.length > 0
+      ? `<div style="font-size: 8px; margin-top: 4px; padding-top: 4px; border-top: 1px solid #e2e8f0;">
+          <span style="color: #0f172a; font-weight: 500;">Signatários:</span>
+          ${signers.map(s => `<span style="display: block; margin-left: 8px;">${s.order || ""}. ${s.name} (${s.email})</span>`).join("")}
+        </div>`
+      : "";
+
+    return `
+      <div style="font-family: sans-serif; font-size: 10px; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 24px 40px; color: #64748b; border-top: 2px solid #e2e8f0; margin-top: 40px; page-break-inside: avoid;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <img src="${qrCode}" style="width: 48px; height: 48px; display: block;" />
+          <div>
+            <div style="font-weight: bold; color: #0f172a; font-size: 11px;">Selo de Autenticidade ODIN</div>
+            <div style="font-size: 9px; margin-top: 2px;">Validar em: <a href="${verificationUrl}" style="color: #3b82f6; text-decoration: none;">${verificationUrl}</a></div>
+            <div style="font-size: 8px; opacity: 0.6; margin-top: 2px;">Hash DNA (SHA-256): ${documentHash || "calculando..."}</div>
+            ${signersInfo}
+          </div>
+        </div>
+        <div style="font-size: 9px; white-space: nowrap;">Gerado em: ${dateStr}</div>
+      </div>
+    `;
+  } catch (error) {
+    console.error("QR Code generation failed:", error);
+    return `
+      <div style="font-family: sans-serif; font-size: 10px; width: 100%; padding: 20px 40px; color: #64748b; border-top: 2px solid #e2e8f0; margin-top: 40px; text-align: center;">
+        Selo de Autenticidade ODIN | Validar em: ${verificationUrl}
+      </div>
+    `;
+  }
 }
 
 export async function renderDocument(
@@ -20,70 +62,91 @@ export async function renderDocument(
   options?: ExtendedRenderOptions
 ): Promise<{ content: Buffer | string; hash?: string }> {
   const compiled = Handlebars.compile(template);
-  const html = compiled(data);
+  let html = compiled(data);
 
+  // Build verification footer if URL is provided
+  let verificationFooter = "";
+  let documentHash = "";
+
+  if (options?.verificationUrl) {
+    documentHash = crypto.createHash("sha256").update(html).digest("hex");
+    verificationFooter = await buildVerificationFooter(options.verificationUrl, documentHash, options.signers);
+
+    // Inject footer into HTML content
+    if (html.includes("</body>")) {
+      html = html.replace("</body>", verificationFooter + "\n</body>");
+    } else {
+      html = html + "\n" + verificationFooter;
+    }
+  }
+
+  // HTML format: return inline with footer
   if (options?.format === "html") {
-    return { content: html };
+    return { content: html, hash: documentHash || undefined };
   }
 
+  // JSON format: return debug info
   if (options?.format === "json") {
-    return { content: JSON.stringify({ html, data }) };
+    return { content: JSON.stringify({ html, data }), hash: documentHash || undefined };
   }
 
+  // PDF format: render HTML (already contains footer) to PDF via Puppeteer
   let browser;
-  
-  if (process.env.VERCEL) {
-    const chromium = require("@sparticuz/chromium");
-    const puppeteerCore = require("puppeteer-core");
-    browser = await puppeteerCore.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
-    });
-  } else {
-    browser = await puppeteer.launch({
-      headless: true,
-    });
-  }
 
   try {
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
-    
-    let footerTemplate = '';
-    if (options?.verificationUrl) {
-      const qrCode = await generateVerificationQRCode(options.verificationUrl);
-      footerTemplate = `
-        <div style="font-family: sans-serif; font-size: 8px; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 40px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 10px;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="${qrCode}" style="width: 40px; height: 40px;" />
-            <div>
-              <div style="font-weight: bold; color: #0f172a;">Selo de Autenticidade ODIN</div>
-              <div>Validar em: ${options.verificationUrl}</div>
-              <div style="font-size: 6px; opacity: 0.6;">Hash DNA: ${options.documentHash || 'calculando...'}</div>
-            </div>
-          </div>
-          <div>Página <span class="pageNumber"></span> de <span class="totalPages"></span></div>
-        </div>
-      `;
+    if (process.env.VERCEL) {
+      const chromium = require("@sparticuz/chromium");
+      const puppeteerCore = require("puppeteer-core");
+      browser = await puppeteerCore.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
+      });
+    } else {
+      browser = await puppeteer.launch({
+        headless: true,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      });
     }
 
-    const pdf = await page.pdf({ 
-      format: "A4", 
+    const page = await browser.newPage();
+
+    // Inject print styles for better PDF rendering
+    const printStyles = `
+      <style>
+        @media print {
+          body { margin: 0; padding: 0; }
+          .verification-footer {
+            display: block !important;
+            position: relative;
+            bottom: auto;
+          }
+        }
+        @page {
+          margin: 20mm 20mm 30mm 20mm;
+        }
+      </style>
+    `;
+
+    await page.setContent(printStyles + html, { waitUntil: "networkidle0" });
+
+    const pdf = await page.pdf({
+      format: "A4",
       printBackground: true,
-      displayHeaderFooter: !!options?.verificationUrl,
-      headerTemplate: '<div></div>',
-      footerTemplate: footerTemplate || '<div></div>',
-      margin: options?.verificationUrl 
-        ? { top: '40px', bottom: '80px', left: '40px', right: '40px' } 
-        : { top: '20px', bottom: '20px', left: '20px', right: '20px' }
+      preferCSSPageSize: false,
+      margin: {
+        top: "20mm",
+        bottom: "30mm",
+        left: "20mm",
+        right: "20mm",
+      },
     });
-    
-    // Calculate SHA-256 hash (Document DNA)
-    const hash = crypto.createHash("sha256").update(pdf).digest("hex");
-    
-    return { content: pdf as Buffer, hash };
+
+    // Final hash from PDF binary
+    const pdfHash = crypto.createHash("sha256").update(pdf).digest("hex");
+
+    return { content: pdf as Buffer, hash: pdfHash };
   } finally {
     if (browser) await browser.close();
   }

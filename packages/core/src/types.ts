@@ -37,6 +37,7 @@ export interface Model {
   name: string;
   description?: string | null;
   category: string;
+  categoryId?: string;
   subcategory?: string | null;
   version: string;
   template: string;
@@ -58,6 +59,8 @@ export interface Model {
   createdAt: string;
   updatedAt: string;
   isActive: boolean;
+  guidance?: string;
+  variableHints?: Record<string, string>;
   features: {
     hasIntermediation: boolean;
     requiresLegalReview: boolean;
@@ -82,6 +85,9 @@ export interface Generation {
   documentHash?: string;
   externalSignatureId?: string;
   signatureStatus?: string;
+  signedAt?: string;
+  ipAddress?: string;
+  status?: string;
   createdAt: string;
 }
 

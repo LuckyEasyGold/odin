@@ -10,13 +10,21 @@ datasource db {
 model User {
   id        String   @id @default(uuid())
   username  String   @unique
+  email     String?  @unique
+  password  String?
   fullName  String?
   avatarUrl String?
+  isSpecialist Boolean @default(false)
+  specialty    String?
+  registrationId String?
+  balance   Decimal  @default(0)
   createdAt DateTime @default(now())
   models    Model[]
   ratings   Rating[]
   apiKey    ApiKey[]
+  webhooks  Webhook[]
   generations Generation[]
+  transactions Transaction[]
 
   @@map("users")
 }
@@ -26,7 +34,9 @@ model Model {
   slug        String   @unique
   name        String
   description String?
-  category    String
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  categoryName String?
   subcategory String?
   version     String
   template    String
@@ -40,6 +50,14 @@ model Model {
   license     String   @default("MIT")
   features    Json     @default("{}")
   compliance  Json     @default("{}")
+  guidance    String?
+  variableHints Json?
+  price       Decimal  @default(0)
+  isVerified  Boolean  @default(false)
+  complianceScore Int  @default(0)
+  curatorNote String?
+  country     String   @default("BR")
+  isPublic    Boolean  @default(true)
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [id])
   createdAt   DateTime @default(now())
@@ -51,12 +69,27 @@ model Model {
   @@map("models")
 }
 
+model Transaction {
+  id          String   @id @default(uuid())
+  userId      String
+  type        String
+  amount      Decimal
+  description String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("transactions")
+}
+
 model Rating {
   id        String   @id @default(uuid())
   modelId   String
   userId    String
   rating    Int      @default(3)
   comment   String?
+  isTechnical Boolean @default(false)
+  isApproval  Boolean @default(false)
   weight    Decimal  @default(1)
   createdAt DateTime @default(now())
   model     Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
@@ -74,12 +107,31 @@ model Generation {
   outputHtml  String?
   outputPdfUrl String?
   outputJson  Json?
-  checksum    String?
+  documentHash String?
+  externalSignatureId String?
+  signatureStatus     String?
+  signers             Signer[]
+  status              String    @default("COMPLETED")
+  signedAt            DateTime?
+  ipAddress           String?
   createdAt   DateTime @default(now())
   model       Model    @relation(fields: [modelId], references: [id])
   user        User?    @relation(fields: [userId], references: [id])
 
   @@map("generations")
+}
+
+model Category {
+  id          String     @id @default(uuid())
+  name        String     @unique
+  description String?
+  parentId    String?
+  parent      Category?  @relation("SubCategories", fields: [parentId], references: [id])
+  children    Category[] @relation("SubCategories")
+  models      Model[]
+  createdAt   DateTime   @default(now())
+
+  @@map("categories")
 }
 
 model ApiKey {
@@ -94,4 +146,30 @@ model ApiKey {
   user             User     @relation(fields: [userId], references: [id])
 
   @@map("api_keys")
+}
+model Webhook {
+  id         String   @id @default(uuid())
+  userId     String
+  url        String
+  events     String[]
+  secret     String
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@map("webhooks")
+}
+
+model Signer {
+  id           String     @id @default(uuid())
+  generationId String
+  email        String
+  name         String
+  status       String     @default("PENDING")
+  order        Int        @default(0)
+  signatureId  String?
+  signedAt     DateTime?
+  generation   Generation @relation(fields: [generationId], references: [id], onDelete: Cascade)
+
+  @@map("signers")
 }

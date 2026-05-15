@@ -4,20 +4,26 @@ import Wizard from "./Wizard";
 import RatingSection from "./RatingSection";
 import { forkModel, verifyModel } from "@/app/actions/models";
 import { auth } from "@/lib/auth";
-import { PrismaClient } from "@prisma/client";
-import { ModelRepository } from "@odin/storage";
-
-const prisma = new PrismaClient();
-const modelRepo = new ModelRepository(prisma);
+import { prisma } from "@/lib/prisma";
 
 async function getModel(slug: string) {
-  try {
-    return await modelRepo.findBySlug(slug);
-  } catch (error) {
-    console.error("Error fetching model:", error);
-    return null;
-  }
-}
+   try {
+     return await prisma.model.findUnique({
+       where: { slug },
+       include: {
+         category: true,
+         creator: { select: { fullName: true, username: true, isSpecialist: true, specialty: true } },
+         ratings: {
+           include: { user: { select: { fullName: true, username: true, isSpecialist: true, specialty: true } } },
+           orderBy: { createdAt: "desc" }
+         }
+       }
+     });
+   } catch (error) {
+     console.error("Error fetching model:", error);
+     return null;
+   }
+ }
 
 export default async function ModelDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

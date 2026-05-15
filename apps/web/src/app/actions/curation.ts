@@ -1,11 +1,8 @@
 "use server"
 
-// @ts-ignore
-import { PrismaClient } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export async function submitTechnicalReview(
   modelId: string, 

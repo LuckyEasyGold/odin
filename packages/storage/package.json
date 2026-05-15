@@ -22,7 +22,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@odin/core": "file:../core",
+    "@odin/core": "workspace:*",
     "@prisma/client": "^5.22.0",
     "dotenv": "^17.4.2"
   },

@@ -11,9 +11,9 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@odin/core": "file:../../packages/core",
-    "@odin/engine": "file:../../packages/engine",
-    "@odin/storage": "file:../../packages/storage",
+    "@odin/core": "workspace:*",
+    "@odin/engine": "workspace:*",
+    "@odin/storage": "workspace:*",
     "@prisma/client": "^5.22.0",
     "axios": "^1.7.0",
     "dotenv": "^17.4.2",

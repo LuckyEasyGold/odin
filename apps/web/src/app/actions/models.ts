@@ -1,13 +1,11 @@
 "use server"
 
 // @ts-ignore
-import { PrismaClient } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { analyzeModelCompliance } from "@/lib/legalLinter";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 async function handleCategory(categoryId: string, formData: FormData) {
   if (categoryId === "custom") {

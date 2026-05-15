@@ -34,7 +34,7 @@ async function authenticateApiKey(req: Request, res: Response, next: Function) {
   const apiKey = req.headers["x-api-key"] as string;
 
   if (!apiKey) {
-    return next(); // Continue, some routes might not need it or will fail later
+    return next();
   }
 
   try {
@@ -48,10 +48,8 @@ async function authenticateApiKey(req: Request, res: Response, next: Function) {
       return res.status(401).json({ error: "Invalid API Key" });
     }
 
-    // Attach user to request
     (req as any).user = keyData.user;
-    
-    // Update last used
+
     await prisma.apiKey.update({
       where: { id: keyData.id },
       data: { lastUsedAt: new Date() }
@@ -63,21 +61,69 @@ async function authenticateApiKey(req: Request, res: Response, next: Function) {
   }
 }
 
+// Trust proxy for Vercel
+app.set("trust proxy", true);
+
+// Rate limiting simple (memory store)
+const rateLimitWindow = 60000;
+const rateLimitMax = 100;
+const rateLimitMap = new Map<string, { count: number; reset: number }>();
+
+function checkRateLimit(ip: string | undefined): boolean {
+  const key = ip || "unknown";
+  const now = Date.now();
+  const record = rateLimitMap.get(key);
+  if (!record || now > record.reset) {
+    rateLimitMap.set(key, { count: 1, reset: now + rateLimitWindow });
+    return true;
+  }
+  if (record.count >= rateLimitMax) {
+    return false;
+  }
+  record.count++;
+  return true;
+}
+
+// Debug route to see what path Express receives
+app.use((req, _res, next) => {
+  console.log(`[DEBUG] Request Path: ${req.path}, URL: ${req.url}`);
+  next();
+});
+
+// Rate limiting + CORS — check rate limit FIRST
+app.use((req, res, next) => {
+  const ip = req.headers["x-forwarded-for"] as string || req.socket?.remoteAddress;
+  if (!checkRateLimit(ip)) {
+    return res.status(429).json({ error: "Too many requests, try again later" });
+  }
+  next();
+});
+
 // CORS simple
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
+
 app.use((_req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, x-api-key");
+  res.header("Access-Control-Allow-Origin", process.env.NODE_ENV === "production" ? FRONTEND_URL : "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, x-api-key, Authorization");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  next();
+});
+
+app.use((_req, res, next) => {
+  res.header("Access-Control-Allow-Origin", process.env.NODE_ENV === "production" ? FRONTEND_URL : "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, x-api-key, Authorization");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   next();
 });
 
 app.use(authenticateApiKey);
 
 app.get("/", (_req: Request, res: Response) => {
-  res.json({ 
-    name: "ODIN API", 
-    version: "1.0.0", 
+  res.json({
+    name: "ODIN API",
+    version: "1.0.0",
     status: "online",
-    message: "Bem-vindo à infraestrutura de documentos ODIN. Use /api/v1 para endpoints." 
+    message: "Bem-vindo à infraestrutura de documentos ODIN. Use /api/v1 para endpoints."
   });
 });
 
@@ -192,13 +238,13 @@ apiRouter.post("/models", async (req: Request, res: Response) => {
 
 apiRouter.post("/generate", async (req: Request, res: Response) => {
   const { modelId, inputs, format = "html", userId: bodyUserId, signers } = req.body;
-  const user = (req as any).user; // From API Key
+  const user = (req as any).user;
   const activeUserId = user?.id || bodyUserId;
 
   try {
     let model = await modelRepo.findById(modelId);
     if (!model) model = await modelRepo.findBySlug(modelId);
-    
+
     if (!model) return res.status(404).json({ error: "Model not found" });
 
     // Marketplace Logic
@@ -208,27 +254,22 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
         return res.status(401).json({ error: "Paid models require authentication" });
       }
 
-      // Check balance (if user from API key, we have it, otherwise fetch)
       const currentUser = user || await prisma.user.findUnique({ where: { id: activeUserId } });
       if (!currentUser || Number(currentUser.balance) < price) {
         return res.status(402).json({ error: "Insufficient balance", price });
       }
 
-      // ATOMIC TRANSACTION: Pay author, Pay platform, Deduct from user
       const authorShare = price * 0.8;
 
       await prisma.$transaction([
-        // Deduct from buyer
-        prisma.user.update({ 
-          where: { id: activeUserId }, 
-          data: { balance: { decrement: price } } 
+        prisma.user.update({
+          where: { id: activeUserId },
+          data: { balance: { decrement: price } }
         }),
-        // Add to author
-        prisma.user.update({ 
-          where: { id: model.createdBy }, 
-          data: { balance: { increment: authorShare } } 
+        prisma.user.update({
+          where: { id: model.createdBy },
+          data: { balance: { increment: authorShare } }
         }),
-        // Record transactions
         prisma.transaction.create({
           data: {
             userId: activeUserId,
@@ -249,13 +290,15 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
     }
 
     const webUrl = process.env.NEXT_PUBLIC_WEB_URL || `${req.protocol}://${req.get('host')}`;
-    const tempGenId = crypto.randomUUID(); // Predetermine ID for URL
-    const verificationUrl = `${webUrl}/verify/${tempGenId}`;
+    const apiUrl = process.env.API_URL || webUrl;
+    const tempGenId = crypto.randomUUID();
+    const verificationUrl = `${apiUrl}/api/v1/verify/${tempGenId}`;
 
-    const renderResult = await renderDocument(model.template, inputs || {}, { 
+    const renderResult = await renderDocument(model.template, inputs || {}, {
       format,
-      verificationUrl: format === "pdf" ? verificationUrl : undefined,
-      documentId: tempGenId
+      verificationUrl,
+      documentId: tempGenId,
+      signers
     });
     const result = renderResult.content;
     const documentHash = renderResult.hash || crypto.createHash("sha256").update(result as string).digest("hex");
@@ -270,11 +313,10 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
       status: signers?.length > 0 ? "PENDING_SIGNATURE" : "COMPLETED",
       signatureStatus: signers?.length > 0 ? "PENDING" : undefined,
       signers: signers
-    });
+    } as any);
 
     const signatureUrl = `${webUrl}/sign/${generation.id}`;
 
-    // Send emails to signers
     if (signers && signers.length > 0) {
       for (const signer of signers) {
         await emailService.sendSignatureRequest(
@@ -286,26 +328,24 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
       }
     }
 
-    // If signers are provided and we have a PDF, initiate electronic signature
     if (signers?.length > 0 && (format === "pdf" || format === "html")) {
       try {
         const apiKey = process.env.DOCUMENSO_API_KEY;
         if (apiKey) {
           const provider = new DocumensoProvider(apiKey);
-          // If we only have HTML, we need to render PDF first for Documenso
-          const pdfBuffer = format === "pdf" 
-            ? (result as Buffer) 
+          const pdfBuffer = format === "pdf"
+            ? (result as Buffer)
             : (await renderDocument(model.template, inputs || {}, { format: "pdf" })).content as Buffer;
 
           const signatureResponse = await provider.createDocument({
-            title: `${model.name} - ${generation.id}`,
+            title: `${model.name} - ${tempGenId}`,
             file: pdfBuffer,
             recipients: signers
           });
 
           await prisma.generation.update({
-            where: { id: generation.id },
-            data: { 
+            where: { id: tempGenId },
+            data: {
               externalSignatureId: signatureResponse.externalId,
               signatureStatus: "SENT"
             }
@@ -318,23 +358,21 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
 
     if (format === "pdf" && (!signers || signers.length === 0)) {
       res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", `attachment; filename=documento-${generation.id}.pdf`);
+      res.setHeader("Content-Disposition", `attachment; filename=documento-${tempGenId}.pdf`);
       return res.send(result);
     }
 
-    const webUrl = process.env.NEXT_PUBLIC_WEB_URL || `${req.protocol}://${req.get('host')}`;
-
-    res.json({ 
-      generationId: generation.id, 
+    res.json({
+      generationId: tempGenId,
       html: format === "html" ? result : undefined,
       externalSignatureId: (generation as any).externalSignatureId,
-      signatureUrl: `${webUrl}/sign/${generation.id}`,
-      message: signers?.length > 0 ? "Document generated and ready for signature" : "Document generated" 
+      signatureUrl: `${webUrl}/sign/${tempGenId}`,
+      message: signers?.length > 0 ? "Document generated and ready for signature" : "Document generated"
     });
   } catch (error) {
     console.error("FULL GENERATION ERROR:", error);
-    res.status(500).json({ 
-      error: "Generation failed", 
+    res.status(500).json({
+      error: "Generation failed",
       message: (error as Error).message,
       stack: process.env.NODE_ENV === 'development' ? (error as Error).stack : undefined
     });
@@ -342,56 +380,65 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
 });
 
 apiRouter.get("/generations/:id/download", async (req: Request, res: Response) => {
-  try {
-    const id = req.params.id as string;
-    const generation = await genRepo.findById(id);
-    if (!generation) return res.status(404).json({ error: "Generation not found" });
+   try {
+     const id = req.params.id as string;
+     const generation = await genRepo.findById(id);
+     if (!generation) return res.status(404).json({ error: "Generation not found" });
 
-    const model = await modelRepo.findById(generation.modelId);
-    if (!model) return res.status(404).json({ error: "Model not found" });
+     const model = await modelRepo.findById(generation.modelId);
+if (!model) return res.status(404).json({ error: "Model not found" });
 
-    // Re-render as PDF for download
-    const { content } = await renderDocument(model.template, generation.inputs as any, { format: "pdf" });
-    
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename=documento-${id}.pdf`);
-    res.send(content);
-  } catch (error) {
-    res.status(500).json({ error: "Download failed" });
-  }
-});
+      // Build verification URL for QR code in PDF
+      const webUrl = process.env.NEXT_PUBLIC_WEB_URL || `${req.protocol}://${req.get('host')}`;
+      const apiUrl = process.env.API_URL || webUrl;
+      const verificationUrl = `${apiUrl}/api/v1/verify/${id}`;
+
+      const { content } = await renderDocument(model.template, generation.inputs as any, {
+        format: "pdf",
+        verificationUrl,
+        documentId: id,
+        signers: generation.signers
+      });
+
+     res.setHeader("Content-Type", "application/pdf");
+     res.setHeader("Content-Disposition", `attachment; filename=documento-${id}.pdf`);
+     res.send(content);
+   } catch (error) {
+     res.status(500).json({ error: "Download failed" });
+   }
+ });
 
 apiRouter.get("/mcp/tools", (_req: Request, res: Response) => {
   res.json({
     tools: [
-      { 
-        name: "odin_list_models", 
-        description: "Lista todos os modelos de documentos disponíveis no ODIN", 
-        parameters: { type: "object", properties: {} } 
+      {
+        name: "odin_list_models",
+        description: "Lista todos os modelos de documentos disponíveis no ODIN",
+        parameters: { type: "object", properties: {} }
       },
-      { 
-        name: "odin_get_model", 
-        description: "Obtém detalhes completos de um modelo específico pelo slug ou ID", 
-        parameters: { 
-          type: "object", 
-          properties: { 
-            id: { type: "string", description: "Slug ou UUID do modelo" } 
+      {
+        name: "odin_get_model",
+        description: "Obtém detalhes completos de um modelo específico pelo slug ou ID",
+        parameters: {
+          type: "object",
+          properties: {
+            id: { type: "string", description: "Slug ou UUID do modelo" }
           },
           required: ["id"]
-        } 
+        }
       },
-      { 
-        name: "odin_generate_document", 
-        description: "Gera um novo documento a partir de um modelo e entradas de dados", 
-        parameters: { 
-          type: "object", 
-          properties: { 
+      {
+        name: "odin_generate_document",
+        description: "Gera um novo documento a partir de um modelo e entradas de dados",
+        parameters: {
+          type: "object",
+          properties: {
             modelId: { type: "string", description: "Slug ou ID do modelo" },
             inputs: { type: "object", description: "Dados para preenchimento das variáveis do modelo" },
             format: { type: "string", enum: ["html", "pdf"], default: "html" }
           },
           required: ["modelId", "inputs"]
-        } 
+        }
       },
     ]
   });
@@ -418,7 +465,6 @@ apiRouter.post("/generations/:id/sign", async (req: Request, res: Response) => {
       } as any
     });
 
-    // Notify Webhooks
     if (updated.userId) {
       dispatchWebhook(updated.userId, "document.signed", {
         generationId: updated.id,
@@ -428,8 +474,8 @@ apiRouter.post("/generations/:id/sign", async (req: Request, res: Response) => {
       });
     }
 
-    res.json({ 
-      message: "Document signed successfully", 
+    res.json({
+      message: "Document signed successfully",
       id: updated.id,
       signedAt: (updated as any).signedAt,
       hash: updated.documentHash
@@ -444,8 +490,10 @@ apiRouter.post("/generations/:id/sign", async (req: Request, res: Response) => {
 apiRouter.get("/verify/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const idStr = Array.isArray(id) ? id[0] : id;
+
     const generation = await prisma.generation.findUnique({
-      where: { id },
+      where: { id: idStr },
       include: { model: { select: { name: true, version: true } } }
     });
 
@@ -453,14 +501,16 @@ apiRouter.get("/verify/:id", async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Document not found" });
     }
 
+    const generationSigners = await prisma.signer.findMany({ where: { generationId: idStr } });
+
     res.json({
       valid: true,
       documentId: generation.id,
-      modelName: generation.model.name,
-      modelVersion: generation.model.version,
+      modelName: generation.model?.name,
+      modelVersion: generation.model?.version,
       hash: generation.documentHash,
       createdAt: generation.createdAt,
-      signers: await prisma.signer.findMany({ where: { generationId: generation.id } })
+      signers: generationSigners
     });
   } catch (error) {
     res.status(500).json({ error: "Verification failed", details: (error as Error).message });
@@ -468,10 +518,10 @@ apiRouter.get("/verify/:id", async (req: Request, res: Response) => {
 });
 
 // Native signing endpoint
-apiRouter.post("/generations/:id/sign", async (req: Request, res: Response) => {
+apiRouter.post("/generations/:id/sign-native", async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const { email, name, signatureData } = req.body;
+    const id = req.params.id as string;
+    const { email, signatureData } = req.body;
 
     const generation = await prisma.generation.findUnique({
       where: { id },
@@ -482,7 +532,7 @@ apiRouter.post("/generations/:id/sign", async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Document not found" });
     }
 
-    const signer = generation.signers.find(s => s.email === email);
+    const signer = generation.signers.find((s: any) => s.email === email);
     if (!signer) {
       return res.status(403).json({ error: "Signer not authorized for this document" });
     }
@@ -491,19 +541,17 @@ apiRouter.post("/generations/:id/sign", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Document already signed by this user" });
     }
 
-    // Update signer status
     await prisma.signer.update({
       where: { id: signer.id },
       data: {
         status: "SIGNED",
         signedAt: new Date(),
-        signatureId: signatureData // Optional: digital signature representation
+        signatureId: signatureData
       }
     });
 
-    // Check if all signed
     const allSigners = await prisma.signer.findMany({ where: { generationId: id } });
-    const allSigned = allSigners.every(s => s.status === "SIGNED");
+    const allSigned = allSigners.every((s: any) => s.status === "SIGNED");
 
     if (allSigned) {
       await prisma.generation.update({
@@ -518,8 +566,18 @@ apiRouter.post("/generations/:id/sign", async (req: Request, res: Response) => {
 
     res.json({ success: true, message: "Document signed successfully" });
   } catch (error) {
+    console.error("Signing error:", error);
     res.status(500).json({ error: "Signing failed", details: (error as Error).message });
   }
+});
+
+// Health check endpoint
+app.get("/health", (_req: Request, res: Response) => {
+  res.status(200).json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    version: "1.0.0"
+  });
 });
 
 // Mount the router at both /api/v1 and root / for resilience
@@ -529,9 +587,13 @@ app.use("/", apiRouter);
 // Specific routes for root-level or legacy support
 app.post("/webhooks/documenso", handleDocumensoWebhook);
 
-app.listen(PORT, () => {
-  console.log(`ODIN API running on port ${PORT}`);
-});
+// Only listen when run directly (for local dev)
+// Vercel handles the server binding in production
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`ODIN API running on port ${PORT}`);
+  });
+}
 
 export { app };
 export default app;
