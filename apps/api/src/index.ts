@@ -260,7 +260,6 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
       }
 
       const authorShare = price * 0.8;
-
       await prisma.$transaction([
         prisma.user.update({
           where: { id: activeUserId },
@@ -371,10 +370,11 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("FULL GENERATION ERROR:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     res.status(500).json({
       error: "Generation failed",
-      message: (error as Error).message,
-      stack: process.env.NODE_ENV === 'development' ? (error as Error).stack : undefined
+      message: errorMessage,
+      stack: process.env.NODE_ENV === 'development' ? (error as Error)?.stack : undefined
     });
   }
 });
