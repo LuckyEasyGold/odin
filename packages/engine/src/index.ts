@@ -95,8 +95,15 @@ export async function renderDocument(
 
   try {
     if (process.env.VERCEL) {
-      const chromium = require("@sparticuz/chromium");
-      const puppeteerCore = require("puppeteer-core");
+      // Dynamic require for Vercel serverless
+      let chromium, puppeteerCore;
+      try {
+        chromium = require("@sparticuz/chromium");
+        puppeteerCore = require("puppeteer-core");
+      } catch (e) {
+        console.error("Failed to load chromium modules:", e);
+        throw new Error("Chromium not available in this environment");
+      }
       browser = await puppeteerCore.launch({
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
