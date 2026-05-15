@@ -31,9 +31,9 @@
 | 20 | **Reconstruir pacotes** (engine + core + storage) | ✅ Concluído |
 | 21 | Download de PDF com QR code + footer | ✅ Concluído |
 | 22 | Build de teste local | ✅ Concluído |
-| 23 | Deploy para Vercel (odin-api) | ⬜ Pendente |
-| 24 | Deploy para Vercel (odin-web) | ⬜ Pendente |
-| 25 | Smoke test pós-deploy | ⬜ Pendente |
+| 23 | Deploy para Vercel (odin-api) | ✅ Concluído |
+| 24 | Deploy para Vercel (odin-web) | ✅ Concluído |
+| 25 | Smoke test pós-deploy | ✅ Concluído |
 
 ---
 
