@@ -9,10 +9,11 @@
   ],
   "routes": [
     {
-      "handle": "filesystem"
+      "src": "/api/(.*)",
+      "dest": "./src/index.ts"
     },
     {
-      "src": "/(.*)",
+      "src": "/health",
       "dest": "./src/index.ts"
     }
   ]

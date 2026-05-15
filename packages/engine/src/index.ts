@@ -154,6 +154,10 @@ export async function renderDocument(
     const pdfHash = crypto.createHash("sha256").update(pdf).digest("hex");
 
     return { content: pdf as Buffer, hash: pdfHash };
+  } catch (pdfError) {
+    console.error("PDF generation failed, returning HTML:", pdfError);
+    // Fallback: return HTML when PDF fails
+    return { content: html, hash: documentHash || undefined };
   } finally {
     if (browser) await browser.close();
   }
