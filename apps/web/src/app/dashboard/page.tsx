@@ -67,6 +67,23 @@ export default async function DashboardPage() {
               : "Torne-se um curador para emitir pareceres técnicos."
             }
           </div>
+          {!session.user.isSpecialist && (
+            <Link
+              href="/dashboard/curation"
+              style={{
+                marginTop: "1rem",
+                display: "inline-block",
+                padding: "0.8rem 1.1rem",
+                backgroundColor: "#0ea5e9",
+                color: "white",
+                borderRadius: "12px",
+                textDecoration: "none",
+                fontWeight: "700"
+              }}
+            >
+              Saiba como participar
+            </Link>
+          )}
         </div>
       </div>
 
