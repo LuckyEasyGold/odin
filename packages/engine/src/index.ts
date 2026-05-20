@@ -3,6 +3,10 @@ import puppeteer from "puppeteer";
 import type { DocumentTemplate, RenderOptions } from "@odin/core";
 import crypto from "crypto";
 import QRCode from "qrcode";
+import { registerOdinHelpers } from "./helpers";
+
+// Register typed helpers ({{moeda}}, {{data}}, {{soma}}, ...) once at module load.
+registerOdinHelpers();
 
 export async function generateVerificationQRCode(url: string): Promise<string> {
   return QRCode.toDataURL(url);
@@ -60,7 +64,7 @@ export async function renderDocument(
   template: string,
   data: Record<string, unknown>,
   options?: ExtendedRenderOptions
-): Promise<{ content: Buffer | string; hash?: string }> {
+): Promise<{ content: Buffer | string; hash?: string; degraded?: boolean }> {
   const compiled = Handlebars.compile(template);
   let html = compiled(data);
 
@@ -156,8 +160,8 @@ export async function renderDocument(
     return { content: pdf as Buffer, hash: pdfHash };
   } catch (pdfError) {
     console.error("PDF generation failed, returning HTML:", pdfError);
-    // Fallback: return HTML when PDF fails
-    return { content: html, hash: documentHash || undefined };
+    // Fallback: return HTML when PDF fails (e.g. Chromium unavailable in serverless)
+    return { content: html, hash: documentHash || undefined, degraded: true };
   } finally {
     if (browser) await browser.close();
   }
@@ -175,3 +179,4 @@ export async function renderFromTemplate(
 }
 
 export * from "./signatures";
+export { registerOdinHelpers } from "./helpers";

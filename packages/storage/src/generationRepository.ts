@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import type { Generation } from "@odin/core";
 
 export class GenerationRepository {
   constructor(private prisma: PrismaClient) {}
@@ -20,42 +19,44 @@ export class GenerationRepository {
     return this.prisma.generation.create({
       data: {
         ...rest,
-        signers: signers ? {
-          create: signers
-        } : undefined
+        signers: signers
+          ? {
+              create: signers,
+            }
+          : undefined,
       },
-      include: { 
+      include: {
         model: true,
-        signers: true
-      }
+        signers: true,
+      },
     });
   }
 
-  async findById(id: string): Promise<any | null> {
-    return this.prisma.generation.findUnique({ 
+  async findById(id: string) {
+    return this.prisma.generation.findUnique({
       where: { id },
-      include: { 
+      include: {
         model: true,
-        signers: true
-      }
+        signers: true,
+      },
     });
   }
 
-  async findByModelId(modelId: string): Promise<Generation[]> {
-    return this.prisma.generation.findMany({ 
+  async findByModelId(modelId: string) {
+    return this.prisma.generation.findMany({
       where: { modelId },
-      include: { signers: true }
-    }) as any;
+      include: { signers: true },
+    });
   }
 
-  async findByUserId(userId: string): Promise<Generation[]> {
-    return this.prisma.generation.findMany({ 
+  async findByUserId(userId: string) {
+    return this.prisma.generation.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
-      include: { 
+      include: {
         model: true,
-        signers: true
-      }
-    }) as any;
+        signers: true,
+      },
+    });
   }
 }

@@ -23,12 +23,6 @@ const ratingRepo = new RatingRepository(prisma);
 
 app.use(express.json());
 
-// Debug route to see what path Express receives
-app.use((req, _res, next) => {
-  console.log(`[DEBUG] Request Path: ${req.path}, URL: ${req.url}`);
-  next();
-});
-
 // Auth Middleware for API Keys
 async function authenticateApiKey(req: Request, res: Response, next: Function) {
   const apiKey = req.headers["x-api-key"] as string;
@@ -65,6 +59,9 @@ async function authenticateApiKey(req: Request, res: Response, next: Function) {
 app.set("trust proxy", true);
 
 // Rate limiting simple (memory store)
+// NOTE: In a serverless deployment (e.g. Vercel), each lambda invocation may use
+// its own memory, so this counter is best-effort. For strict limits, switch to
+// a shared store (Redis/Upstash). Kept in-memory for local/single-process use.
 const rateLimitWindow = 60000;
 const rateLimitMax = 100;
 const rateLimitMap = new Map<string, { count: number; reset: number }>();
@@ -84,34 +81,27 @@ function checkRateLimit(ip: string | undefined): boolean {
   return true;
 }
 
-// Debug route to see what path Express receives
-app.use((req, _res, next) => {
-  console.log(`[DEBUG] Request Path: ${req.path}, URL: ${req.url}`);
-  next();
-});
-
-// Rate limiting + CORS — check rate limit FIRST
+// Rate limiting — check first
 app.use((req, res, next) => {
-  const ip = req.headers["x-forwarded-for"] as string || req.socket?.remoteAddress;
+  const ip = (req.headers["x-forwarded-for"] as string) || req.socket?.remoteAddress;
   if (!checkRateLimit(ip)) {
     return res.status(429).json({ error: "Too many requests, try again later" });
   }
   next();
 });
 
-// CORS simple
+// CORS
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 
 app.use((_req, res, next) => {
-  res.header("Access-Control-Allow-Origin", process.env.NODE_ENV === "production" ? FRONTEND_URL : "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, x-api-key, Authorization");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  next();
-});
-
-app.use((_req, res, next) => {
-  res.header("Access-Control-Allow-Origin", process.env.NODE_ENV === "production" ? FRONTEND_URL : "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, x-api-key, Authorization");
+  res.header(
+    "Access-Control-Allow-Origin",
+    process.env.NODE_ENV === "production" ? FRONTEND_URL : "*"
+  );
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, x-api-key, Authorization"
+  );
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   next();
 });
@@ -317,8 +307,8 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
       documentHash,
       status: signers?.length > 0 ? "PENDING_SIGNATURE" : "COMPLETED",
       signatureStatus: signers?.length > 0 ? "PENDING" : undefined,
-      signers: signers
-    } as any);
+      signers: signers,
+    });
 
     const signatureUrl = `${webUrl}/sign/${generation.id}`;
 
@@ -352,8 +342,8 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
             where: { id: tempGenId },
             data: {
               externalSignatureId: signatureResponse.externalId,
-              signatureStatus: "SENT"
-            }
+              signatureStatus: "SENT",
+            },
           });
         }
       } catch (sigError) {
@@ -362,6 +352,12 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
     }
 
     if (format === "pdf" && (!signers || signers.length === 0)) {
+      if (renderResult.degraded) {
+        // PDF generation failed; engine returned HTML as fallback.
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        res.setHeader("X-ODIN-Degraded", "pdf-fallback-html");
+        return res.send(result);
+      }
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader("Content-Disposition", `attachment; filename=documento-${tempGenId}.pdf`);
       return res.send(result);
@@ -372,7 +368,8 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
       html: format === "html" ? result : undefined,
       externalSignatureId: (generation as any).externalSignatureId,
       signatureUrl: `${webUrl}/sign/${tempGenId}`,
-      message: signers?.length > 0 ? "Document generated and ready for signature" : "Document generated"
+      degraded: renderResult.degraded || undefined,
+      message: signers?.length > 0 ? "Document generated and ready for signature" : "Document generated",
     });
   } catch (error) {
     console.error("FULL GENERATION ERROR:", error);
@@ -386,33 +383,37 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
 });
 
 apiRouter.get("/generations/:id/download", async (req: Request, res: Response) => {
-   try {
-     const id = req.params.id as string;
-     const generation = await genRepo.findById(id);
-     if (!generation) return res.status(404).json({ error: "Generation not found" });
+  try {
+    const id = req.params.id as string;
+    const generation = await genRepo.findById(id);
+    if (!generation) return res.status(404).json({ error: "Generation not found" });
 
-     const model = await modelRepo.findById(generation.modelId);
-if (!model) return res.status(404).json({ error: "Model not found" });
+    const model = await modelRepo.findById(generation.modelId);
+    if (!model) return res.status(404).json({ error: "Model not found" });
 
-      // Build verification URL for QR code in PDF
-      const webUrl = process.env.NEXT_PUBLIC_WEB_URL || `${req.protocol}://${req.get('host')}`;
-      const apiUrl = process.env.API_URL || webUrl;
-      const verificationUrl = `${apiUrl}/api/v1/verify/${id}`;
+    // Build verification URL for QR code in PDF
+    const webUrl = process.env.NEXT_PUBLIC_WEB_URL || `${req.protocol}://${req.get("host")}`;
+    const apiUrl = process.env.API_URL || webUrl;
+    const verificationUrl = `${apiUrl}/api/v1/verify/${id}`;
 
-      const { content } = await renderDocument(model.template, generation.inputs as any, {
+    const { content } = await renderDocument(
+      model.template,
+      generation.inputs as Record<string, unknown>,
+      {
         format: "pdf",
         verificationUrl,
         documentId: id,
-        signers: generation.signers
-      });
+        signers: generation.signers,
+      }
+    );
 
-     res.setHeader("Content-Type", "application/pdf");
-     res.setHeader("Content-Disposition", `attachment; filename=documento-${id}.pdf`);
-     res.send(content);
-   } catch (error) {
-     res.status(500).json({ error: "Download failed" });
-   }
- });
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename=documento-${id}.pdf`);
+    res.send(content);
+  } catch (error) {
+    res.status(500).json({ error: "Download failed" });
+  }
+});
 
 apiRouter.get("/mcp/tools", (_req: Request, res: Response) => {
   res.json({
@@ -458,7 +459,7 @@ apiRouter.post("/generations/:id/sign", async (req: Request, res: Response) => {
     const generation = await genRepo.findById(id);
     if (!generation) return res.status(404).json({ error: "Document not found" });
 
-    if ((generation as any).status === "SIGNED") {
+    if (generation.status === "SIGNED") {
       return res.status(400).json({ error: "Document already signed" });
     }
 
@@ -468,23 +469,23 @@ apiRouter.post("/generations/:id/sign", async (req: Request, res: Response) => {
         status: "SIGNED",
         signedAt: new Date(),
         ipAddress: Array.isArray(ipAddress) ? ipAddress[0] : (ipAddress as string),
-      } as any
+      },
     });
 
     if (updated.userId) {
       dispatchWebhook(updated.userId, "document.signed", {
         generationId: updated.id,
         modelId: updated.modelId,
-        signedAt: (updated as any).signedAt,
-        hash: updated.documentHash
+        signedAt: updated.signedAt,
+        hash: updated.documentHash,
       });
     }
 
     res.json({
       message: "Document signed successfully",
       id: updated.id,
-      signedAt: (updated as any).signedAt,
-      hash: updated.documentHash
+      signedAt: updated.signedAt,
+      hash: updated.documentHash,
     });
   } catch (error) {
     console.error("Signing error:", error);
@@ -538,7 +539,7 @@ apiRouter.post("/generations/:id/sign-native", async (req: Request, res: Respons
       return res.status(404).json({ error: "Document not found" });
     }
 
-    const signer = generation.signers.find((s: any) => s.email === email);
+    const signer = generation.signers.find((s) => s.email === email);
     if (!signer) {
       return res.status(403).json({ error: "Signer not authorized for this document" });
     }
@@ -552,12 +553,12 @@ apiRouter.post("/generations/:id/sign-native", async (req: Request, res: Respons
       data: {
         status: "SIGNED",
         signedAt: new Date(),
-        signatureId: signatureData
-      }
+        signatureId: signatureData,
+      },
     });
 
     const allSigners = await prisma.signer.findMany({ where: { generationId: id } });
-    const allSigned = allSigners.every((s: any) => s.status === "SIGNED");
+    const allSigned = allSigners.every((s) => s.status === "SIGNED");
 
     if (allSigned) {
       await prisma.generation.update({
@@ -586,9 +587,8 @@ app.get("/health", (_req: Request, res: Response) => {
   });
 });
 
-// Mount the router at both /api/v1 and root / for resilience
+// Mount the API router at /api/v1
 app.use("/api/v1", apiRouter);
-app.use("/", apiRouter);
 
 // Specific routes for root-level or legacy support
 app.post("/webhooks/documenso", handleDocumensoWebhook);

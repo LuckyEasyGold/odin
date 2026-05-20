@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { createModel } from "@/app/actions/models";
 import Link from "next/link";
 import { analyzeModelCompliance } from "@/lib/legalLinter";
+import RichTemplateEditor from "@/components/RichTemplateEditor";
 
 export default function ModelEditor({ categories, existingModels }: { categories: any[], existingModels: any[] }) {
   const [selectedModelId, setSelectedModelId] = useState("");
@@ -42,7 +43,7 @@ export default function ModelEditor({ categories, existingModels }: { categories
         <div style={{ display: "flex", gap: "1rem" }}>
           <button 
             type="button"
-            onClick={() => alert("DICA: Use {{variavel}} no texto para criar campos dinâmicos!")}
+            onClick={() => alert("DICA: Use o botão '＋ Inserir Variável' para campos dinâmicos. Os tipos disponíveis são: Texto, Número, Moeda e Data.")}
             style={{ padding: "0.5rem 1rem", border: "1px solid #e2e8f0", borderRadius: "8px", cursor: "pointer" }}
           >
             ❓ Ajuda
@@ -174,22 +175,10 @@ export default function ModelEditor({ categories, existingModels }: { categories
           </div>
           
           <div style={{ display: "grid", gridTemplateColumns: "1fr 280px", gap: "1.5rem" }}>
-            <textarea 
-              name="template" 
-              value={formData.template}
-              onChange={(e) => setFormData({...formData, template: e.target.value})}
-              required 
-              rows={20}
-              style={{ 
-                padding: "1rem", 
-                borderRadius: "12px", 
-                border: "2px solid #e2e8f0", 
-                fontFamily: "monospace",
-                fontSize: "1rem",
-                lineHeight: "1.5",
-                backgroundColor: "var(--background)",
-                color: "var(--foreground)"
-              }}
+            <RichTemplateEditor
+              name="template"
+              initialValue={formData.template}
+              onChange={(v) => setFormData({ ...formData, template: v })}
             />
             
             <div style={{ 

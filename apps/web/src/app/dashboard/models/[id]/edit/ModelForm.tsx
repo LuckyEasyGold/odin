@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { updateModel } from "@/app/actions/models";
+import RichTemplateEditor from "@/components/RichTemplateEditor";
 
 export default function ModelForm({ model, categories, id }: { model: any, categories: any[], id: string }) {
   const [showCustomCategory, setShowCustomCategory] = useState(false);
@@ -76,22 +77,10 @@ export default function ModelForm({ model, categories, id }: { model: any, categ
 
       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         <label style={{ fontWeight: "bold", color: "var(--muted)", fontSize: "0.85rem" }}>Corpo do Documento (Template)</label>
-        <textarea 
-          name="template" 
-          value={formData.template}
-          onChange={(e) => setFormData({...formData, template: e.target.value})}
-          required 
-          rows={15}
-          style={{ 
-            padding: "1rem", 
-            borderRadius: "12px", 
-            border: "2px solid var(--card-border)", 
-            backgroundColor: "var(--card-bg)",
-            color: "var(--foreground)",
-            fontFamily: "monospace",
-            fontSize: "1rem",
-            lineHeight: "1.5"
-          }}
+        <RichTemplateEditor
+          name="template"
+          initialValue={formData.template}
+          onChange={(v) => setFormData({ ...formData, template: v })}
         />
       </div>
 
