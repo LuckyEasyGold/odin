@@ -8,7 +8,7 @@ export default async function Home() {
   const t = getTranslation("pt");
   const models = await prisma.model.findMany({
     where: { isActive: true, isPublic: true },
-    include: { category: true },
+    include: { category: true, creator: true },
     take: 6,
     orderBy: { createdAt: "desc" }
   });
@@ -61,63 +61,89 @@ export default async function Home() {
             .premium-card:hover {
               transform: translateY(-5px);
               box-shadow: 0 20px 25px -5px var(--shadow) !important;
-              border-color: #3b82f6 !important;
+              border-color: var(--primary) !important;
             }
           `}} />
           <h3 style={{ fontSize: "1.5rem", marginBottom: "1.5rem", color: "var(--foreground)" }}>{t.home.popular.title}</h3>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "2rem" }}>
             {models.map((model: any) => (
-              <Link key={model.id} href={`/models/${model.slug}`} style={{ textDecoration: "none" }}>
-                <div 
-                  className="premium-card"
-                  style={{ 
-                    backgroundColor: "var(--card-bg)", 
-                    padding: "2rem", 
-                    borderRadius: "24px", 
-                    border: "1px solid var(--card-border)",
-                    boxShadow: "0 10px 15px -3px var(--shadow)",
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    cursor: "pointer"
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
-                    <div style={{ 
-                      color: "#2563eb", 
-                      fontSize: "0.7rem", 
-                      fontWeight: "800", 
-                      textTransform: "uppercase",
-                      letterSpacing: "0.05em",
-                      background: "rgba(37, 99, 235, 0.1)",
-                      padding: "0.25rem 0.75rem",
-                      borderRadius: "9999px"
-                    }}>
-                      {model.category?.name || "Documento"}
-                    </div>
-                    {/* @ts-ignore */}
-                    {model.compliance?.status === "verified" && (
-                      <div style={{ 
-                        display: "flex", 
-                        alignItems: "center", 
-                        gap: "4px",
-                        fontSize: "0.7rem",
-                        fontWeight: "700",
-                        color: "#0891b2",
-                        background: "linear-gradient(135deg, #ecfeff 0%, #cffafe 100%)",
-                        padding: "0.25rem 0.6rem",
-                        borderRadius: "8px",
-                        border: "1px solid #a5f3fc"
-                      }}>
-                        <span style={{ fontSize: "0.8rem" }}>🛡️</span> Verificado
-                      </div>
-                    )}
+              <div 
+                key={model.id}
+                className="premium-card"
+                style={{ 
+                  backgroundColor: "var(--card-bg)", 
+                  color: "var(--foreground)",
+                  padding: "2rem", 
+                  borderRadius: "24px", 
+                  border: "1px solid var(--card-border)",
+                  boxShadow: "0 10px 15px -3px var(--shadow)",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column"
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+                  <div style={{ 
+                    color: "#2563eb", 
+                    fontSize: "0.7rem", 
+                    fontWeight: "800", 
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    background: "rgba(37, 99, 235, 0.1)",
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "9999px"
+                  }}>
+                    {model.category?.name || "Documento"}
                   </div>
-                  <h4 style={{ color: "var(--foreground)", margin: "0 0 0.75rem 0", fontSize: "1.25rem", fontWeight: "700" }}>{model.name}</h4>
-                  <p style={{ color: "var(--muted)", fontSize: "0.95rem", margin: 0, lineHeight: "1.5", flex: 1 }}>{model.description}</p>
-                  <div style={{ marginTop: "1.5rem", color: "#3b82f6", fontWeight: "bold", fontSize: "0.875rem" }}>Ver Detalhes →</div>
+                  {/* @ts-ignore */}
+                  {model.compliance?.status === "verified" && (
+                    <div style={{ 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "4px",
+                      fontSize: "0.7rem",
+                      fontWeight: "700",
+                      color: "#0891b2",
+                      background: "linear-gradient(135deg, #ecfeff 0%, #cffafe 100%)",
+                      padding: "0.25rem 0.6rem",
+                      borderRadius: "8px",
+                      border: "1px solid #a5f3fc"
+                    }}>
+                      <span style={{ fontSize: "0.8rem" }}>🛡️</span> Verificado
+                    </div>
+                  )}
                 </div>
-              </Link>
+                <Link href={`/models/${model.slug}`} style={{ textDecoration: "none" }}>
+                  <h4 style={{ color: "var(--foreground)", margin: "0 0 0.75rem 0", fontSize: "1.25rem", fontWeight: "700" }}>{model.name}</h4>
+                </Link>
+                <p style={{ color: "var(--muted)", fontSize: "0.95rem", margin: 0, lineHeight: "1.5", flex: 1 }}>{model.description}</p>
+
+                <div style={{ marginTop: "1.25rem", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+                  <Link
+                    href={`/models?author=${encodeURIComponent(model.creator?.username || "")}`}
+                    style={{ color: "var(--primary)", textDecoration: "underline", fontWeight: "700", fontSize: "0.95rem" }}
+                  >
+                    {model.creator?.fullName || model.creator?.username || "Autor"}
+                  </Link>
+                  <span style={{
+                    fontSize: "0.75rem",
+                    fontWeight: "700",
+                    textTransform: "uppercase",
+                    background: Number(model.price || 0) > 0 ? "rgba(252, 165, 165, 0.2)" : "rgba(187, 247, 208, 0.2)",
+                    color: Number(model.price || 0) > 0 ? "#b91c1c" : "#15803d",
+                    padding: "0.35rem 0.75rem",
+                    borderRadius: "9999px",
+                    border: Number(model.price || 0) > 0 ? "1px solid rgba(248, 113, 113, 0.3)" : "1px solid rgba(134, 239, 172, 0.3)"
+                  }}>
+                    {Number(model.price || 0) > 0 ? "Pago" : "Open"}
+                  </span>
+                </div>
+
+                <div style={{ marginTop: "1.5rem", paddingTop: "1.5rem", borderTop: "1px solid var(--card-border)", display: "flex", justifyContent: "space-between", alignItems: "center", color: "var(--muted)", fontSize: "0.875rem" }}>
+                  <span>v{model.version}</span>
+                  <Link href={`/models/${model.slug}`} style={{ color: "var(--primary)", fontWeight: "bold", textDecoration: "none" }}>Gerar Agora →</Link>
+                </div>
+              </div>
             ))}
           </div>
         </section>

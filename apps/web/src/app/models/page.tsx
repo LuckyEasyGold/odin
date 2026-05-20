@@ -22,7 +22,12 @@ export default async function ModelsPage({
     ];
   }
   if (category) where.categoryId = category;
-  if (author) where.creator = { name: { contains: author, mode: "insensitive" } };
+  if (author) where.creator = {
+    OR: [
+      { username: { contains: author, mode: "insensitive" } },
+      { fullName: { contains: author, mode: "insensitive" } }
+    ]
+  };
 
   const rawModels = await prisma.model.findMany({
     where,
@@ -104,16 +109,14 @@ export default async function ModelsPage({
       {/* Listagem de Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: "2.5rem" }}>
         {models.map((model: any) => (
-          <Link
+          <div
             key={model.id}
-            href={`/models/${model.slug}`}
             style={{
               display: "flex",
               flexDirection: "column",
               padding: "2rem",
               borderRadius: "24px",
-              textDecoration: "none",
-              color: "inherit",
+              color: "var(--foreground)",
               backgroundColor: "var(--card-bg)",
               border: "1px solid var(--card-border)",
               boxShadow: "0 10px 15px -3px var(--shadow)",
@@ -138,21 +141,37 @@ export default async function ModelsPage({
                 </span>
               )}
             </div>
-            <h3 style={{ margin: "0 0 1rem 0", color: "var(--foreground)", fontSize: "1.5rem", fontWeight: "700" }}>{model.name}</h3>
+            <Link href={`/models/${model.slug}`} style={{ textDecoration: "none" }}>
+              <h3 style={{ margin: "0 0 1rem 0", color: "var(--foreground)", fontSize: "1.5rem", fontWeight: "700" }}>{model.name}</h3>
+            </Link>
             <p style={{ margin: 0, fontSize: "1rem", color: "var(--muted)", lineHeight: "1.6", flex: 1 }}>{model.description}</p>
-            
-            <div style={{ marginTop: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <div style={{ width: "100%", height: "4px", backgroundColor: "var(--card-border)", borderRadius: "2px" }}>
-                <div style={{ width: `${model.complianceScore}%`, height: "100%", backgroundColor: model.complianceScore > 70 ? "#10b981" : "#f59e0b", borderRadius: "2px" }}></div>
-              </div>
-              <span style={{ fontSize: "0.7rem", color: "var(--muted)", fontWeight: "bold" }}>{model.complianceScore}% Saúde Jurídica</span>
+
+            <div style={{ marginTop: "1.25rem", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+              <Link
+                href={`/models?author=${encodeURIComponent(model.creator?.username || "")}`}
+                style={{ color: "var(--primary)", textDecoration: "underline", fontWeight: "700", fontSize: "0.95rem" }}
+              >
+                {model.creator?.fullName || model.creator?.username || "Autor"}
+              </Link>
+              <span style={{
+                fontSize: "0.75rem",
+                fontWeight: "700",
+                textTransform: "uppercase",
+                background: Number(model.price || 0) > 0 ? "rgba(252, 165, 165, 0.2)" : "rgba(187, 247, 208, 0.2)",
+                color: Number(model.price || 0) > 0 ? "#b91c1c" : "#15803d",
+                padding: "0.35rem 0.75rem",
+                borderRadius: "9999px",
+                border: Number(model.price || 0) > 0 ? "1px solid rgba(248, 113, 113, 0.3)" : "1px solid rgba(134, 239, 172, 0.3)"
+              }}>
+                {Number(model.price || 0) > 0 ? "Pago" : "Open"}
+              </span>
             </div>
 
             <div style={{ marginTop: "1.5rem", paddingTop: "1.5rem", borderTop: "1px solid var(--card-border)", display: "flex", justifyContent: "space-between", color: "var(--muted)", fontSize: "0.875rem" }}>
               <span>v{model.version}</span>
-              <span style={{ color: "var(--primary)", fontWeight: "bold" }}>Gerar Agora →</span>
+              <Link href={`/models/${model.slug}`} style={{ color: "var(--primary)", fontWeight: "bold", textDecoration: "none" }}>Ver Modelo →</Link>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </main>
