@@ -91,18 +91,31 @@ app.use((req, res, next) => {
 });
 
 // CORS
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  
+  // Allow localhost, production frontend, and Vercel preview/branch subdomains
+  const isAllowedOrigin = !origin || 
+    origin === "https://odin-web-snowy.vercel.app" || 
+    origin.startsWith("http://localhost:") ||
+    (origin.endsWith(".vercel.app") && origin.includes("odin"));
 
-app.use((_req, res, next) => {
-  res.header(
-    "Access-Control-Allow-Origin",
-    process.env.NODE_ENV === "production" ? FRONTEND_URL : "*"
-  );
+  if (origin && isAllowedOrigin) {
+    res.header("Access-Control-Allow-Origin", origin);
+  } else if (!origin) {
+    res.header("Access-Control-Allow-Origin", "*");
+  }
+  
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, x-api-key, Authorization"
   );
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Credentials", "true");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
   next();
 });
 
