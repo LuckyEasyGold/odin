@@ -1,11 +1,12 @@
 "use client";
 
-import { useEditor, EditorContent, ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
+import { useEditor, EditorContent } from "@tiptap/react";
 import { Node, mergeAttributes } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
+import TextAlign from "@tiptap/extension-text-align";
 import { useEffect, useMemo, useState } from "react";
 
 /* -------------------------------------------------------------------------- */
@@ -86,41 +87,30 @@ const VariableNode = Node.create({
   },
 
   addNodeView() {
-    return ReactNodeViewRenderer(VariableChip);
+    return ({ node }) => {
+      const span = document.createElement("span");
+      const c = TYPE_COLORS[node.attrs.varType as VarType] || TYPE_COLORS.texto;
+      span.setAttribute("data-odin-var", node.attrs.name);
+      span.setAttribute("data-odin-type", node.attrs.varType);
+      span.setAttribute("title", `${TYPE_LABELS[node.attrs.varType as VarType]} • {{${node.attrs.varType} ${node.attrs.name}}}`);
+      span.contentEditable = "false";
+      span.style.display = "inline-block";
+      span.style.padding = "1px 8px";
+      span.style.margin = "0 2px";
+      span.style.borderRadius = "999px";
+      span.style.backgroundColor = c.bg;
+      span.style.color = c.fg;
+      span.style.border = `1px solid ${c.border}`;
+      span.style.fontSize = "0.85em";
+      span.style.fontWeight = "600";
+      span.style.fontFamily = "ui-monospace, SFMono-Regular, monospace";
+      span.style.cursor = "default";
+      span.style.userSelect = "none";
+      span.textContent = toHandlebars(node.attrs.name, node.attrs.varType as VarType);
+      return { dom: span };
+    };
   },
 });
-
-function VariableChip(props: any) {
-  const { name, varType } = props.node.attrs as { name: string; varType: VarType };
-  const c = TYPE_COLORS[varType] || TYPE_COLORS.texto;
-  return (
-    <NodeViewWrapper as="span" style={{ display: "inline-block" }}>
-      <span
-        contentEditable={false}
-        title={`${TYPE_LABELS[varType]} • {{${varType} ${name}}}`}
-        style={{
-          display: "inline-block",
-          padding: "1px 8px",
-          margin: "0 2px",
-          borderRadius: 999,
-          backgroundColor: c.bg,
-          color: c.fg,
-          border: `1px solid ${c.border}`,
-          fontSize: "0.85em",
-          fontWeight: 600,
-          fontFamily: "ui-monospace, SFMono-Regular, monospace",
-          cursor: "default",
-          userSelect: "none",
-        }}
-      >
-        {name}
-        <span style={{ opacity: 0.6, marginLeft: 4, fontSize: "0.75em" }}>
-          {varType === "moeda" ? "R$" : varType === "data" ? "📅" : varType === "numero" ? "#" : "T"}
-        </span>
-      </span>
-    </NodeViewWrapper>
-  );
-}
 
 /* -------------------------------------------------------------------------- */
 /*  Pre-load: rehydrate {{texto x}} / {{moeda x}} / etc into chips            */
@@ -159,7 +149,14 @@ function Toolbar({
     cursor: "pointer",
     fontSize: "0.85rem",
     fontWeight: 600,
+    position: "relative",
   });
+
+  const getFontSize = () => {
+    if (editor.isActive("heading", { level: 1 })) return "28px";
+    if (editor.isActive("heading", { level: 2 })) return "24px";
+    return "16px";
+  };
 
   return (
     <div
@@ -172,35 +169,147 @@ function Toolbar({
         background: "#f8fafc",
         borderTopLeftRadius: 12,
         borderTopRightRadius: 12,
+        alignItems: "center",
       }}
     >
       {!rawMode && (
         <>
-          <button type="button" style={btn(editor.isActive("bold"))} onClick={() => editor.chain().focus().toggleBold().run()}>
+          <button
+            type="button"
+            title="Negrito"
+            style={btn(editor.isActive("bold"))}
+            onClick={() => editor.chain().focus().toggleBold().run()}
+          >
             <b>B</b>
           </button>
-          <button type="button" style={btn(editor.isActive("italic"))} onClick={() => editor.chain().focus().toggleItalic().run()}>
+          <button
+            type="button"
+            title="Itálico"
+            style={btn(editor.isActive("italic"))}
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+          >
             <i>I</i>
           </button>
-          <button type="button" style={btn(editor.isActive("underline"))} onClick={() => editor.chain().focus().toggleUnderline().run()}>
+          <button
+            type="button"
+            title="Sublinhado"
+            style={btn(editor.isActive("underline"))}
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+          >
             <u>U</u>
           </button>
           <span style={{ width: 1, background: "#e2e8f0", margin: "0 4px" }} />
-          <button type="button" style={btn(editor.isActive("heading", { level: 1 }))} onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>
-            H1
+
+          {/* Font Size Dropdown */}
+          <select
+            title="Tamanho da fonte"
+            onChange={(e) => {
+              const size = e.target.value;
+              if (size === "h1") {
+                editor.chain().focus().toggleHeading({ level: 1 }).run();
+              } else if (size === "h2") {
+                editor.chain().focus().toggleHeading({ level: 2 }).run();
+              } else {
+                editor.chain().focus().setParagraph().run();
+              }
+            }}
+            value={
+              editor.isActive("heading", { level: 1 })
+                ? "h1"
+                : editor.isActive("heading", { level: 2 })
+                  ? "h2"
+                  : "normal"
+            }
+            style={{
+              padding: "0.35rem 0.6rem",
+              border: "1px solid #e2e8f0",
+              borderRadius: 6,
+              background: "white",
+              color: "#475569",
+              cursor: "pointer",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+            }}
+          >
+            <option value="normal">Padrão</option>
+            <option value="h1">Grande (28px)</option>
+            <option value="h2">Médio (24px)</option>
+          </select>
+
+          <span style={{ width: 1, background: "#e2e8f0", margin: "0 4px" }} />
+
+          {/* Alignment Buttons with SVG icons */}
+          <button
+            type="button"
+            title="Alinhar à esquerda"
+            style={btn(editor.isActive({ textAlign: "left" }))}
+            onClick={() => editor.chain().focus().setTextAlign("left").run()}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <line x1="2" y1="4" x2="14" y2="4" stroke="currentColor" strokeWidth="1.5" />
+              <line x1="2" y1="8" x2="10" y2="8" stroke="currentColor" strokeWidth="1.5" />
+              <line x1="2" y1="12" x2="12" y2="12" stroke="currentColor" strokeWidth="1.5" />
+            </svg>
           </button>
-          <button type="button" style={btn(editor.isActive("heading", { level: 2 }))} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
-            H2
+          <button
+            type="button"
+            title="Centralizar"
+            style={btn(editor.isActive({ textAlign: "center" }))}
+            onClick={() => editor.chain().focus().setTextAlign("center").run()}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <line x1="1" y1="4" x2="15" y2="4" stroke="currentColor" strokeWidth="1.5" />
+              <line x1="3" y1="8" x2="13" y2="8" stroke="currentColor" strokeWidth="1.5" />
+              <line x1="2" y1="12" x2="14" y2="12" stroke="currentColor" strokeWidth="1.5" />
+            </svg>
           </button>
-          <button type="button" style={btn(editor.isActive("bulletList"))} onClick={() => editor.chain().focus().toggleBulletList().run()}>
+          <button
+            type="button"
+            title="Alinhar à direita"
+            style={btn(editor.isActive({ textAlign: "right" }))}
+            onClick={() => editor.chain().focus().setTextAlign("right").run()}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <line x1="2" y1="4" x2="14" y2="4" stroke="currentColor" strokeWidth="1.5" />
+              <line x1="6" y1="8" x2="14" y2="8" stroke="currentColor" strokeWidth="1.5" />
+              <line x1="4" y1="12" x2="14" y2="12" stroke="currentColor" strokeWidth="1.5" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            title="Justificar"
+            style={btn(editor.isActive({ textAlign: "justify" }))}
+            onClick={() => editor.chain().focus().setTextAlign("justify").run()}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <line x1="2" y1="4" x2="14" y2="4" stroke="currentColor" strokeWidth="1.5" />
+              <line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" strokeWidth="1.5" />
+              <line x1="2" y1="12" x2="14" y2="12" stroke="currentColor" strokeWidth="1.5" />
+            </svg>
+          </button>
+
+          <span style={{ width: 1, background: "#e2e8f0", margin: "0 4px" }} />
+
+          <button
+            type="button"
+            title="Lista com marcadores"
+            style={btn(editor.isActive("bulletList"))}
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+          >
             • Lista
           </button>
-          <button type="button" style={btn(editor.isActive("orderedList"))} onClick={() => editor.chain().focus().toggleOrderedList().run()}>
+          <button
+            type="button"
+            title="Lista numerada"
+            style={btn(editor.isActive("orderedList"))}
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          >
             1. Lista
           </button>
           <span style={{ width: 1, background: "#e2e8f0", margin: "0 4px" }} />
           <button
             type="button"
+            title="Inserir variável dinâmica"
             onClick={onInsertVar}
             style={{
               ...btn(false),
@@ -399,6 +508,7 @@ export default function RichTemplateEditor({
       Underline,
       Link.configure({ openOnClick: false }),
       Placeholder.configure({ placeholder }),
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
       VariableNode,
     ],
     content: hydrateVariables(initialValue),

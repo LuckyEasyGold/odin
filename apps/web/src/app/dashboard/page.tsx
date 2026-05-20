@@ -2,6 +2,8 @@
 import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
+import { deleteModel } from "@/app/actions/models";
+import DeleteModelButton from "@/components/DeleteModelButton";
 
 const prisma = new PrismaClient();
 
@@ -12,7 +14,7 @@ export default async function DashboardPage() {
   const [totalGenerations, rawModels, rawRecentGenerations] = await Promise.all([
     prisma.generation.count({ where: { userId: session.user.id } }),
     prisma.model.findMany({
-      where: { createdBy: session.user.id },
+      where: { createdBy: session.user.id, isActive: true },
       include: { category: true },
       orderBy: { createdAt: "desc" }
     }),
@@ -85,7 +87,10 @@ export default async function DashboardPage() {
                     <div style={{ fontWeight: "600", fontSize: "0.95rem", color: "var(--foreground)" }}>{m.name}</div>
                     <div style={{ fontSize: "0.75rem", color: "var(--muted)" }}>{m.category?.name || "Geral"} • {m.isPublic ? "Público" : "Privado"}</div>
                   </div>
-                  <Link href={`/dashboard/models/${m.id}/edit`} style={{ fontSize: "0.8rem", color: "var(--primary)", textDecoration: "none" }}>Editar</Link>
+                  <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+                    <Link href={`/dashboard/models/${m.id}/edit`} style={{ fontSize: "0.8rem", color: "var(--primary)", textDecoration: "none" }}>Editar</Link>
+                    <DeleteModelButton id={m.id} action={deleteModel} />
+                  </div>
                 </div>
               ))}
             </div>

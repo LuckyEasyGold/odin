@@ -2,14 +2,15 @@ import Link from "next/link";
 import { getTranslation } from "@/locales";
 import Wizard from "./Wizard";
 import RatingSection from "./RatingSection";
-import { forkModel, verifyModel } from "@/app/actions/models";
+import DeleteModelButton from "@/components/DeleteModelButton";
+import { forkModel, verifyModel, deleteModel } from "@/app/actions/models";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 async function getModel(slug: string) {
    try {
      return await prisma.model.findUnique({
-       where: { slug },
+       where: { slug, isActive: true },
        include: {
          category: true,
          creator: { select: { fullName: true, username: true, isSpecialist: true, specialty: true } },
@@ -104,6 +105,43 @@ export default async function ModelDetailPage({ params }: { params: Promise<{ sl
                 ✅ Verificar Modelo (Specialist)
               </button>
             </form>
+          )}
+
+          {session?.user?.id === model.createdBy && (
+            <>
+              <Link
+                href={`/dashboard/models/${model.id}/edit`}
+                style={{
+                  padding: "0.75rem 1.5rem",
+                  backgroundColor: "var(--primary)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "12px",
+                  fontWeight: "bold",
+                  textDecoration: "none",
+                  cursor: "pointer",
+                  boxShadow: "0 10px 15px -3px rgba(59, 130, 246, 0.3)"
+                }}
+              >
+                ✏️ Editar Modelo
+              </Link>
+              <DeleteModelButton
+                id={model.id}
+                action={deleteModel}
+                label="🗑️ Excluir Modelo"
+                buttonStyle={{
+                  padding: "0.75rem 1.5rem",
+                  backgroundColor: "#fee2e2",
+                  color: "#b91c1c",
+                  border: "1px solid #fca5a5",
+                  borderRadius: "12px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
+                  textDecoration: "none"
+                }}
+              />
+            </>
           )}
 
           <form action={async () => {

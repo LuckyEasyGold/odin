@@ -146,8 +146,27 @@ export async function forkModel(id: string) {
   });
 
   revalidatePath("/dashboard");
+  revalidatePath("/models");
   redirect(`/dashboard/models/${newModel.id}/edit`);
 }
+
+export async function deleteModel(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Não autorizado");
+
+  const id = formData.get("id") as string;
+  if (!id) throw new Error("ID do modelo é obrigatório");
+
+  const model = await prisma.model.findUnique({ where: { id } });
+  if (!model) throw new Error("Modelo não encontrado");
+  if (model.createdBy !== session.user.id) throw new Error("Apenas o autor pode excluir");
+
+  await prisma.model.update({ where: { id }, data: { isActive: false } });
+  revalidatePath("/dashboard");
+  revalidatePath("/models");
+  redirect("/dashboard");
+}
+
 export async function verifyModel(id: string, curatorNote?: string) {
   const session = await auth();
   if (!session?.user?.id) throw new Error("Não autorizado");
