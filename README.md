@@ -17,44 +17,81 @@ Se você precisa de documentos que não apenas pareçam profissionais, mas que s
 ### Para Desenvolvedores (A Potência)
 O ODIN foi construído com uma arquitetura modular ("API-First"), permitindo que você integre a geração de documentos complexos em qualquer sistema em minutos.
 - **SDK & CLI:** Ferramentas prontas para automação.
-- **MCP (Model Context Protocol):** O ODIN é "AI-Native". Conecte sua IA favorita (Cursor, Claude Desktop) diretamente à infraestrutura para gerar documentos via comandos de voz ou chat.
+- **MCP (Model Context Protocol):** O ODIN é "AI-Native". Conecte sua IA favorita diretamente à infraestrutura para gerar documentos via comandos de voz ou chat.
 - **Webhooks:** Receba notificações quando um documento for assinado ou gerado.
-
 
 ---
 
-## 🚀 Como o ODIN funciona?
+## 🚀 Quickstart (Local)
 
-O ecossistema ODIN é dividido em três grandes pilares:
+### 1) Pré-requisitos
+- **Node.js 20+**
+- **pnpm 9+**
+- **Docker + Docker Compose** (recomendado para banco local)
 
-1.  **A Biblioteca (Registry):** Um catálogo de modelos de alta utilidade criados pela comunidade e verificados por especialistas.
-2.  **O Motor (Engine):** Transforma dados simples em documentos complexos (PDF/HTML) com design impecável.
-3.  **O Selo de Confiança (Compliance):** Um sistema de auditoria que garante que cada modelo atenda a requisitos mínimos de segurança jurídica.
+### 2) Instalação
+```bash
+pnpm install
+```
+
+### 3) Ambiente
+Crie o arquivo `.env` na raiz com uma base como esta:
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/odin"
+API_PORT=3001
+NEXT_PUBLIC_WEB_URL="http://localhost:3000"
+API_URL="http://localhost:3001"
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="change-me"
+
+# Opcional para assinaturas Documenso
+DOCUMENSO_API_KEY=""
+
+# Opcional para e-mails de assinatura
+RESEND_API_KEY=""
+EMAIL_FROM="no-reply@odin.local"
+```
+
+### 4) Banco de dados
+```bash
+docker compose up -d
+pnpm --filter @odin/storage prisma migrate deploy
+pnpm --filter @odin/storage prisma db seed
+```
+
+### 5) Executar o projeto
+```bash
+pnpm dev
+```
+- Web: `http://localhost:3000`
+- API: `http://localhost:3001`
 
 ---
 
 ## 🛠️ Comece Agora
 
-Escolha seu perfil abaixo para as instruções ideais:
-
 ### 👤 Sou um Usuário / Criador de Modelos
-- **[Guia de Conceitos (Leigos)](/docs/CONCEITO.md)**: Entenda o que é um modelo, uma variável e como a verificação funciona.
-- **Dashboard**: Acesse a interface web para criar e gerenciar seus documentos.
+- **[Guia de Conceitos (Leigos)](/docs/CONCEITO.md)**
+- **[Fluxo de Assinaturas](/docs/FLUXO_ASSINATURAS.md)**
+- **Dashboard**: interface web para criar e gerenciar modelos e gerações.
 
 ### 💻 Sou um Desenvolvedor
-- **[Guia do Desenvolvedor](/docs/GUIA_DESENVOLVEDOR.md)**: Documentação da API, SDK e exemplos de integração.
-- **CLI**: `npx odin list` para explorar os modelos via terminal.
+- **[Guia do Desenvolvedor](/docs/GUIA_DESENVOLVEDOR.md)**
+- API base local: `http://localhost:3001/api/v1`
 
 ---
 
 ## 🏗️ Arquitetura Técnica
 
 O projeto é um monorepo modular:
-- `apps/web`: Interface Next.js premium para usuários finais.
-- `apps/api`: Gateway REST/MCP de alta performance.
+- `apps/web`: Interface Next.js para usuários finais.
+- `apps/api`: Gateway REST/MCP.
+- `apps/worker`: Rotinas assíncronas.
 - `packages/engine`: Motor de renderização agnóstico.
 - `packages/storage`: Camada de persistência com Prisma & PostgreSQL.
 - `packages/sdk-node`: Biblioteca oficial para integração Node.js.
+- `packages/mcp-server`: Servidor MCP para agentes de IA.
+- `packages/cli`: CLI para automação via terminal.
 
 ---
 

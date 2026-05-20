@@ -149,7 +149,11 @@ apiRouter.get("/me", async (req: Request, res: Response) => {
     fullName: dbUser.fullName,
     balance: Number(dbUser.balance),
     isSpecialist: dbUser.isSpecialist,
-    specialty: dbUser.specialty
+    specialty: dbUser.specialty,
+    communityScore: dbUser.communityScore,
+    communityLevel: dbUser.communityLevel,
+    communityTitle: dbUser.communityTitle,
+    canCurate: dbUser.canCurate
   });
 });
 
