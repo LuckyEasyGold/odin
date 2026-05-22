@@ -28,7 +28,7 @@ export default function DocsPage() {
         gap: "1rem", 
         marginBottom: "6rem" 
       }}>
-        {["Fundamentos", "Biblioteca", "Editor", "Compliance", "Finanças", "Assinaturas", "Desenvolvedores", "Segurança"].map((item) => (
+        {["Quickstart", "Fundamentos", "Biblioteca", "Editor", "Compliance", "Finanças", "Assinaturas", "Desenvolvedores", "Segurança"].map((item) => (
           <a key={item} href={`#${item.toLowerCase()}`} style={{
             padding: "1rem",
             textAlign: "center",
@@ -44,6 +44,26 @@ export default function DocsPage() {
           </a>
         ))}
       </nav>
+
+      {/* 0. Quickstart */}
+
+      <section id="quickstart" style={{ marginBottom: "6rem" }}>
+        <h2 style={{ fontSize: "2rem", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          ⚡ 0. Quickstart Técnico
+        </h2>
+        <p>Para começar rápido em ambiente local:</p>
+        <ol style={{ paddingLeft: "1.5rem", marginTop: "1rem" }}>
+          <li>Instale dependências: <code>pnpm install</code></li>
+          <li>Suba o banco: <code>docker compose up -d</code></li>
+          <li>Rode migrações/seed: <code>pnpm --filter @odin/storage prisma migrate deploy</code> e <code>pnpm --filter @odin/storage prisma db seed</code></li>
+          <li>Inicie a plataforma: <code>pnpm dev</code></li>
+        </ol>
+        <p style={{ marginTop: "1rem" }}>
+          Consulte também os guias detalhados: <Link href="/docs/CONCEITO.md" style={{ color: "#3b82f6" }}>Conceitos</Link>,{" "}
+          <Link href="/docs/GUIA_DESENVOLVEDOR.md" style={{ color: "#3b82f6" }}>Guia do Desenvolvedor</Link> e{" "}
+          <Link href="/docs/FLUXO_ASSINATURAS.md" style={{ color: "#3b82f6" }}>Fluxo de Assinaturas</Link>.
+        </p>
+      </section>
 
       {/* 1. Fundamentos */}
       <section id="fundamentos" style={{ marginBottom: "6rem" }}>
