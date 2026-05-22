@@ -1,9 +1,18 @@
-import NextAuth from "next-auth";
 import { PrismaClient } from "@prisma/client";
-import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
 
 const prisma = new PrismaClient();
+
+type AuthUserExtras = {
+  isSpecialist?: boolean;
+  specialty?: string | null;
+  communityScore?: number;
+  communityLevel?: number;
+  communityTitle?: string;
+  canCurate?: boolean;
+};
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
@@ -26,14 +35,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             OR: [
               { username: credentials.email as string },
               { email: credentials.email as string },
-            ]
-          }
+            ],
+          },
         });
 
-        if (user && user.password) {
+        if (user?.password) {
           const isPasswordValid = await bcrypt.compare(
             credentials.password as string,
-            user.password
+            user.password,
           );
 
           if (isPasswordValid) {
@@ -43,6 +52,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               image: user.avatarUrl,
               isSpecialist: user.isSpecialist,
               specialty: user.specialty,
+              communityScore: user.communityScore,
+              communityLevel: user.communityLevel,
+              communityTitle: user.communityTitle,
+              canCurate: user.canCurate,
             };
           }
         }
@@ -53,17 +66,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        const enriched = user as typeof user & AuthUserExtras;
         token.id = user.id;
-        token.isSpecialist = (user as any).isSpecialist;
-        token.specialty = (user as any).specialty;
+        token.isSpecialist = enriched.isSpecialist ?? false;
+        token.specialty = enriched.specialty ?? null;
+        token.communityScore = enriched.communityScore ?? 0;
+        token.communityLevel = enriched.communityLevel ?? 1;
+        token.communityTitle =
+          enriched.communityTitle ?? "Aprendiz de Curadoria";
+        token.canCurate = enriched.canCurate ?? false;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).id = token.id;
-        (session.user as any).isSpecialist = token.isSpecialist;
-        (session.user as any).specialty = token.specialty;
+        session.user.id = token.id;
+        session.user.isSpecialist = token.isSpecialist;
+        session.user.specialty = token.specialty;
+        session.user.communityScore = token.communityScore;
+        session.user.communityLevel = token.communityLevel;
+        session.user.communityTitle = token.communityTitle;
+        session.user.canCurate = token.canCurate;
       }
       return session;
     },

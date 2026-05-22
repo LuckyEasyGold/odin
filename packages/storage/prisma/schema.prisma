@@ -18,6 +18,11 @@ model User {
   isSpecialist Boolean @default(false)
   specialty    String? // Ex: "Jurídico", "Contábil"
   registrationId String? // Ex: OAB, CRC
+  communityScore Int @default(0)
+  communityLevel Int @default(1)
+  communityTitle String @default("Aprendiz de Curadoria")
+  canCurate Boolean @default(false)
+  specialistValidatedByCommunity Boolean @default(false)
   balance   Decimal  @default(0)
   createdAt DateTime @default(now())
   models    Model[]

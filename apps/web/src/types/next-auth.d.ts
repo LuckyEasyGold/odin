@@ -1,25 +1,37 @@
-import NextAuth, { DefaultSession } from "next-auth"
+import NextAuth, { type DefaultSession } from "next-auth";
 
 declare module "next-auth" {
   interface Session {
     user: {
-      id: string
-      isSpecialist: boolean
-      specialty: string | null
-    } & DefaultSession["user"]
+      id: string;
+      isSpecialist: boolean;
+      specialty: string | null;
+      communityScore: number;
+      communityLevel: number;
+      communityTitle: string;
+      canCurate: boolean;
+    } & DefaultSession["user"];
   }
 
   interface User {
-    id: string
-    isSpecialist: boolean
-    specialty: string | null
+    id: string;
+    isSpecialist: boolean;
+    specialty: string | null;
+    communityScore: number;
+    communityLevel: number;
+    communityTitle: string;
+    canCurate: boolean;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    id: string
-    isSpecialist: boolean
-    specialty: string | null
+    id: string;
+    isSpecialist: boolean;
+    specialty: string | null;
+    communityScore: number;
+    communityLevel: number;
+    communityTitle: string;
+    canCurate: boolean;
   }
 }
