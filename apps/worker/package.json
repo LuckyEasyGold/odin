@@ -4,7 +4,7 @@
   "description": "Document generation worker",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "pnpm --filter @odin/core build && pnpm --filter @odin/engine build && tsc",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js"
   },

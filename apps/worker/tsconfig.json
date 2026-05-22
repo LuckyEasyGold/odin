@@ -5,14 +5,19 @@
     "moduleResolution": "NodeNext",
     "strict": true,
     "outDir": "./dist",
-    "rootDir": "./src",
     "declaration": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@odin/core": ["../../packages/core/src/index.ts"],
+      "@odin/engine": ["../../packages/engine/src/index.ts"]
+    },
+    "rootDirs": ["./src", "../../packages/core/src", "../../packages/engine/src"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
