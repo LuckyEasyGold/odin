@@ -153,11 +153,11 @@ importers:
   apps/worker:
     dependencies:
       '@odin/core':
-        specifier: file:../../packages/core
+        specifier: workspace:*
         version: link:../../packages/core
       '@odin/engine':
-        specifier: file:../../packages/engine
-        version: file:packages/engine(typescript@5.9.3)
+        specifier: workspace:*
+        version: link:../../packages/engine
       bullmq:
         specifier: ^4.0.0
         version: 4.18.3
@@ -911,9 +911,6 @@ packages:
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
-
-  '@odin/engine@file:packages/engine':
-    resolution: {directory: packages/engine, type: directory}
 
   '@panva/hkdf@1.2.1':
     resolution: {integrity: sha512-6oclG6Y3PiDFcoyk8srjLfVKyMfVCKJ27JwNPViuXziFpmdz+MZnZN/aKY0JGXgYuO/VghU0jcOAZgWXZ1Dmrw==}
@@ -3352,23 +3349,6 @@ snapshots:
 
   '@next/swc-win32-x64-msvc@15.0.0':
     optional: true
-
-  '@odin/engine@file:packages/engine(typescript@5.9.3)':
-    dependencies:
-      '@odin/core': link:packages/core
-      '@sparticuz/chromium': 148.0.0
-      handlebars: 4.7.9
-      puppeteer: 22.15.0(typescript@5.9.3)
-      puppeteer-core: 24.43.1
-      qrcode: 1.5.4
-    transitivePeerDependencies:
-      - bare-abort-controller
-      - bare-buffer
-      - bufferutil
-      - react-native-b4a
-      - supports-color
-      - typescript
-      - utf-8-validate
 
   '@panva/hkdf@1.2.1': {}
 

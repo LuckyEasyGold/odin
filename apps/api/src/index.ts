@@ -1,6 +1,5 @@
 import express from "express";
 import type { Request, Response, Express } from "express";
-import { PrismaClient } from "@prisma/client";
 import { renderDocument, DocumensoProvider } from "@odin/engine";
 import * as dotenv from "dotenv";
 import path from "path";
@@ -8,7 +7,7 @@ import { emailService } from "./services/email";
 import crypto from "crypto";
 
 dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
-import { ModelRepository, GenerationRepository, RatingRepository } from "@odin/storage";
+import { PrismaClient, ModelRepository, GenerationRepository, RatingRepository } from "@odin/storage";
 import { dispatchWebhook } from "./lib/webhooks";
 import { handleDocumensoWebhook } from "./webhooks/documenso";
 
