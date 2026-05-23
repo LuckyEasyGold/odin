@@ -19,7 +19,7 @@
     "format:check": "biome format --check .",
     "lint": "biome lint .",
     "prepare": "husky",
-    "postinstall": "prisma generate --schema=./packages/storage/prisma/schema.prisma"
+    "postinstall": "pnpm --filter @odin/core build && pnpm --filter @odin/engine build && pnpm --filter @odin/storage build && prisma generate --schema=./packages/storage/prisma/schema.prisma"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.0",

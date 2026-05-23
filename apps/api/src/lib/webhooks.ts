@@ -1,6 +1,6 @@
 import axios from "axios";
 import crypto from "crypto";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@odin/storage";
 
 const prisma = new PrismaClient();
 
