@@ -12,6 +12,18 @@ type AuthUserExtras = {
   communityLevel?: number;
   communityTitle?: string;
   canCurate?: boolean;
+  specialistValidatedByCommunity?: boolean;
+};
+
+type SessionTokenExtras = {
+  id: string;
+  isSpecialist: boolean;
+  specialty: string | null;
+  communityScore: number;
+  communityLevel: number;
+  communityTitle: string;
+  canCurate: boolean;
+  specialistValidatedByCommunity: boolean;
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -56,6 +68,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               communityLevel: user.communityLevel,
               communityTitle: user.communityTitle,
               canCurate: user.canCurate,
+              specialistValidatedByCommunity:
+                user.specialistValidatedByCommunity,
             };
           }
         }
@@ -75,18 +89,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.communityTitle =
           enriched.communityTitle ?? "Aprendiz de Curadoria";
         token.canCurate = enriched.canCurate ?? false;
+        token.specialistValidatedByCommunity =
+          enriched.specialistValidatedByCommunity ?? false;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id;
-        session.user.isSpecialist = token.isSpecialist;
-        session.user.specialty = token.specialty;
-        session.user.communityScore = token.communityScore;
-        session.user.communityLevel = token.communityLevel;
-        session.user.communityTitle = token.communityTitle;
-        session.user.canCurate = token.canCurate;
+        const sessionToken = token as typeof token & SessionTokenExtras;
+        session.user.id = sessionToken.id;
+        session.user.isSpecialist = sessionToken.isSpecialist;
+        session.user.specialty = sessionToken.specialty;
+        session.user.communityScore = sessionToken.communityScore;
+        session.user.communityLevel = sessionToken.communityLevel;
+        session.user.communityTitle = sessionToken.communityTitle;
+        session.user.canCurate = sessionToken.canCurate;
+        session.user.specialistValidatedByCommunity =
+          sessionToken.specialistValidatedByCommunity;
       }
       return session;
     },

@@ -1,4 +1,4 @@
-import NextAuth, { type DefaultSession } from "next-auth";
+import type { DefaultSession } from "next-auth";
 
 declare module "next-auth" {
   interface Session {
@@ -10,6 +10,7 @@ declare module "next-auth" {
       communityLevel: number;
       communityTitle: string;
       canCurate: boolean;
+      specialistValidatedByCommunity: boolean;
     } & DefaultSession["user"];
   }
 
@@ -21,6 +22,7 @@ declare module "next-auth" {
     communityLevel: number;
     communityTitle: string;
     canCurate: boolean;
+    specialistValidatedByCommunity: boolean;
   }
 }
 
@@ -33,5 +35,21 @@ declare module "next-auth/jwt" {
     communityLevel: number;
     communityTitle: string;
     canCurate: boolean;
+    specialistValidatedByCommunity: boolean;
   }
 }
+
+declare module "@auth/core/jwt" {
+  interface JWT {
+    id: string;
+    isSpecialist: boolean;
+    specialty: string | null;
+    communityScore: number;
+    communityLevel: number;
+    communityTitle: string;
+    canCurate: boolean;
+    specialistValidatedByCommunity: boolean;
+  }
+}
+
+export {};
