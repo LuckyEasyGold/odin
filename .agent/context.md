@@ -1,26 +1,61 @@
-# 🧠 Memória do Agente - ODIN (Maio/2026)
+﻿# ODIN Agent Manifest
 
-## 📌 Visão Geral do Projeto
-O ODIN é uma rede de infraestrutura de documentos. O objetivo é permitir que usuários criem, gerenciem e compartilhem modelos de documentos profissionais que podem ser preenchidos manualmente ou via API/IA.
+ODIN é uma infraestrutura aberta para criação, automação e operação de documentos inteligentes.
+O projeto está organizado como monorepo pnpm com web app, API, worker, packages compartilhados, engine, storage, SDK, CLI e MCP server.
+A visão completa de produto, arquitetura e estratégia está em [ODIN_MASTER_BLUEPRINT.md](./ODIN_MASTER_BLUEPRINT.md).
 
-## 🏗️ Arquitetura e Decisões Técnicas
-- **Monorepo:** Estruturado com `pnpm workspaces`.
-- **Banco de Dados:** Prisma no pacote `@odin/storage`. Migramos para uma taxonomia relacional (tabela `Category` com Parent/Child).
-- **Serialização:** Implementamos conversão manual de `Decimal` para `Number` e `Date` para `String` no `page.tsx` do dashboard e criação, para compatibilidade com Next.js 15 Client Components.
-- **Wizard:** Implementamos um **Auto-Parser** (regex) no componente `Wizard.tsx`. Se um modelo não tem `fields` definidos, o sistema extrai variáveis `{{...}}` automaticamente do template.
+## Capacidades necessárias
 
-## ✅ Funcionalidades Entregues (Fase 6)
-- **Biblioteca Profissional:** Mais de 40 modelos reais (Destaque para a categoria **Orçamentos de Serviços** com 10 modelos específicos).
-- **Sistema de Forks:** Botão de Fork na visualização de modelos públicos que permite clonar o modelo para a conta do usuário.
-- **Privacidade:** Campo `isPublic` no banco de dados.
-- **Navegação:** Navbar universal integrada no `layout.tsx` raiz e Dashboard ajustado.
-- **Documentação:** Página `/docs` criada para desenvolvedores.
+Agentes MCP/IA que entrarem no projeto devem ter, idealmente, as seguintes capacidades ativas:
 
-## 🚀 Próximos Passos (Backlog)
-1. **Sistema de Monetização:** Implementar cobrança por geração de documentos premium.
-2. **Editor Rich Text:** Substituir o textarea simples por um editor mais robusto (ex: TipTap ou Quill).
-3. **Assinatura Visual:** Implementar a renderização visual da assinatura eletrônica (SHA-256) no rodapé dos documentos.
-4. **Dashboard Keys:** Finalizar a tela de geração e revogação de `x-api-key`.
+- Filesystem: read/write/glob/grep.
+- pnpm + Node 20+.
+- Prisma CLI: migrate e generate.
+- Git + gh CLI.
+- PostgreSQL: entender schema Prisma e impacto de migrations.
+- Next.js 15 App Router: RSC, route handlers e NextAuth v5.
+- TypeScript strict.
+- Tailwind + shadcn/ui.
+- Engine de templates: `@odin/engine`, baseada em Handlebars.
+- MCP server tooling: `@odin/mcp-server`.
 
----
-*Este documento deve ser lido no início de cada nova sessão de desenvolvimento.*
+## Estado do projeto
+
+Checkpoint 2026-05-24:
+
+- Vercel deploy verde após sequência PR #5-#9.
+- Migration baseline + community curation aplicada no histórico do projeto via PR #11.
+- Auth fix: `session.user.id` forçado a `String` em `apps/web/src/lib/auth.ts`.
+- Schema community curation: `User.canCurate`, `communityLevel`, `communityScore`, `communityTitle`, `specialistValidatedByCommunity`.
+
+## Convenções de código
+
+- `PrismaClient` deve ser sempre re-exportado de `@odin/storage`; nunca importar `@prisma/client` direto nas apps/packages consumidoras.
+- `postinstall` builda `@odin/core` -> `@odin/engine` -> `@odin/storage` antes de `prisma generate`.
+- Dependências do worker devem usar `workspace:*`, não `file:`.
+
+## O que não mexer sem aprovação
+
+- `ODIN_MASTER_BLUEPRINT.md`.
+- `schema.prisma`: `User.id`, `Model.createdBy` e `Generation.userId` são `String` UUID; não mudar para `Int`.
+- API pública `/api/v1/*`, por compatibilidade.
+
+## Próximos passos planejados
+
+UI/UX em 5 fases:
+
+1. Definir fundação visual, tokens e padrões shadcn/Tailwind.
+2. Revisar navegação, layout base e hierarquia de informação.
+3. Melhorar fluxos principais de autenticação, dashboard e documentos.
+4. Refinar experiência de geração, templates e feedback de estados.
+5. Garantir responsividade, acessibilidade e polimento visual.
+6. Registrar progresso em tracker antes de retomar execução contínua.
+
+## Comandos úteis
+
+```bash
+pnpm dev
+pnpm prisma migrate deploy --schema=./packages/storage/prisma/schema.prisma
+pnpm prisma studio --schema=./packages/storage/prisma/schema.prisma
+pnpm --filter @odin/web build
+```
