@@ -1,107 +1,73 @@
-# ODIN - Open Document Infrastructure Network 🔱🛡️⚖️
+﻿# ODIN - Open Document Infrastructure Network
 
-> **A infraestrutura padrão para criação, validação e automação de documentos profissionais com segurança jurídica e inteligência.**
+> Infraestrutura aberta para criação, automação e operação de documentos inteligentes.
 
----
+![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
+![Next.js](https://img.shields.io/badge/Next.js-15.5-black.svg)
+![pnpm workspace](https://img.shields.io/badge/pnpm-workspace-orange.svg)
+![Status](https://img.shields.io/badge/status-paused%20%2F%20checkpoint-yellow.svg)
 
-## 🌟 O que é o ODIN?
+## O que é ODIN
 
-O **ODIN** não é apenas um site para preencher contratos. É uma **Rede de Infraestrutura Aberta** concebida para transformar o conhecimento técnico e jurídico em modelos de documentos que são ao mesmo tempo **reutilizáveis**, **programáveis** e **extremamente confiáveis**.
+ODIN é uma plataforma modular para gerar, versionar e operar documentos digitais com automação, templates e integrações.
+O projeto combina uma aplicação web, APIs, engine de templates, storage Prisma/Postgres e ferramentas para SDK, CLI e MCP.
+A visão de produto é construir uma rede aberta para infraestrutura documental, com trilhas para uso individual, equipes e comunidade.
+Este repositório está em checkpoint para pausa planejada de desenvolvimento e retomada futura.
 
-### Para Leigos e Gestores (O Valor)
-Se você precisa de documentos que não apenas pareçam profissionais, mas que sigam as melhores práticas do mercado e da lei, o ODIN é seu assistente. Ele garante que:
-- **Você não esqueça cláusulas críticas:** Nosso linter jurídico avisa se faltar algo essencial.
-- **Os dados estejam corretos:** O preenchimento é guiado e validado em tempo real.
-- **Tudo seja rastreável:** Cada documento gerado possui um "DNA digital" (hash) único.
+## Stack
 
-### Para Desenvolvedores (A Potência)
-O ODIN foi construído com uma arquitetura modular ("API-First"), permitindo que você integre a geração de documentos complexos em qualquer sistema em minutos.
-- **SDK & CLI:** Ferramentas prontas para automação.
-- **MCP (Model Context Protocol):** O ODIN é "AI-Native". Conecte sua IA favorita diretamente à infraestrutura para gerar documentos via comandos de voz ou chat.
-- **Webhooks:** Receba notificações quando um documento for assinado ou gerado.
+- Next.js 15.5 com App Router
+- Prisma com PostgreSQL/Neon
+- NextAuth
+- pnpm monorepo
+- Tailwind CSS
+- shadcn/ui
 
----
+## Estrutura do monorepo
 
-## 🚀 Quickstart (Local)
+- `apps/web`: aplicação web principal em Next.js.
+- `apps/api`: API backend para serviços e integrações.
+- `apps/worker`: worker para processamento assíncrono.
+- `packages/core`: tipos, contratos e utilitários compartilhados.
+- `packages/engine`: engine de templates baseada em Handlebars.
+- `packages/storage`: camada Prisma, schema e client compartilhado.
+- `packages/sdk-node`: SDK Node.js para consumidores externos.
+- `packages/mcp-server`: servidor MCP para integração com agentes.
+- `packages/cli`: CLI para operações locais e automações.
 
-### 1) Pré-requisitos
-- **Node.js 20+**
-- **pnpm 9+**
-- **Docker + Docker Compose** (recomendado para banco local)
+## Como rodar
 
-### 2) Instalação
 ```bash
 pnpm install
+pnpm prisma migrate deploy --schema=./packages/storage/prisma/schema.prisma
+pnpm --filter @odin/web dev
 ```
 
-### 3) Ambiente
-Crie o arquivo `.env` na raiz com uma base como esta:
-```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/odin"
-API_PORT=3001
-NEXT_PUBLIC_WEB_URL="http://localhost:3000"
-API_URL="http://localhost:3001"
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="change-me"
+## Variáveis de ambiente principais
 
-# Opcional para assinaturas Documenso
-DOCUMENSO_API_KEY=""
+- `DATABASE_URL`: conexão PostgreSQL/Neon usada pelo Prisma.
+- `NEXTAUTH_SECRET`: segredo de assinatura das sessões NextAuth.
+- `NEXTAUTH_URL`: URL base da aplicação web.
 
-# Opcional para e-mails de assinatura
-RESEND_API_KEY=""
-EMAIL_FROM="no-reply@odin.local"
-```
+## Status atual
 
-### 4) Banco de dados
-```bash
-docker compose up -d
-pnpm --filter @odin/storage prisma migrate deploy
-pnpm --filter @odin/storage prisma db seed
-```
+Checkpoint 2026-05-24 - vide `CHECKPOINT.md` e `.agent`.
 
-### 5) Executar o projeto
-```bash
-pnpm dev
-```
-- Web: `http://localhost:3000`
-- API: `http://localhost:3001`
+- Vercel com deploy verde após sequência de correções.
+- Baseline de migrations e campos de curadoria comunitária registrados.
+- Desenvolvimento pausado com foco em preservar contexto para retomada.
 
----
+## Documentos importantes
 
-## 🛠️ Comece Agora
+- [`ODIN_MASTER_BLUEPRINT.md`](./ODIN_MASTER_BLUEPRINT.md): visão de produto, estratégia e arquitetura macro.
+- [`.agent`](./.agent): manifesto operacional para agentes MCP/IA que entrarem no projeto.
+- [`CHECKPOINT.md`](./CHECKPOINT.md): snapshot de estado para retomada em 2026-05-24.
 
-### 👤 Sou um Usuário / Criador de Modelos
-- **[Guia de Conceitos (Leigos)](/docs/CONCEITO.md)**
-- **[Fluxo de Assinaturas](/docs/FLUXO_ASSINATURAS.md)**
-- **Dashboard**: interface web para criar e gerenciar modelos e gerações.
+## Roadmap curto
 
-### 💻 Sou um Desenvolvedor
-- **[Guia do Desenvolvedor](/docs/GUIA_DESENVOLVEDOR.md)**
-- API base local: `http://localhost:3001/api/v1`
+UI/UX em 5 fases: fundação visual, navegação, fluxos principais, experiência de geração e acabamento responsivo/acessível.
+O tracker pendente deve ser usado como referência de execução ao retomar.
 
----
+## Licença
 
-## 🏗️ Arquitetura Técnica
-
-O projeto é um monorepo modular:
-- `apps/web`: Interface Next.js para usuários finais.
-- `apps/api`: Gateway REST/MCP.
-- `apps/worker`: Rotinas assíncronas.
-- `packages/engine`: Motor de renderização agnóstico.
-- `packages/storage`: Camada de persistência com Prisma & PostgreSQL.
-- `packages/sdk-node`: Biblioteca oficial para integração Node.js.
-- `packages/mcp-server`: Servidor MCP para agentes de IA.
-- `packages/cli`: CLI para automação via terminal.
-
----
-
-## 📜 Roadmap de Evolução
-- [x] **Fase 1 (MVP)**: Geração básica e catálogo.
-- [x] **Fase 2 (Compliance)**: Linter jurídico e selos de verificação.
-- [x] **Fase 3 (Ecossistema)**: CLI, SDK e suporte a Agentes de IA (MCP).
-- [x] **Fase 4 (Assinatura)**: Fluxo completo de assinatura digital integrada (Documenso).
-- [ ] **Fase 5 (Blockchain)**: Registro imutável de integridade.
-
----
-
-*ODIN - Onde o documento encontra a inteligência e a lei.* ⚖️🔱
+MIT.
