@@ -54,7 +54,7 @@ export class ModelRepository {
     const ratings = await this.prisma.rating.findMany({ where: { modelId: id } });
     if (ratings.length === 0) return;
 
-    const total = ratings.reduce((acc, r) => acc + (r.rating * Number(r.weight)), 0);
+    const total = ratings.reduce((acc: number, r: (typeof ratings)[number]) => acc + (r.rating * Number(r.weight)), 0);
     const count = ratings.length;
     const avg = total / count;
 
