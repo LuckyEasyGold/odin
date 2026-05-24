@@ -81,7 +81,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         const enriched = user as typeof user & AuthUserExtras;
-        token.id = user.id;
+        token.id = String(user.id);
+        token.sub = String(user.id);
         token.isSpecialist = enriched.isSpecialist ?? false;
         token.specialty = enriched.specialty ?? null;
         token.communityScore = enriched.communityScore ?? 0;
@@ -97,7 +98,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (session.user) {
         const sessionToken = token as typeof token & SessionTokenExtras;
-        session.user.id = sessionToken.id;
+        session.user.id = String(token.sub ?? sessionToken.id);
         session.user.isSpecialist = sessionToken.isSpecialist;
         session.user.specialty = sessionToken.specialty;
         session.user.communityScore = sessionToken.communityScore;
