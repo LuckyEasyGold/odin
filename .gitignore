@@ -42,5 +42,4 @@ coverage
 test-results
 
 # Prisma
-/packages/storage/prisma/migrations
 .vercel
