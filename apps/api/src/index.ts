@@ -301,9 +301,8 @@ apiRouter.post("/generate", async (req: Request, res: Response) => {
     }
 
     const webUrl = process.env.NEXT_PUBLIC_WEB_URL || `${req.protocol}://${req.get('host')}`;
-    const apiUrl = process.env.API_URL || webUrl;
     const tempGenId = crypto.randomUUID();
-    const verificationUrl = `${apiUrl}/api/v1/verify/${tempGenId}`;
+    const verificationUrl = `${webUrl}/verify/${tempGenId}`;
 
     const renderResult = await renderDocument(model.template, inputs || {}, {
       format,
@@ -409,8 +408,7 @@ apiRouter.get("/generations/:id/download", async (req: Request, res: Response) =
 
     // Build verification URL for QR code in PDF
     const webUrl = process.env.NEXT_PUBLIC_WEB_URL || `${req.protocol}://${req.get("host")}`;
-    const apiUrl = process.env.API_URL || webUrl;
-    const verificationUrl = `${apiUrl}/api/v1/verify/${id}`;
+    const verificationUrl = `${webUrl}/verify/${id}`;
 
     const { content } = await renderDocument(
       model.template,
