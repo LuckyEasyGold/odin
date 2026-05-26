@@ -91,6 +91,9 @@ importers:
       '@auth/prisma-adapter':
         specifier: ^2.11.2
         version: 2.11.2(@prisma/client@5.22.0(prisma@5.22.0))
+      '@odin/engine':
+        specifier: workspace:*
+        version: link:../../packages/engine
       '@odin/storage':
         specifier: workspace:*
         version: link:../../packages/storage
