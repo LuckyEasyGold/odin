@@ -99,19 +99,26 @@ export async function renderDocument(
 
   try {
     if (process.env.VERCEL) {
-      // Dynamic require for Vercel serverless
+      // Dynamic require for Vercel serverless — uses chromium-min which downloads
+      // the binary from a remote URL at runtime (avoids the 50MB function size limit)
       let chromium, puppeteerCore;
       try {
-        chromium = require("@sparticuz/chromium");
+        chromium = require("@sparticuz/chromium-min");
         puppeteerCore = require("puppeteer-core");
       } catch (e) {
         console.error("Failed to load chromium modules:", e);
         throw new Error("Chromium not available in this environment");
       }
+
+      // The remote chromium tarball for v131 — matches puppeteer-core@22.x
+      const executablePath = await chromium.executablePath(
+        "https://github.com/Sparticuz/chromium/releases/download/v131.0.0/chromium-v131.0.0-pack.tar"
+      );
+
       browser = await puppeteerCore.launch({
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath(),
+        executablePath,
         headless: chromium.headless,
       });
     } else {
