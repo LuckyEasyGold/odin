@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@odin/storage", "@odin/core"],
-  // Required for Puppeteer/Chromium to work in Vercel serverless
-  serverExternalPackages: ["@sparticuz/chromium-min", "puppeteer-core", "puppeteer", "handlebars"],
+  transpilePackages: ["@odin/storage", "@odin/core", "@odin/engine"],
   async rewrites() {
     return [
       {
