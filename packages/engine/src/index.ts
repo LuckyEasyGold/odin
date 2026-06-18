@@ -1,5 +1,4 @@
 import Handlebars from "handlebars";
-import puppeteer from "puppeteer";
 import type { DocumentTemplate, RenderOptions } from "@odin/core";
 import crypto from "crypto";
 import QRCode from "qrcode";
@@ -115,6 +114,13 @@ export async function renderDocument(
         headless: chromium.headless,
       });
     } else {
+      let puppeteer;
+      try {
+        puppeteer = require("puppeteer");
+      } catch (e) {
+        console.error("Failed to load local puppeteer:", e);
+        throw new Error("Local Puppeteer not available");
+      }
       browser = await puppeteer.launch({
         headless: true,
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
