@@ -5,15 +5,38 @@ export interface EmailOptions {
 }
 
 export class EmailService {
+  private readonly resendApiKey = process.env.RESEND_API_KEY;
+  private readonly emailFrom = process.env.EMAIL_FROM;
+
+  private get isConfigured(): boolean {
+    return Boolean(this.resendApiKey && this.emailFrom);
+  }
+
   async sendEmail(options: EmailOptions): Promise<void> {
-    console.log("-----------------------------------------");
-    console.log(`[EMAIL SIMULADO] Enviando para: ${options.to}`);
-    console.log(`Assunto: ${options.subject}`);
-    console.log(`Corpo: ${options.html}`);
-    console.log("-----------------------------------------");
-    
-    // Futura integração com Resend, SendGrid, etc.
-    return Promise.resolve();
+    if (!this.isConfigured) {
+      console.warn("[EMAIL DISABLED] Missing RESEND_API_KEY or EMAIL_FROM. Email not sent.");
+      console.warn(`[EMAIL DISABLED] To: ${options.to} | Subject: ${options.subject}`);
+      return;
+    }
+
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.resendApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: this.emailFrom,
+        to: [options.to],
+        subject: options.subject,
+        html: options.html,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`Failed to send email (${response.status}): ${errorBody}`);
+    }
   }
 
   async sendSignatureRequest(to: string, signerName: string, documentName: string, signUrl: string): Promise<void> {
@@ -32,7 +55,7 @@ export class EmailService {
           <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
           <p style="font-size: 10px; color: #999;">ODIN - Infraestrutura Aberta para Documentos</p>
         </div>
-      `
+      `,
     });
   }
 }
