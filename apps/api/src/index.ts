@@ -410,7 +410,7 @@ apiRouter.get("/generations/:id/download", async (req: Request, res: Response) =
     const webUrl = process.env.NEXT_PUBLIC_WEB_URL || `${req.protocol}://${req.get("host")}`;
     const verificationUrl = `${webUrl}/verify/${id}`;
 
-    const { content } = await renderDocument(
+    const renderResult = await renderDocument(
       model.template,
       generation.inputs as Record<string, unknown>,
       {
@@ -421,9 +421,16 @@ apiRouter.get("/generations/:id/download", async (req: Request, res: Response) =
       }
     );
 
+    if (renderResult.degraded) {
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("X-ODIN-Degraded", "pdf-fallback-html");
+      res.setHeader("Content-Disposition", `attachment; filename=documento-${id}.html`);
+      return res.send(renderResult.content);
+    }
+
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename=documento-${id}.pdf`);
-    res.send(content);
+    res.send(renderResult.content);
   } catch (error) {
     res.status(500).json({ error: "Download failed" });
   }
