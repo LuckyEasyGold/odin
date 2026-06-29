@@ -1,7 +1,6 @@
 import Handlebars from "handlebars";
 import type { DocumentTemplate, RenderOptions } from "@odin/core";
 import crypto from "crypto";
-import path from "path";
 import QRCode from "qrcode";
 import { registerOdinHelpers } from "./helpers";
 
@@ -99,42 +98,55 @@ export async function renderDocument(
 
   try {
     if (process.env.VERCEL) {
-      // Dynamic require for Vercel serverless using @sparticuz/chromium-min
-      let chromium, puppeteerCore;
-      try {
-        chromium = require("@sparticuz/chromium-min");
-        puppeteerCore = require("puppeteer-core");
-      } catch (e) {
-        console.error("Failed to load chromium modules:", e);
-        throw new Error("Chromium not available in this environment");
+      console.log("[ODIN PDF] Starting PDF generation on Vercel...");
+      console.log("[ODIN PDF] CHROMIUM_DOWNLOAD_URL:", process.env.CHROMIUM_DOWNLOAD_URL ? "set" : "NOT SET");
+
+      // CRITICAL: Set AWS_LAMBDA_JS_RUNTIME BEFORE require() so chromium-min
+      // extracts system libraries (libnss3, libX11, etc.) and sets LD_LIBRARY_PATH
+      if (!process.env.AWS_LAMBDA_JS_RUNTIME) {
+        process.env.AWS_LAMBDA_JS_RUNTIME = "nodejs20.x";
+        console.log("[ODIN PDF] Set AWS_LAMBDA_JS_RUNTIME=nodejs20.x for library extraction");
       }
 
-      // Disable graphics for serverless (no GPU)
-      chromium.setGraphicsMode = false;
+      // Dynamic require for Vercel serverless using @sparticuz/chromium-min
+      let ChromiumClass, puppeteerCore;
+      try {
+        ChromiumClass = require("@sparticuz/chromium-min");
+        puppeteerCore = require("puppeteer-core");
+        console.log("[ODIN PDF] chromium-min and puppeteer-core loaded successfully");
+      } catch (e: any) {
+        console.error("[ODIN PDF] Failed to load chromium modules:", e?.message || e);
+        throw new Error("Chromium modules not available");
+      }
 
       // Resolve Chromium binary path
       // If CHROMIUM_DOWNLOAD_URL is set, chromium-min downloads it at runtime.
       // Otherwise it falls back to the bundled brotli files (if using the full package).
       const downloadUrl = process.env.CHROMIUM_DOWNLOAD_URL;
-      let executablePath;
+      let executablePath: string;
       try {
-        executablePath = await chromium.executablePath(
+        console.log("[ODIN PDF] Calling chromium.executablePath()...");
+        executablePath = await ChromiumClass.executablePath(
           downloadUrl || undefined
         );
-      } catch (e) {
-        console.error("Failed to resolve Chromium executable path:", e);
-        throw new Error("Chromium executable not found");
+        console.log("[ODIN PDF] Chromium executable path:", executablePath);
+      } catch (e: any) {
+        console.error("[ODIN PDF] Failed to resolve Chromium executable path:", e?.message || e);
+        throw new Error("Chromium executable not found: " + (e?.message || e));
       }
 
-      // Set library path so Chromium can find system libraries on Vercel
-      process.env.LD_LIBRARY_PATH = path.dirname(executablePath);
+      // Log LD_LIBRARY_PATH (should be set by chromium-min's setupLambdaEnvironment)
+      console.log("[ODIN PDF] LD_LIBRARY_PATH after require:", process.env.LD_LIBRARY_PATH || "(not set - chromium-min may not have set it)");
+      console.log("[ODIN PDF] FONTCONFIG_PATH:", process.env.FONTCONFIG_PATH || "(not set)");
 
+      console.log("[ODIN PDF] Launching puppeteer...");
       browser = await puppeteerCore.launch({
-        args: chromium.args,
-        defaultViewport: chromium.defaultViewport,
+        args: ChromiumClass.args,
+        defaultViewport: ChromiumClass.defaultViewport,
         executablePath,
-        headless: chromium.headless,
+        headless: ChromiumClass.headless,
       });
+      console.log("[ODIN PDF] Puppeteer launched successfully");
     } else {
       let puppeteer;
       try {
