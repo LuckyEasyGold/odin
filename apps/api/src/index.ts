@@ -22,7 +22,7 @@ const ratingRepo = new RatingRepository(prisma);
 
 app.use(express.json());
 
-// Auth Middleware for API Keys
+// Auth Middleware for API Keys (optional — attaches user if key is provided)
 async function authenticateApiKey(req: Request, res: Response, next: Function) {
   const apiKey = req.headers["x-api-key"] as string;
 
@@ -52,6 +52,15 @@ async function authenticateApiKey(req: Request, res: Response, next: Function) {
   } catch (error) {
     res.status(500).json({ error: "Authentication error", details: (error as Error).message });
   }
+}
+
+// Middleware to REQUIRE authentication for mutating endpoints
+async function requireAuth(req: Request, res: Response, next: Function) {
+  const user = (req as any).user;
+  if (!user) {
+    return res.status(401).json({ error: "Authentication required. Provide a valid API key via x-api-key header." });
+  }
+  next();
 }
 
 // Trust proxy for Vercel
@@ -89,20 +98,29 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS
+// CORS — strict allowlist
+const ALLOWED_ORIGINS = [
+  "https://odin-web-snowy.vercel.app",
+  "https://odin-api-eight.vercel.app",
+];
+
+// Also allow localhost in development
+if (process.env.NODE_ENV !== "production") {
+  ALLOWED_ORIGINS.push("http://localhost:3000");
+  ALLOWED_ORIGINS.push("http://localhost:3001");
+}
+
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   
-  // Allow localhost, production frontend, and Vercel preview/branch subdomains
-  const isAllowedOrigin = !origin || 
-    origin === "https://odin-web-snowy.vercel.app" || 
-    origin.startsWith("http://localhost:") ||
-    (origin.endsWith(".vercel.app") && origin.includes("odin"));
-
-  if (origin && isAllowedOrigin) {
-    res.header("Access-Control-Allow-Origin", origin);
-  } else if (!origin) {
-    res.header("Access-Control-Allow-Origin", "*");
+  if (origin) {
+    if (ALLOWED_ORIGINS.includes(origin)) {
+      res.header("Access-Control-Allow-Origin", origin);
+    } else {
+      // For disallowed origins, still respond but without CORS headers
+      // (browser will block the request)
+      return next();
+    }
   }
   
   res.header(
@@ -191,7 +209,9 @@ apiRouter.get("/models/:id/ratings", async (req: Request, res: Response) => {
   }
 });
 
-apiRouter.post("/models/:id/ratings", async (req: Request, res: Response) => {
+// ─── MUTATING ROUTES (require authentication) ───
+
+apiRouter.post("/models/:id/ratings", requireAuth, async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     const { userId, rating, comment } = req.body;
@@ -209,7 +229,7 @@ apiRouter.post("/models/:id/ratings", async (req: Request, res: Response) => {
   }
 });
 
-apiRouter.post("/models/:id/fork", async (req: Request, res: Response) => {
+apiRouter.post("/models/:id/fork", requireAuth, async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     const { slug } = req.body;
@@ -235,9 +255,25 @@ apiRouter.get("/models/:id", async (req: Request, res: Response) => {
   }
 });
 
-apiRouter.post("/models", async (req: Request, res: Response) => {
+apiRouter.post("/models", requireAuth, async (req: Request, res: Response) => {
   try {
-    const model = await modelRepo.create(req.body);
+    const { name, template, description, ...rest } = req.body;
+    if (!name || typeof name !== "string") {
+      return res.status(400).json({ error: "Field 'name' is required and must be a string" });
+    }
+    if (!template || typeof template !== "string") {
+      return res.status(400).json({ error: "Field 'template' is required and must be a string" });
+    }
+    // Limit template size to prevent abuse
+    if (template.length > 100000) {
+      return res.status(400).json({ error: "Template exceeds maximum size of 100KB" });
+    }
+    const model = await modelRepo.create({
+      name,
+      template,
+      description: description || "",
+      ...rest,
+    });
     res.status(201).json(model);
   } catch (error) {
     res.status(400).json({ error: "Invalid model data" });
@@ -559,7 +595,7 @@ apiRouter.get("/verify/:id", async (req: Request, res: Response) => {
 });
 
 // Native signing endpoint
-apiRouter.post("/generations/:id/sign-native", async (req: Request, res: Response) => {
+apiRouter.post("/generations/:id/sign-native", requireAuth, async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     const { email, signatureData } = req.body;

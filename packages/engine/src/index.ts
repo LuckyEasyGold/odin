@@ -2,6 +2,7 @@ import Handlebars from "handlebars";
 import type { DocumentTemplate, RenderOptions } from "@odin/core";
 import crypto from "crypto";
 import QRCode from "qrcode";
+import DOMPurify from "isomorphic-dompurify";
 import { registerOdinHelpers } from "./helpers";
 
 // Register typed helpers ({{moeda}}, {{data}}, {{soma}}, ...) once at module load.
@@ -67,7 +68,7 @@ export async function renderDocument(
   const compiled = Handlebars.compile(template);
   let html = compiled(data);
 
-  // Build verification footer if URL is provided
+  // Build verification footer if URL is provided (BEFORE sanitization so footer is also sanitized)
   let verificationFooter = "";
   let documentHash = "";
 
@@ -82,6 +83,13 @@ export async function renderDocument(
       html = html + "\n" + verificationFooter;
     }
   }
+
+  // Sanitize HTML (after footer injection) to prevent XSS attacks from templates and signer data
+  html = DOMPurify.sanitize(html, {
+    ADD_TAGS: ["style", "img", "svg"],
+    ADD_ATTR: ["style", "class", "id", "src", "alt", "href", "target", "rel"],
+    ALLOW_DATA_ATTR: true,
+  });
 
   // HTML format: return inline with footer
   if (options?.format === "html") {
@@ -179,6 +187,9 @@ export async function renderDocument(
         }
       </style>
     `;
+
+    // Disable JavaScript execution in Puppeteer to prevent XSS-based attacks
+    await page.setJavaScriptEnabled(false);
 
     await page.setContent(printStyles + html, { waitUntil: "networkidle0" });
 

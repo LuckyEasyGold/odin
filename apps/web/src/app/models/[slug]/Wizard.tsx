@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { getTranslation } from "@/locales";
+import DOMPurify from "isomorphic-dompurify";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -393,10 +394,12 @@ export default function Wizard({ model }: { model: Model }) {
             boxSizing: "border-box",
           }}
           dangerouslySetInnerHTML={{
-            __html:
+            __html: DOMPurify.sanitize(
               result?.html ||
               templateRef.current ||
               `<p style="color:#999;text-align:center;padding:4rem 0;">Preencha os campos acima para gerar o documento.</p>`,
+              { ADD_TAGS: ["style"], ADD_ATTR: ["style", "class"], ALLOW_DATA_ATTR: true }
+            ),
           }}
         />
 
