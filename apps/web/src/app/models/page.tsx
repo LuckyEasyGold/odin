@@ -278,10 +278,8 @@ export default async function ModelsPage({
                   style={{
                     borderBottom: "1px solid var(--card-border)",
                     transition: "background 0.15s",
-                    cursor: "pointer"
                   }}
                   className="model-list-row"
-                  onClick={() => { window.location.href = `/models/${model.slug}`; }}
                 >
                   <style dangerouslySetInnerHTML={{ __html: `
                     .model-list-row:hover { background: rgba(59, 130, 246, 0.03); }
