@@ -95,10 +95,70 @@ export default function Wizard({ model }: { model: Model }) {
     }
   };
 
+  // Try server-side PDF (works locally, may fallback to HTML on Vercel)
   const handleDownload = async () => {
     if (!result?.generationId) return;
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
     window.open(`${apiUrl}/api/v1/generations/${result.generationId}/download`, "_blank");
+  };
+
+  // Client-side PDF via browser print dialog ("Save as PDF")
+  const handlePrintPDF = () => {
+    if (!result?.html) return;
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      alert("Pop-up bloqueado. Permita pop-ups para imprimir o documento.");
+      return;
+    }
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Documento ODIN</title>
+        <style>
+          @page { margin: 20mm; size: A4; }
+          * { box-sizing: border-box; }
+          body { 
+            font-family: 'Times New Roman', Times, serif !important; 
+            font-size: 12pt !important; 
+            line-height: 1.6 !important; 
+            color: #000 !important; 
+            padding: 0 !important;
+            margin: 0 !important;
+            width: 100%;
+          }
+          @media print {
+            body { padding: 0; margin: 0; }
+          }
+          img { max-width: 100%; height: auto; }
+          table { width: 100%; border-collapse: collapse; }
+          td, th { border: 1px solid #000; padding: 8px; }
+          p { margin: 0 0 10pt 0; }
+    </style>
+  </head>
+  <body>
+    ${result.html}
+    <script>
+      window.onload = function() { window.print(); };
+    <\/script>
+  </body>
+  </html>
+    `);
+    printWindow.document.close();
+  };
+
+  // Download HTML as a file (always works)
+  const handleDownloadHTML = () => {
+    if (!result?.html) return;
+    const blob = new Blob([result.html], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `documento-odin.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -328,22 +388,59 @@ export default function Wizard({ model }: { model: Model }) {
       }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
           <h3 style={{ margin: 0, color: "var(--foreground)" }}>{t.wizard.preview}</h3>
-          {result?.generationId && (
-            <button
-              onClick={handleDownload}
-              style={{
-                padding: "0.6rem 1.25rem",
-                backgroundColor: "#10b981",
-                color: "white",
-                border: "none",
-                borderRadius: "10px",
-                cursor: "pointer",
-                fontWeight: "bold",
-                fontSize: "0.85rem"
-              }}
-            >
-              Baixar (PDF)
-            </button>
+          {result?.html && (
+            <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+              <button
+                onClick={handlePrintPDF}
+                style={{
+                  padding: "0.6rem 1rem",
+                  backgroundColor: "#2563eb",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  fontSize: "0.8rem",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                🖨️ PDF (Navegador)
+              </button>
+              {result?.generationId && (
+                <button
+                  onClick={handleDownload}
+                  style={{
+                    padding: "0.6rem 1rem",
+                    backgroundColor: "#10b981",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "10px",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                    fontSize: "0.8rem",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  ⬇️ Download
+                </button>
+              )}
+              <button
+                onClick={handleDownloadHTML}
+                style={{
+                  padding: "0.6rem 1rem",
+                  backgroundColor: "transparent",
+                  color: "var(--muted)",
+                  border: "1px solid var(--card-border)",
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  fontSize: "0.8rem",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                HTML
+              </button>
+            </div>
           )}
         </div>
         
