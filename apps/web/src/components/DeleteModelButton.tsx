@@ -7,9 +7,11 @@ type DeleteModelButtonProps = {
   label?: string;
   action: (formData: FormData) => Promise<void>;
   buttonStyle?: CSSProperties;
+  /** Optional CSS class for uniform button styling */
+  className?: string;
 };
 
-export default function DeleteModelButton({ id, label = "Excluir", action, buttonStyle }: DeleteModelButtonProps) {
+export default function DeleteModelButton({ id, label = "Excluir", action, buttonStyle, className }: DeleteModelButtonProps) {
   const formRef = useRef<HTMLFormElement>(null);
 
   function handleClick(event: FormEvent<HTMLButtonElement>) {
@@ -22,24 +24,34 @@ export default function DeleteModelButton({ id, label = "Excluir", action, butto
   }
 
   return (
-    <form ref={formRef} action={action}>
+    <form ref={formRef} action={action} style={{ display: "inline" }}>
       <input type="hidden" name="id" value={id} />
-      <button
-        type="button"
-        onClick={handleClick}
-        style={{
-          fontSize: "0.8rem",
-          color: "#dc2626",
-          background: "transparent",
-          border: "none",
-          cursor: "pointer",
-          padding: 0,
-          textDecoration: "underline",
-          ...buttonStyle
-        }}
-      >
-        {label}
-      </button>
+      {className ? (
+        <button
+          type="button"
+          onClick={handleClick}
+          className={className}
+        >
+          {label}
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={handleClick}
+          style={{
+            fontSize: "0.8rem",
+            color: "#dc2626",
+            background: "transparent",
+            border: "none",
+            cursor: "pointer",
+            padding: 0,
+            textDecoration: "underline",
+            ...buttonStyle
+          }}
+        >
+          {label}
+        </button>
+      )}
     </form>
   );
 }

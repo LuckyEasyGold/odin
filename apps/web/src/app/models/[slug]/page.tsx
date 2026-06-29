@@ -85,61 +85,30 @@ export default async function ModelDetailPage({ params }: { params: Promise<{ sl
           )}
         </div>
 
-        <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-          {/* Specialist Verification Button */}
+        <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
+          {/* All action buttons use a uniform style */}
           {session?.user?.isSpecialist && compliance?.status !== "verified" && (
             <form action={async () => {
               "use server";
               await verifyModel(model.id);
             }}>
-              <button type="submit" style={{ 
-                padding: "0.75rem 1.5rem", 
-                backgroundColor: "#0891b2", 
-                color: "white", 
-                border: "none", 
-                borderRadius: "12px", 
-                fontWeight: "bold",
-                cursor: "pointer",
-                boxShadow: "0 10px 15px -3px rgba(8, 145, 178, 0.3)"
-              }}>
-                ✅ Verificar Modelo (Specialist)
+              <button type="submit" className="action-btn action-btn-verify">
+                ✅ Verificar
               </button>
             </form>
           )}
 
           {session?.user?.id === model.createdBy && (
             <>
-              <Link
-                href={`/dashboard/models/${model.id}/edit`}
-                style={{
-                  padding: "0.75rem 1.5rem",
-                  backgroundColor: "var(--primary)",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "12px",
-                  fontWeight: "bold",
-                  textDecoration: "none",
-                  cursor: "pointer",
-                  boxShadow: "0 10px 15px -3px rgba(59, 130, 246, 0.3)"
-                }}
-              >
+              <Link href={`/dashboard/models/${model.id}/edit`} className="action-btn action-btn-edit">
                 ✏️ Editar Modelo
               </Link>
               <DeleteModelButton
                 id={model.id}
                 action={deleteModel}
-                label="🗑️ Excluir Modelo"
-                buttonStyle={{
-                  padding: "0.75rem 1.5rem",
-                  backgroundColor: "#fee2e2",
-                  color: "#b91c1c",
-                  border: "1px solid #fca5a5",
-                  borderRadius: "12px",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)",
-                  textDecoration: "none"
-                }}
+                label="🗑️ Excluir"
+                buttonStyle={{}}
+                className="action-btn action-btn-delete"
               />
             </>
           )}
@@ -148,17 +117,8 @@ export default async function ModelDetailPage({ params }: { params: Promise<{ sl
             "use server";
             await forkModel(model.id);
           }}>
-            <button type="submit" style={{ 
-              padding: "0.75rem 1.5rem", 
-              backgroundColor: "var(--card-bg)", 
-              color: "var(--foreground)", 
-              border: "1px solid var(--card-border)", 
-              borderRadius: "12px", 
-              fontWeight: "bold",
-              cursor: "pointer",
-              boxShadow: "0 4px 6px var(--shadow)"
-            }}>
-              🔱 Fork (Criar minha versão)
+            <button type="submit" className="action-btn action-btn-fork">
+              🔱 Fork
             </button>
           </form>
         </div>
