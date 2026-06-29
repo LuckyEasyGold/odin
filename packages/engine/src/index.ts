@@ -1,6 +1,7 @@
 import Handlebars from "handlebars";
 import type { DocumentTemplate, RenderOptions } from "@odin/core";
 import crypto from "crypto";
+import path from "path";
 import QRCode from "qrcode";
 import { registerOdinHelpers } from "./helpers";
 
@@ -98,19 +99,40 @@ export async function renderDocument(
 
   try {
     if (process.env.VERCEL) {
-      // Dynamic require for Vercel serverless
+      // Dynamic require for Vercel serverless using @sparticuz/chromium-min
       let chromium, puppeteerCore;
       try {
-        chromium = require("@sparticuz/chromium");
+        chromium = require("@sparticuz/chromium-min");
         puppeteerCore = require("puppeteer-core");
       } catch (e) {
         console.error("Failed to load chromium modules:", e);
         throw new Error("Chromium not available in this environment");
       }
+
+      // Disable graphics for serverless (no GPU)
+      chromium.setGraphicsMode = false;
+
+      // Resolve Chromium binary path
+      // If CHROMIUM_DOWNLOAD_URL is set, chromium-min downloads it at runtime.
+      // Otherwise it falls back to the bundled brotli files (if using the full package).
+      const downloadUrl = process.env.CHROMIUM_DOWNLOAD_URL;
+      let executablePath;
+      try {
+        executablePath = await chromium.executablePath(
+          downloadUrl || undefined
+        );
+      } catch (e) {
+        console.error("Failed to resolve Chromium executable path:", e);
+        throw new Error("Chromium executable not found");
+      }
+
+      // Set library path so Chromium can find system libraries on Vercel
+      process.env.LD_LIBRARY_PATH = path.dirname(executablePath);
+
       browser = await puppeteerCore.launch({
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath(),
+        executablePath,
         headless: chromium.headless,
       });
     } else {
