@@ -422,16 +422,29 @@ apiRouter.get("/generations/:id/download", async (req: Request, res: Response) =
     );
 
     if (renderResult.degraded) {
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      res.setHeader("X-ODIN-Degraded", "pdf-fallback-html");
-      res.setHeader("Content-Disposition", `attachment; filename=documento-${id}.html`);
-      return res.send(renderResult.content);
+      res.writeHead(200, {
+        "Content-Type": "text/html; charset=utf-8",
+        "X-ODIN-Degraded": "pdf-fallback-html",
+        "Content-Disposition": `attachment; filename=documento-${id}.html`,
+      });
+      const body = typeof renderResult.content === "string"
+        ? renderResult.content
+        : Buffer.from(renderResult.content).toString("utf-8");
+      return res.end(body);
     }
 
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename=documento-${id}.pdf`);
-    res.send(renderResult.content);
+    const pdfBuffer = Buffer.isBuffer(renderResult.content)
+      ? renderResult.content
+      : Buffer.from(renderResult.content);
+
+    res.writeHead(200, {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename=documento-${id}.pdf`,
+      "Content-Length": Buffer.byteLength(pdfBuffer),
+    });
+    res.end(pdfBuffer);
   } catch (error) {
+    console.error("[ODIN PDF] Download error:", error);
     res.status(500).json({ error: "Download failed" });
   }
 });
