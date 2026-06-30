@@ -77,6 +77,80 @@ Foi implementada uma solução client-side de PDF via `window.print()` no Wizard
 
 ---
 
+## 2026-06-29 — Mobile-First: Transformação em App Mobile Responsivo + PWA
+
+**Contexto:** Usuário solicitou uma versão responsiva com aparência de aplicativo mobile para o ODIN. O projeto tinha design desktop-first, sem suporte mobile adequado.
+
+### Diagnóstico
+1. **Layout desktop-first:** Navbar fixa no topo, sidebar do dashboard fixa em 260px — quebrava em telas < 768px
+2. **Sem PWA:** Não havia manifest.json, viewport meta, ícones para instalação como app
+3. **Formulários não responsivos:** Inputs e botões com tamanhos fixos, sem adaptação mobile
+4. **Tabelas sem scroll:** Wallet, Keys e list view da página de modelos não tinham overflow-x
+5. **Sem touch feedback:** Nenhum `-webkit-tap-highlight-color`, active states, ou animações de toque
+
+### Ações tomadas
+
+#### 1. Design System Mobile-First (`globals.css`)
+- Adicionado `--bottom-nav-height`, `--safe-area-top/bottom`, `--radius-*` tokens
+- `-webkit-tap-highlight-color: transparent` em todos os botões
+- `overscroll-behavior: none` no body
+- `input:focus` com box-shadow sutil
+- Classes utilitárias: `.card-grid`, `.table-responsive`, `.page-container`, `.page-enter`, `.btn-primary`, `.btn-secondary`
+- Media queries para ≥768px (`.show-desktop`/`.show-mobile`)
+- Animações: `fadeIn`, `slideUp`, shimmer skeleton, toast
+
+#### 2. Bottom Tab Bar no Mobile (`Navbar.tsx`)
+- Mobile: bottom tabs fixas com ícones SVG (Início, Modelos, Docs, Entrar/Painel)
+- Tab ativa com indicador superior e cor primária
+- Desktop: mantida a navbar superior original com blur, scroll detection
+- Dashboard tem sua própria bottom nav separada (escondida do Navbar global)
+
+#### 3. Dashboard Mobile (`DashboardMobileNav.tsx` + `layout.tsx`)
+- Desktop: sidebar fixa à esquerda com links, info do usuário, botão sair
+- Mobile: bottom tab bar com 5 abas (Painel, Carteira, Chaves, Webhooks, Criar)
+- Conteúdo principal com `overflow-x: hidden`, padding responsivo
+
+#### 4. PWA Suporte
+- `manifest.json` com todos os tamanhos de ícone (72-512px)
+- Viewport meta com `viewport-fit=cover`, `maximum-scale=1.0`, `user-scalable=no`
+- Meta tags: `apple-mobile-web-app-capable`, `theme-color`, `status-bar-style`
+- Ícones em `/icons/`
+
+#### 5. Páginas Adaptadas para Mobile
+| Página | Adaptações |
+|--------|-----------|
+| **Landing** (`page.tsx`) | Fontes com `clamp()`, CTA com `btn-primary`/`btn-secondary`, grid responsivo, emoji 🔱 no hero |
+| **Modelos** (`models/page.tsx`) | Filtros em grid responsivo `auto-fit`, inputs menores, padding responsivo |
+| **Model Detail** (`models/[slug]/page.tsx`) | Header em coluna, badges adaptados, overflow-x nos action buttons |
+| **Wizard** (`Wizard.tsx`) | Padding responsivo no documento, inputs de signatários com `flex-wrap`, botões com `btn-primary`/`btn-secondary` |
+| **Login/Register** | Usa variáveis CSS do tema, cards com `var(--radius-xl)`, inputs unificados |
+| **Dashboard > Wallet** | Cards com `clamp()` padding, extrato com `table-responsive` para scroll horizontal |
+| **Dashboard > Keys** | Padding responsivo, dica de segurança adaptada |
+| **Dashboard > Webhooks** | Padding responsivo, boxes adaptados |
+| **Docs** | Fontes `clamp()`, grid de navegação responsivo |
+
+#### 6. Acessibilidade e Touch
+- `-webkit-tap-highlight-color: transparent` em elementos interativos
+- `:active` states com `scale(0.96)` nos action buttons
+- Scroll customizado com `::-webkit-scrollbar`
+- Selection color com a cor primária
+
+### Impacto
+- ✅ Interface nativa mobile com bottom tabs fixas
+- ✅ PWA instalável como app no celular
+- ✅ Todas as páginas adaptadas para viewport < 768px
+- ✅ Dashboard funcional em mobile com bottom nav própria
+- ✅ Touch feedback e animações suaves
+- ✅ Código legado preservado (sem breaking changes no layout desktop)
+
+### Pendências
+- [ ] Gerar ícones PNG reais (atualmente SVG placeholder)
+- [ ] Testar em dispositivos iOS e Android reais
+- [ ] Adicionar service worker para cache offline
+- [ ] Testar PWA install prompt
+
+---
+
 ## Template para novos registros
 
 ```markdown

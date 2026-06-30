@@ -42,24 +42,22 @@ export default function LoginPage() {
       display: "flex", 
       alignItems: "center", 
       justifyContent: "center",
-      backgroundColor: "#f8fafc" 
+      padding: "1rem",
+      backgroundColor: "var(--background)" 
     }}>
       <div style={{ 
         width: "100%", 
         maxWidth: "400px", 
-        padding: "2rem", 
-        backgroundColor: "white", 
-        borderRadius: "16px",
-        boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)"
+        padding: "clamp(1.5rem, 4vw, 2.5rem)",
+        backgroundColor: "var(--card-bg)", 
+        borderRadius: "var(--radius-xl)",
+        border: "1px solid var(--card-border)",
+        boxShadow: "0 10px 25px var(--shadow)"
       }}>
-        <div style={{ marginBottom: "2rem", textAlign: "center" }}>
-          <Link href="/" style={{ color: "#64748b", textDecoration: "none", fontSize: "0.875rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
-            ← Voltar para o Início
-          </Link>
-        </div>
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <h1 style={{ fontSize: "1.875rem", fontWeight: "bold", color: "#0f172a" }}>Entrar no ODIN</h1>
-          <p style={{ color: "#64748b", marginTop: "0.5rem" }}>Acesse sua conta para gerenciar documentos</p>
+          <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>🔱</div>
+          <h1 style={{ fontSize: "1.75rem", fontWeight: "bold", color: "var(--foreground)" }}>Entrar no ODIN</h1>
+          <p style={{ color: "var(--muted)", marginTop: "0.5rem", fontSize: "0.9rem" }}>Acesse sua conta para gerenciar documentos</p>
         </div>
 
         {error && (
@@ -67,9 +65,10 @@ export default function LoginPage() {
             padding: "0.75rem", 
             backgroundColor: "#fee2e2", 
             color: "#b91c1c", 
-            borderRadius: "8px",
+            borderRadius: "10px",
             marginBottom: "1.5rem",
-            fontSize: "0.875rem"
+            fontSize: "0.875rem",
+            fontWeight: "500"
           }}>
             {error}
           </div>
@@ -77,7 +76,7 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: "1.25rem" }}>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem", fontWeight: "500" }}>
+            <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem", fontWeight: "600", color: "var(--foreground)" }}>
               Username ou Email
             </label>
             <input
@@ -85,19 +84,12 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              style={{ 
-                width: "100%", 
-                padding: "0.75rem", 
-                borderRadius: "8px", 
-                border: "1px solid #e2e8f0",
-                outline: "none"
-              }}
               placeholder="ex: system"
             />
           </div>
 
           <div style={{ marginBottom: "1.5rem" }}>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem", fontWeight: "500" }}>
+            <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem", fontWeight: "600", color: "var(--foreground)" }}>
               Senha
             </label>
             <input
@@ -105,13 +97,6 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              style={{ 
-                width: "100%", 
-                padding: "0.75rem", 
-                borderRadius: "8px", 
-                border: "1px solid #e2e8f0",
-                outline: "none"
-              }}
               placeholder="••••••••"
             />
           </div>
@@ -119,26 +104,23 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            style={{
-              width: "100%",
-              padding: "0.75rem",
-              backgroundColor: "#2563eb",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              fontWeight: "600",
-              cursor: loading ? "not-allowed" : "pointer",
-              transition: "background-color 0.2s"
-            }}
+            className="btn-primary"
+            style={{ width: "100%" }}
           >
             {loading ? "Carregando..." : "Entrar"}
           </button>
         </form>
 
-        <div style={{ marginTop: "1.5rem", textAlign: "center", fontSize: "0.875rem", color: "#64748b" }}>
+        <div style={{ marginTop: "1.5rem", textAlign: "center", fontSize: "0.875rem", color: "var(--muted)" }}>
           Ainda não tem conta?{" "}
-          <Link href="/register" style={{ color: "#2563eb", fontWeight: "600" }}>
+          <Link href="/register" style={{ color: "var(--primary)", fontWeight: "700" }}>
             Criar conta
+          </Link>
+        </div>
+
+        <div style={{ marginTop: "1rem", textAlign: "center" }}>
+          <Link href="/" style={{ color: "var(--muted)", fontSize: "0.8rem", textDecoration: "none" }}>
+            ← Voltar para o Início
           </Link>
         </div>
       </div>

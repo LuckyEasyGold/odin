@@ -318,6 +318,7 @@ export default function Wizard({ model }: { model: Model }) {
         margin: "0 auto",
         color: "var(--foreground)",
       }}
+      className="page-enter"
     >
       {/* ═══════ 1. Expert tip  ═══════ */}
       {(model as any).guidance && (
@@ -383,10 +384,10 @@ export default function Wizard({ model }: { model: Model }) {
           style={{
             backgroundColor: "#fff",
             color: "#000",
-            padding: "3.5rem 4rem",
-            minHeight: "600px",
+            padding: "clamp(1.5rem, 4vw, 4rem)",
+            minHeight: "clamp(300px, 60vh, 600px)",
             fontFamily: "'Times New Roman', Times, serif",
-            fontSize: "12pt",
+            fontSize: "clamp(10pt, 1.2vw, 12pt)",
             lineHeight: "1.8",
             maxWidth: "210mm",
             margin: "0 auto",
@@ -465,14 +466,14 @@ export default function Wizard({ model }: { model: Model }) {
             style={{
               backgroundColor: "var(--card-bg)",
               border: "1px solid var(--card-border)",
-              borderRadius: "16px",
-              padding: "2rem",
+              borderRadius: "var(--radius-lg)",
+              padding: "clamp(1rem, 2.5vw, 2rem)",
             }}
           >
             <h4
               style={{
-                margin: "0 0 1.25rem 0",
-                fontSize: "1rem",
+                margin: "0 0 1rem 0",
+                fontSize: "0.95rem",
                 color: "var(--foreground)",
                 display: "flex",
                 alignItems: "center",
@@ -494,24 +495,26 @@ export default function Wizard({ model }: { model: Model }) {
                   key={index}
                   style={{
                     display: "flex",
-                    gap: "0.75rem",
+                    gap: "0.5rem",
                     alignItems: "center",
+                    flexWrap: "wrap",
                   }}
                 >
                   <input
-                    placeholder="Nome do signatário"
+                    placeholder="Nome"
                     value={signer.name}
                     onChange={(e) =>
                       updateSigner(index, "name", e.target.value)
                     }
                     style={{
-                      flex: 1,
-                      padding: "0.7rem 1rem",
+                      flex: "1 1 140px",
+                      padding: "0.65rem 0.85rem",
                       borderRadius: "10px",
                       border: "1px solid var(--card-border)",
-                      fontSize: "0.9rem",
+                      fontSize: "0.85rem",
                       backgroundColor: "var(--background)",
                       color: "var(--foreground)",
+                      minWidth: 0,
                     }}
                   />
                   <input
@@ -522,13 +525,14 @@ export default function Wizard({ model }: { model: Model }) {
                       updateSigner(index, "email", e.target.value)
                     }
                     style={{
-                      flex: 1,
-                      padding: "0.7rem 1rem",
+                      flex: "1 1 160px",
+                      padding: "0.65rem 0.85rem",
                       borderRadius: "10px",
                       border: "1px solid var(--card-border)",
-                      fontSize: "0.9rem",
+                      fontSize: "0.85rem",
                       backgroundColor: "var(--background)",
                       color: "var(--foreground)",
+                      minWidth: 0,
                     }}
                   />
                   <button
@@ -539,9 +543,10 @@ export default function Wizard({ model }: { model: Model }) {
                       border: "none",
                       color: "#ef4444",
                       cursor: "pointer",
-                      fontSize: "1.25rem",
-                      padding: "0.5rem",
+                      fontSize: "1.1rem",
+                      padding: "0.4rem",
                       lineHeight: 1,
+                      flexShrink: 0,
                     }}
                   >
                     ✕
@@ -556,37 +561,27 @@ export default function Wizard({ model }: { model: Model }) {
               style={{
                 background: "none",
                 border: "1px dashed var(--card-border)",
-                color: "#2563eb",
-                padding: "0.75rem",
+                color: "var(--primary)",
+                padding: "0.65rem",
                 borderRadius: "10px",
-                marginTop: "1rem",
+                marginTop: "0.75rem",
                 width: "100%",
                 cursor: "pointer",
-                fontSize: "0.9rem",
+                fontSize: "0.85rem",
                 fontWeight: 500,
                 transition: "all 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "#2563eb";
-                e.currentTarget.style.background =
-                  "rgba(37, 99, 235, 0.04)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "var(--card-border)";
-                e.currentTarget.style.background = "none";
               }}
             >
               + Adicionar Signatário
             </button>
             <p
               style={{
-                fontSize: "0.8rem",
+                fontSize: "0.75rem",
                 color: "var(--muted)",
-                marginTop: "0.75rem",
+                marginTop: "0.5rem",
               }}
             >
-              Os signatários receberão um e-mail para assinar o documento
-              digitalmente via ODIN SIGN.
+              Os signatários receberão um e-mail para assinar digitalmente.
             </p>
           </div>
         )}
@@ -650,91 +645,44 @@ export default function Wizard({ model }: { model: Model }) {
         <div
           style={{
             display: "flex",
-            gap: "1rem",
+            gap: "0.75rem",
             justifyContent: "center",
+            flexWrap: "wrap",
           }}
         >
           {!result ? (
             <button
               onClick={handleSubmit}
               disabled={loading}
+              className="btn-primary"
               style={{
-                padding: "1.25rem 3rem",
-                backgroundColor: "#2563eb",
-                color: "white",
-                border: "none",
-                borderRadius: "14px",
-                fontSize: "1.15rem",
-                fontWeight: "bold",
-                cursor: loading ? "not-allowed" : "pointer",
-                boxShadow: "0 10px 20px -5px rgba(37, 99, 235, 0.35)",
-                transition: "all 0.2s ease",
                 opacity: loading ? 0.7 : 1,
-                minWidth: 280,
-              }}
-              onMouseEnter={(e) => {
-                if (!loading)
-                  e.currentTarget.style.transform = "translateY(-2px)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
+                minWidth: "clamp(200px, 40vw, 320px)",
+                fontSize: "clamp(0.95rem, 1.5vw, 1.15rem)",
               }}
             >
               {loading
                 ? "⏳ Gerando..."
                 : Number((model as any).price) > 0
-                  ? `🚀 Gerar por R$ ${Number((model as any).price).toFixed(2)}`
+                  ? `🚀 Gerar · R$ ${Number((model as any).price).toFixed(2)}`
                   : "🚀 Gerar Documento"}
             </button>
           ) : (
             <>
               <button
                 onClick={handleDownload}
+                className="btn-primary"
                 style={{
-                  padding: "1.25rem 3rem",
-                  backgroundColor: "#10b981",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "14px",
-                  fontSize: "1.15rem",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  boxShadow:
-                    "0 10px 20px -5px rgba(16, 185, 129, 0.35)",
-                  transition: "all 0.2s ease",
-                  minWidth: 280,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
+                  background: "linear-gradient(135deg, #10b981, #059669)",
+                  boxShadow: "0 6px 16px -4px rgba(16, 185, 129, 0.3)",
+                  fontSize: "clamp(0.95rem, 1.5vw, 1.15rem)",
                 }}
               >
                 ⬇️ Baixar PDF
               </button>
               <button
                 onClick={handleRegenerate}
-                style={{
-                  padding: "1.25rem 2rem",
-                  backgroundColor: "transparent",
-                  color: "var(--foreground)",
-                  border: "1px solid var(--card-border)",
-                  borderRadius: "14px",
-                  fontSize: "1.05rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "#2563eb";
-                  e.currentTarget.style.color = "#2563eb";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor =
-                    "var(--card-border)";
-                  e.currentTarget.style.color = "var(--foreground)";
-                }}
+                className="btn-secondary"
               >
                 ↩️ Refazer
               </button>

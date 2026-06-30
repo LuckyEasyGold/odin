@@ -56,62 +56,62 @@ export default async function ModelsPage({
 
   return (
     <main style={{
-      padding: "3rem 2rem",
+      padding: "clamp(1rem, 3vw, 3rem) clamp(0.75rem, 4vw, 4rem)",
       maxWidth: "1300px",
       margin: "0 auto",
       minHeight: "100vh",
       backgroundColor: "var(--background)",
       color: "var(--foreground)"
     }}>
-      <header style={{ marginBottom: "3rem", textAlign: "center" }}>
-        <h1 style={{ fontSize: "3rem", fontWeight: "800", color: "var(--foreground)", marginBottom: "1rem" }}>
+      <header style={{ marginBottom: "clamp(1.5rem, 3vw, 3rem)", textAlign: "center" }}>
+        <h1 style={{ fontSize: "clamp(1.75rem, 5vw, 3rem)", fontWeight: "800", color: "var(--foreground)", marginBottom: "0.75rem" }}>
           Explorar Modelos
         </h1>
-        <p style={{ fontSize: "1.25rem", color: "var(--muted)", maxWidth: "700px", margin: "0 auto" }}>
+        <p style={{ fontSize: "clamp(0.95rem, 2vw, 1.25rem)", color: "var(--muted)", maxWidth: "700px", margin: "0 auto" }}>
           Encontre o documento perfeito entre milhares de modelos profissionais.
         </p>
       </header>
 
-      {/* Barra de Busca e Filtros */}
+      {/* Filters */}
       <section style={{
         backgroundColor: "var(--card-bg)",
-        padding: "2rem",
-        borderRadius: "24px",
+        padding: "clamp(1rem, 2vw, 2rem)",
+        borderRadius: "var(--radius-xl)",
         boxShadow: "0 10px 15px -3px var(--shadow)",
-        marginBottom: "2rem",
+        marginBottom: "1.5rem",
         border: "1px solid var(--card-border)"
       }}>
-        <form style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 0.5fr", gap: "1rem", alignItems: "end" }}>
+        <form style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "0.75rem", alignItems: "end" }}>
           <div>
-            <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "bold", color: "var(--muted)", marginBottom: "0.5rem" }}>Busca</label>
+            <label style={{ display: "block", fontSize: "0.75rem", fontWeight: "bold", color: "var(--muted)", marginBottom: "0.4rem" }}>Busca</label>
             <input
               name="q"
               defaultValue={q}
               placeholder="Ex: Contrato..."
-              style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: "12px", border: "1px solid var(--card-border)", backgroundColor: "var(--background)", color: "var(--foreground)", fontSize: "1rem" }}
+              style={{ width: "100%", padding: "0.65rem 0.85rem", borderRadius: "10px", border: "1px solid var(--card-border)", backgroundColor: "var(--background)", color: "var(--foreground)", fontSize: "0.9rem" }}
             />
           </div>
           <div>
-            <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "bold", color: "var(--muted)", marginBottom: "0.5rem" }}>Categoria</label>
+            <label style={{ display: "block", fontSize: "0.75rem", fontWeight: "bold", color: "var(--muted)", marginBottom: "0.4rem" }}>Categoria</label>
             <select
               name="category"
               defaultValue={category}
-              style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: "12px", border: "1px solid var(--card-border)", backgroundColor: "var(--background)", color: "var(--foreground)", fontSize: "1rem" }}
+              style={{ width: "100%", padding: "0.65rem 0.85rem", borderRadius: "10px", border: "1px solid var(--card-border)", backgroundColor: "var(--background)", color: "var(--foreground)", fontSize: "0.9rem" }}
             >
               <option value="">Todas</option>
               {categories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
           <div>
-            <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "bold", color: "var(--muted)", marginBottom: "0.5rem" }}>Autor</label>
+            <label style={{ display: "block", fontSize: "0.75rem", fontWeight: "bold", color: "var(--muted)", marginBottom: "0.4rem" }}>Autor</label>
             <input
               name="author"
               defaultValue={author}
               placeholder="Criador..."
-              style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: "12px", border: "1px solid var(--card-border)", backgroundColor: "var(--background)", color: "var(--foreground)", fontSize: "1rem" }}
+              style={{ width: "100%", padding: "0.65rem 0.85rem", borderRadius: "10px", border: "1px solid var(--card-border)", backgroundColor: "var(--background)", color: "var(--foreground)", fontSize: "0.9rem" }}
             />
           </div>
-          <button type="submit" style={{ padding: "0.75rem", backgroundColor: "var(--primary)", color: "white", border: "none", borderRadius: "12px", fontWeight: "bold", cursor: "pointer" }}>
+          <button type="submit" style={{ padding: "0.65rem 1rem", backgroundColor: "var(--primary)", color: "white", border: "none", borderRadius: "10px", fontWeight: "bold", cursor: "pointer", height: "42px" }}>
             Buscar
           </button>
         </form>
@@ -183,30 +183,17 @@ export default async function ModelsPage({
 
       {/* ─── VIEW: CARDS ─── */}
       {!listMode && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: "2.5rem" }}>
+        <div className="card-grid" style={{ display: "grid", gap: "clamp(1rem, 2vw, 2.5rem)" }}>
           {models.map((model: any) => (
             <div
               key={model.id}
+              className="card"
               style={{
                 display: "flex",
                 flexDirection: "column",
-                padding: "2rem",
-                borderRadius: "24px",
-                color: "var(--foreground)",
-                backgroundColor: "var(--card-bg)",
-                border: "1px solid var(--card-border)",
-                boxShadow: "0 10px 15px -3px var(--shadow)",
-                transition: "all 0.3s ease"
+                padding: "clamp(1.25rem, 2.5vw, 2rem)",
               }}
-              className="model-card"
             >
-              <style dangerouslySetInnerHTML={{ __html: `
-                .model-card:hover {
-                  transform: translateY(-8px);
-                  box-shadow: 0 20px 25px -5px var(--shadow);
-                  border-color: var(--primary);
-                }
-              `}} />
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
                 <span style={{ fontSize: "0.75rem", background: "rgba(59, 130, 246, 0.1)", color: "var(--primary)", padding: "0.4rem 1rem", borderRadius: "100px", fontWeight: "700", textTransform: "uppercase" }}>
                   {model.category?.name || "Geral"}

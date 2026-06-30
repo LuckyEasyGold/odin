@@ -2,21 +2,19 @@ import Link from "next/link";
 
 export default function DocsPage() {
   return (
-    <main style={{ 
-      padding: "4rem 2rem", 
-      maxWidth: "1100px", 
-      margin: "0 auto",
+    <main className="page-container" style={{ 
+      maxWidth: "1100px",
       lineHeight: "1.7",
       color: "var(--foreground)",
       backgroundColor: "var(--background)",
       minHeight: "100vh"
     }}>
       {/* Hero Section */}
-      <header style={{ marginBottom: "5rem", textAlign: "center" }}>
-        <h1 style={{ fontSize: "3.5rem", fontWeight: "900", marginBottom: "1.5rem", letterSpacing: "-0.02em" }}>
+      <header style={{ marginBottom: "clamp(2rem, 5vw, 5rem)", textAlign: "center" }}>
+        <h1 style={{ fontSize: "clamp(1.75rem, 5vw, 3.5rem)", fontWeight: "900", marginBottom: "1rem", letterSpacing: "-0.02em" }}>
           Central de Conhecimento ODIN 🔱
         </h1>
-        <p style={{ fontSize: "1.25rem", color: "var(--muted)", maxWidth: "800px", margin: "0 auto" }}>
+        <p style={{ fontSize: "clamp(0.95rem, 2vw, 1.25rem)", color: "var(--muted)", maxWidth: "800px", margin: "0 auto" }}>
           Tudo o que você precisa saber para criar, gerenciar e integrar documentos profissionais com inteligência e conformidade.
         </p>
       </header>
@@ -24,9 +22,9 @@ export default function DocsPage() {
       {/* Grid de Navegação Rápida */}
       <nav style={{ 
         display: "grid", 
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", 
-        gap: "1rem", 
-        marginBottom: "6rem" 
+        gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", 
+        gap: "0.75rem", 
+        marginBottom: "clamp(2rem, 5vw, 6rem)" 
       }}>
         {["Quickstart", "Fundamentos", "Biblioteca", "Editor", "Compliance", "Finanças", "Assinaturas", "Desenvolvedores", "Segurança"].map((item) => (
           <a key={item} href={`#${item.toLowerCase()}`} style={{

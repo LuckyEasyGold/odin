@@ -8,6 +8,16 @@ export const metadata = {
   },
   description: "Open Document Infrastructure Network — Gere documentos profissionais e jurídicos a partir de modelos reutilizáveis via API.",
   keywords: "documentos, documentos jurídicos, automação documental, templates, API, odin",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/icons/icon-192x192.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "ODIN",
+  },
   openGraph: {
     title: "ODIN — Geração de Documentos Profissionais",
     description: "Plataforma open source para criar, validar e automatizar documentos profissionais via API.",
@@ -30,10 +40,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+        <meta name="theme-color" content="#0f172a" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+      </head>
       <body>
         <Providers>
           <Navbar />
-          {children}
+          <main className="page-enter">
+            {children}
+          </main>
         </Providers>
       </body>
     </html>

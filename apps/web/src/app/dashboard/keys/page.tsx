@@ -11,23 +11,23 @@ export default async function KeysPage() {
 
   return (
     <div style={{ maxWidth: "1000px", margin: "0 auto", color: "var(--foreground)" }}>
-      <header style={{ marginBottom: "3rem" }}>
-        <h1 style={{ fontSize: "2.5rem", fontWeight: "800", marginBottom: "0.5rem" }}>🔑 Chaves de API</h1>
-        <p style={{ color: "var(--muted)", fontSize: "1.1rem" }}>
-          Gerencie suas credenciais para acessar o ODIN via CLI, SDK ou integrações externas.
+      <header style={{ marginBottom: "clamp(1.5rem, 3vw, 3rem)" }}>
+        <h1 style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)", fontWeight: "800", marginBottom: "0.25rem" }}>🔑 Chaves de API</h1>
+        <p style={{ color: "var(--muted)", fontSize: "clamp(0.85rem, 1.5vw, 1.1rem)" }}>
+          Gerencie suas credenciais para acessar o ODIN via CLI, SDK ou integrações.
         </p>
       </header>
 
       <div style={{ 
-        padding: "2rem", 
+        padding: "clamp(1rem, 2vw, 2rem)", 
         backgroundColor: "rgba(59, 130, 246, 0.05)", 
-        borderRadius: "24px", 
+        borderRadius: "var(--radius-lg)", 
         border: "1px solid rgba(59, 130, 246, 0.2)",
-        marginBottom: "3rem"
+        marginBottom: "clamp(1.5rem, 3vw, 3rem)"
       }}>
-        <h3 style={{ margin: "0 0 0.5rem 0", color: "var(--primary)" }}>Dica de Segurança</h3>
-        <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--muted)", lineHeight: "1.6" }}>
-          Suas chaves de API têm as mesmas permissões que sua conta. Nunca compartilhe suas chaves ou as publique em repositórios públicos. 
+        <h3 style={{ margin: "0 0 0.5rem 0", color: "var(--primary)", fontSize: "0.95rem" }}>Dica de Segurança</h3>
+        <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--muted)", lineHeight: "1.6" }}>
+          Suas chaves têm as mesmas permissões que sua conta. Nunca compartilhe. 
           As chaves são exibidas <strong>apenas uma vez</strong> após a criação.
         </p>
       </div>
